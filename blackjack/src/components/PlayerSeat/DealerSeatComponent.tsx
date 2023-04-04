@@ -2,14 +2,14 @@ import { observer } from "mobx-react-lite";
 import React, { useEffect } from "react";
 import table from "../../store/table";
 import { CardComponent } from "../Card/CardComponent";
-import { CardsWrapper, PlayerStyled } from "./Player.styled";
+import { CardsWrapper, SeatStyled } from "./Seat.styled";
 
-export const Dealer = observer(() => {
+export const DealerSeatComponent = observer(() => {
   const dealer = table.dealer;
   return (
     <>
       {dealer && dealer.handTotal}
-      <PlayerStyled>
+      <SeatStyled>
         <CardsWrapper>
           {dealer &&
             dealer.hand.map((card) => (
@@ -20,7 +20,7 @@ export const Dealer = observer(() => {
               />
             ))}
         </CardsWrapper>
-      </PlayerStyled>
+      </SeatStyled>
     </>
   );
 });

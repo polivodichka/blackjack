@@ -1,16 +1,17 @@
-import { StringDecoder } from "string_decoder";
 import styled from "styled-components";
 import { makeColorDarker } from "../../utils/makeColorDarker";
 
 export const BetPanelStyled = styled.div`
   display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  width: 100%;
 `;
 
 export const ChipStyled = styled.button.attrs(
   (props: { color: string; bet: number; size: number }) => props
 )`
   cursor: pointer;
-  margin: 1em;
   position: relative;
   display: inline-block;
   width: ${(props) => props.size}px;
@@ -111,12 +112,12 @@ export const ChipStyled = styled.button.attrs(
       ),
       linear-gradient(
         150deg,
-        ${(props) => makeColorDarker(props.color)} 0,
-        ${(props) => makeColorDarker(props.color)} 46%,
+        ${(props) => makeColorDarker(props.color, 20)} 0,
+        ${(props) => makeColorDarker(props.color, 20)} 46%,
         #ebebeb 46%,
         #ebebeb 54%,
-        ${(props) => makeColorDarker(props.color)} 54%,
-        ${(props) => makeColorDarker(props.color)} 100%
+        ${(props) => makeColorDarker(props.color, 20)} 54%,
+        ${(props) => makeColorDarker(props.color, 20)} 100%
       );
   }
 
@@ -151,7 +152,7 @@ export const ChipStyled = styled.button.attrs(
         0px rgba(0, 0, 0, 0.3);
 
     background: ${(props) => props.color};
-    color: ${(props) => props.color};
+    color: ${(props) => makeColorDarker(props.color, 5)};
   }
   &:hover {
     transform: scale(1.3);

@@ -21,17 +21,28 @@ class Table {
       currentPlayer: computed,
       roundIsStarted: computed,
       ableToStartGame: computed,
+      seats: computed,
+      needInsurance: computed,
       addPlayer: action,
       deal: action,
       hit: action,
       stand: action,
+      split: action,
       double: action,
       draw: action,
       createDeck: action,
       shuffleDeck: action,
       playerRemove: action,
     });
+
+    autorun(() => {
+      if (this.dealer && this.currentPlayerIndex! === this.players.length) {
+        this.currentPlayerIndex = null;
+        while (this.dealer.canHit) this.dealer.hand.push(this.draw());
+      }
+    });
   }
+
   get ableToStartGame(): boolean {
     return this.players.length > 0 && !this.dealer;
   }
@@ -43,15 +54,39 @@ class Table {
       ? this.players[this.currentPlayerIndex]
       : null;
   }
+  get seats(): {
+    [key: string]: Player[];
+  } {
+    return this.players.reduce<{ [key: string]: Player[] }>(
+      (result, player) => {
+        if (!result[player.seatId]) {
+          result[player.seatId] = [];
+        }
+        result[player.seatId].push(player);
+        return result;
+      },
+      {}
+    );
+  }
+  get needInsurance(): boolean {
+    return !!!(
+      this.dealer && this.dealer.hand.find((card) => card.rank === "ace")
+    );
+  }
 
   setCurrentBetBtnValue(value: number): void {
     this.currentBetBtnValue = value;
   }
 
-  addPlayer(seatId: string): void {
+  addPlayer(seatId: string): Player {
     // функция для добавления нового игрока в массив players
-    if (!this.players.find((player) => player.seatId === seatId))
-      this.players.push(new Player(seatId));
+    const player = this.players.find((player) => player.seatId === seatId);
+    if (!player) {
+      const newPlayer = new Player(seatId);
+      this.players.push(newPlayer);
+      return newPlayer;
+    }
+    return player;
   }
 
   deal(dealerId: string): void {
@@ -76,15 +111,37 @@ class Table {
   stand(): void {
     // функция для завершения хода текущего игрока
     this.currentPlayerIndex!++;
-    if (this.dealer && this.currentPlayerIndex! === this.players.length) {
-      this.currentPlayerIndex = null;
-      while (this.dealer.canHit) this.dealer.hand.push(this.draw());
+  }
+
+  split() {
+    if (this.currentPlayer && this.currentPlayerIndex !== null) {
+      const subPlayer = new Player(this.currentPlayer.seatId);
+      subPlayer.parentPlayer = this.currentPlayer;
+      subPlayer.hand = this.currentPlayer.hand.splice(1, 1);
+      subPlayer.currentBet = [...this.currentPlayer.currentBet];
+
+      this.currentPlayer.hand.push(this.draw());
+      subPlayer.hand.push(this.draw());
+
+      this.players.splice(this.currentPlayerIndex, 0, subPlayer);
     }
   }
 
   double(): void {
-    const bets = this.currentPlayer!.currentBet;
-    this.currentPlayer!.currentBet = bets.concat(bets);
+    const player = this.currentPlayer;
+    if (player) {
+      const bets = player.currentBet;
+      player.currentBet = bets.concat(bets);
+      this.hit();
+      this.stand();
+    }
+  }
+
+  insurance(): void {
+    this.currentPlayer &&
+      this.currentPlayer.insuarence.push(
+        this.currentPlayer?.currentBet.reduce((a, b) => a + b) / 2
+      );
   }
 
   draw(): Card {

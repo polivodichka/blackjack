@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import { FC } from "react";
 import { Suit, SuitCard } from "../../types.ds";
 import { CardStyled } from "./Card.styled";
 

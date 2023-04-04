@@ -1,10 +1,10 @@
 import { observable, computed, action, makeObservable } from "mobx";
 import { nanoid } from "nanoid";
 import { Card } from "./card";
-import game from "./table";
+import gameTable from "./table";
 
 export class Dealer {
-  id: string = nanoid();
+  readonly id: string = nanoid();
   hand: Card[] = [];
   seatId: string;
 
@@ -20,7 +20,7 @@ export class Dealer {
   }
 
   get isTurn(): boolean {
-    return this.id === game.currentPlayer?.id;
+    return this.id === gameTable.currentPlayer?.id;
   }
 
   get handTotal(): number {

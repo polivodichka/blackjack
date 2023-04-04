@@ -1,28 +1,47 @@
 import { observer } from "mobx-react-lite";
-import game from "../../store/table";
+import gameTable from "../../store/table";
 import { useCallback } from "react";
 
 export const GameActionsComponent = observer(() => {
   const hit = useCallback(() => {
-    game.hit();
+    gameTable.hit();
   }, []);
+
   const stand = useCallback(() => {
-    game.stand();
+    gameTable.stand();
   }, []);
+
   const double = useCallback(() => {
-    game.double();
+    gameTable.double();
+  }, []);
+
+  const split = useCallback(() => {
+    gameTable.split();
+  }, []);
+
+  const insurance = useCallback(() => {
+    gameTable.insurance();
   }, []);
   return (
     <>
-      {game.currentPlayer && (
+      {gameTable.currentPlayer && (
         <div>
-          <button disabled={!game.currentPlayer.canHit ?? false} onClick={hit}>
+          <button disabled={!gameTable.currentPlayer.canHit} onClick={hit}>
             Hit
           </button>
           <button onClick={stand}>Stand</button>
-          <button disabled={!game.currentPlayer.canSplit}>Split</button>
-          <button onClick={double}>Double</button>
-          <button>Insuarense</button>
+          <button disabled={!gameTable.currentPlayer.canSplit} onClick={split}>
+            Split
+          </button>
+          <button
+            onClick={double}
+            disabled={!gameTable.currentPlayer.canDouble}
+          >
+            Double
+          </button>
+          <button disabled={gameTable.needInsurance} onClick={insurance}>
+            Insurance
+          </button>
         </div>
       )}
     </>

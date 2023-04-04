@@ -1,7 +1,5 @@
-import { observer } from "mobx-react-lite";
-import { FC, MouseEventHandler } from "react";
+import { FC } from "react";
 import { ChipStyled } from "./BetPanel.styled";
-import game from "../../store/table";
 
 type BetProps = {
   value: number;
@@ -10,16 +8,20 @@ type BetProps = {
   size: number;
   className?: string;
 };
-export const Bet: FC<BetProps> = observer(
-  ({ value, onBetSet, color, size, className }) => {
-    return (
-      <ChipStyled
-        className={className ?? ""}
-        color={color}
-        bet={value}
-        onClick={onBetSet}
-        size={size}
-      />
-    );
-  }
-);
+export const Bet: FC<BetProps> = ({
+  value,
+  onBetSet,
+  color,
+  size,
+  className,
+}) => {
+  return (
+    <ChipStyled
+      className={className ?? ""}
+      color={color}
+      bet={value}
+      onClick={onBetSet}
+      size={size}
+    />
+  );
+};
