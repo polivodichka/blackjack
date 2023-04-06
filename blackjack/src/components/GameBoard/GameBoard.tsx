@@ -3,25 +3,25 @@ import { useCallback } from "react";
 import gameTable from "../../store/table";
 import { BetPanel } from "../BetPanel/BetPanel";
 import { GameActionsComponent } from "../GameActions/GameActionsComponent";
-import { DealerSeatComponent } from "../PlayerSeat/DealerSeatComponent";
-import { PlayerSeatComponent } from "../PlayerSeat/PlayerSeatComponent";
-import { SeatsZone } from "../PlayerSeat/Seat.styled";
+import { DealerSpotComponent } from "../PlayerSpot/DealerSpotComponent";
+import { PlayerSpotComponent } from "../PlayerSpot/PlayerSpotComponent";
+import { SpotsZone } from "../PlayerSpot/Spot.styled";
 import { GameBoardStyled } from "./GameBoard.styled";
 
 export const GameBoard = observer(() => {
-  const dealerSeatId = "dealerSeat";
-  const seats = [];
+  const dealerSpotId = "dealerSpot";
+  const spots = [];
   for (let i = 0; i < 5; i++) {
-    seats.push(<PlayerSeatComponent key={i} id={`seat-${i}`} />);
+    spots.push(<PlayerSpotComponent key={i} id={`spot-${i}`} />);
   }
   const handlePlayBtn = useCallback(() => {
-    gameTable.deal(dealerSeatId);
+    gameTable.deal(dealerSpotId);
   }, []);
   return (
     <GameBoardStyled>
-      <DealerSeatComponent />
+      <DealerSpotComponent />
       <>
-        <SeatsZone>{seats}</SeatsZone>
+        <SpotsZone>{spots}</SpotsZone>
         <BetPanel />
       </>
       {gameTable.ableToStartGame && (

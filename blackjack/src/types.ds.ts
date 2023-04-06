@@ -12,6 +12,7 @@ export enum PlayerGameState {
   blackjack,
   "natural blackjack",
   active,
+  error,
 }
 export interface ICard {
   id: number;

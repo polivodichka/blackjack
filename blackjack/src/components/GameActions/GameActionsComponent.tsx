@@ -20,32 +20,33 @@ export const GameActionsComponent = observer(() => {
   }, []);
 
   const insurance = useCallback(() => {
-    gameTable.insurance();
+    gameTable.currentPlayer && gameTable.currentPlayer.insurance();
+  }, []);
+  const skipInsurance = useCallback(() => {
+    gameTable.currentPlayer && gameTable.currentPlayer.insurance(0);
   }, []);
   return (
     <>
-      {gameTable.currentPlayer && (
-        <div>
-          <button disabled={!gameTable.currentPlayer.canHit} onClick={hit}>
-            Hit
-          </button>
-          <button onClick={stand}>
-            Stand
-          </button>
-          <button disabled={!gameTable.currentPlayer.canSplit} onClick={split}>
-            Split
-          </button>
-          <button
-            onClick={double}
-            disabled={!gameTable.currentPlayer.canDouble}
-          >
-            Double
-          </button>
-          <button disabled={gameTable.needInsurance} onClick={insurance}>
-            Insurance
-          </button>
-        </div>
-      )}
+      {gameTable.currentPlayer &&
+        (gameTable.currentPlayer.canInsurance ? (
+          <>
+            <button onClick={insurance}>Insurance</button>
+            <button onClick={skipInsurance}>Skip insurance</button>
+          </>
+        ) : (
+          <div>
+            {gameTable.currentPlayer.canHit && (
+              <button onClick={hit}>Hit</button>
+            )}
+            <button onClick={stand}>Stand</button>
+            {gameTable.currentPlayer.canSplit && (
+              <button onClick={split}>Split</button>
+            )}
+            {gameTable.currentPlayer.canDouble && (
+              <button onClick={double}>Double</button>
+            )}
+          </div>
+        ))}
     </>
   );
 });

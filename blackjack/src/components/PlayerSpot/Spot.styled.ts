@@ -14,21 +14,27 @@ export const OnePlayerWrapper = styled.div`
   justify-content: center;
   position: relative;
   &.active {
-    animation: pulce 2s ease-in-out infinite;
+    animation: pulse 2s ease-in-out infinite;
   }
 `;
-export const SeatStyled = styled.div`
+export const SpotStyled = styled.div`
   display: block;
   height: 30vh;
   width: 16vw;
   border: 3px solid white;
+  border-radius: 9px;
+  padding: 20px 0;
   position: relative;
+  cursor: pointer;
   &.active {
     border: 2px solid red;
   }
+  &.empty {
+    animation: pulse 2s ease-in-out infinite;
+  }
 `;
 
-export const SeatsZone = styled.div`
+export const SpotsZone = styled.div`
   display: flex;
   gap: 0 20px;
 `;
@@ -40,9 +46,14 @@ export const CardsWrapper = styled.div`
 `;
 
 export const CardsTotal = styled.div`
-  position: absolute;
-  top: 20px;
-  right: 20px;
+  height: 20px;
+  width: 20px;
+  height: min-content;
+  color: white;
+  background-color: #5dadec;
+  text-align: center;
+  padding: 3px;
+  border-radius: 50%;
   z-index: 2;
 `;
 
@@ -52,6 +63,10 @@ export const BalanceStyled = styled.div`
   &::after {
     content: "$";
   }
+`;
+export const ChipsWrapper = styled.div`
+  display: flex;
+  flex-direction: row;
 `;
 
 export const GameEndComponent = styled.div`
