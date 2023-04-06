@@ -1,11 +1,10 @@
 import { observer } from "mobx-react-lite";
-import React, { useEffect } from "react";
-import table from "../../store/table";
+import gameTable from "../../store/table";
 import { CardComponent } from "../Card/CardComponent";
 import { CardsWrapper, SeatStyled } from "./Seat.styled";
 
 export const DealerSeatComponent = observer(() => {
-  const dealer = table.dealer;
+  const dealer = gameTable.dealer;
   return (
     <>
       {dealer && dealer.handTotal}

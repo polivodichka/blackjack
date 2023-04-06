@@ -1,6 +1,6 @@
 import { observer } from "mobx-react-lite";
-import gameTable from "../../store/table";
 import { useCallback } from "react";
+import gameTable from "../../store/table";
 
 export const GameActionsComponent = observer(() => {
   const hit = useCallback(() => {
@@ -29,7 +29,9 @@ export const GameActionsComponent = observer(() => {
           <button disabled={!gameTable.currentPlayer.canHit} onClick={hit}>
             Hit
           </button>
-          <button onClick={stand}>Stand</button>
+          <button onClick={stand}>
+            Stand
+          </button>
           <button disabled={!gameTable.currentPlayer.canSplit} onClick={split}>
             Split
           </button>

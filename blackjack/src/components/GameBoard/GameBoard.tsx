@@ -1,16 +1,12 @@
-import React, { useCallback } from "react";
+import { observer } from "mobx-react-lite";
+import { useCallback } from "react";
+import gameTable from "../../store/table";
 import { BetPanel } from "../BetPanel/BetPanel";
+import { GameActionsComponent } from "../GameActions/GameActionsComponent";
 import { DealerSeatComponent } from "../PlayerSeat/DealerSeatComponent";
 import { PlayerSeatComponent } from "../PlayerSeat/PlayerSeatComponent";
 import { SeatsZone } from "../PlayerSeat/Seat.styled";
-import gameTable from "../../store/table";
 import { GameBoardStyled } from "./GameBoard.styled";
-import { observer } from "mobx-react-lite";
-import { GameActionsComponent } from "../GameActions/GameActionsComponent";
-
-type GameBoardProps = {
-  currentPlayerId: string; //вообще это надо тянуть из состояния игры
-};
 
 export const GameBoard = observer(() => {
   const dealerSeatId = "dealerSeat";
@@ -29,7 +25,9 @@ export const GameBoard = observer(() => {
         <BetPanel />
       </>
       {gameTable.ableToStartGame && (
-        <button onClick={handlePlayBtn}>PLAY</button>
+        <button onClick={handlePlayBtn}>
+          PLAY
+        </button>
       )}
       {gameTable.roundIsStarted && <GameActionsComponent />}
     </GameBoardStyled>

@@ -1,15 +1,12 @@
 export function makeColorDarker(color: string, percents: number) {
-  // Извлекаем компоненты цвета из строки
   let red = parseInt(color.substring(1, 3), 16);
   let green = parseInt(color.substring(3, 5), 16);
   let blue = parseInt(color.substring(5, 7), 16);
 
-  // Уменьшаем значение каждой компоненты на 10%
   red = Math.floor(red * (1 - percents / 100));
   green = Math.floor(green * (1 - percents / 100));
   blue = Math.floor(blue * (1 - percents / 100));
 
-  // Преобразуем компоненты обратно в строку и объединяем их
   let darkColor =
     "#" +
     red.toString(16).padStart(2, "0") +

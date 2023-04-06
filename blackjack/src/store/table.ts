@@ -1,60 +1,54 @@
 import { observable, action, makeObservable, computed, autorun } from "mobx";
-import { Suit } from "../types.ds";
+import { PlayerGameState, Suit } from "../types.ds";
 import { Card } from "./card";
 import { Dealer } from "./dealer";
 import { Player } from "./player";
 
 class Table {
-  players: Player[] = [];
-  dealer: Dealer | null = null;
-  currentPlayerIndex: number | null = null;
-  deck: Card[] = [];
-  currentBetBtnValue: number = 2;
+  @observable players: Player[] = [];
+  @observable dealer: Dealer | null = null;
+  @observable currentPlayerIndex: number | null = null;
+  @observable deck: Card[] = [];
+  @observable currentBetBtnValue: number = 2;
 
   constructor() {
-    makeObservable(this, {
-      players: observable,
-      dealer: observable,
-      currentPlayerIndex: observable,
-      deck: observable,
-      currentBetBtnValue: observable,
-      currentPlayer: computed,
-      roundIsStarted: computed,
-      ableToStartGame: computed,
-      seats: computed,
-      needInsurance: computed,
-      addPlayer: action,
-      deal: action,
-      hit: action,
-      stand: action,
-      split: action,
-      double: action,
-      draw: action,
-      createDeck: action,
-      shuffleDeck: action,
-      playerRemove: action,
-    });
-
+    makeObservable(this);
     autorun(() => {
       if (this.dealer && this.currentPlayerIndex! === this.players.length) {
         this.currentPlayerIndex = null;
         while (this.dealer.canHit) this.dealer.hand.push(this.draw());
+        this.countWinnings();
+      }
+      if (
+        this.currentPlayer &&
+        this.currentPlayer.state === PlayerGameState.bust
+      ) {
+        this.stand();
       }
     });
   }
 
-  get ableToStartGame(): boolean {
-    return this.players.length > 0 && !this.dealer;
+  @computed get ableToStartGame(): boolean {
+    return (
+      this.players.length > 0 &&
+      !this.dealer &&
+      this.players.every(
+        (player) => player.betChipsTotal > 0 || player.parentPlayer
+      )
+    );
   }
-  get roundIsStarted(): boolean {
+
+  @computed get roundIsStarted(): boolean {
     return this.players.length > 0 && !!this.dealer;
   }
-  get currentPlayer(): Player | null {
+
+  @computed get currentPlayer(): Player | null {
     return typeof this.currentPlayerIndex === "number"
       ? this.players[this.currentPlayerIndex]
       : null;
   }
-  get seats(): {
+
+  @computed get seats(): {
     [key: string]: Player[];
   } {
     return this.players.reduce<{ [key: string]: Player[] }>(
@@ -68,18 +62,18 @@ class Table {
       {}
     );
   }
-  get needInsurance(): boolean {
+
+  @computed get needInsurance(): boolean {
     return !!!(
       this.dealer && this.dealer.hand.find((card) => card.rank === "ace")
     );
   }
 
-  setCurrentBetBtnValue(value: number): void {
+  @action setCurrentBetBtnValue(value: number): void {
     this.currentBetBtnValue = value;
   }
 
-  addPlayer(seatId: string): Player {
-    // функция для добавления нового игрока в массив players
+  @action addPlayer(seatId: string): Player {
     const player = this.players.find((player) => player.seatId === seatId);
     if (!player) {
       const newPlayer = new Player(seatId);
@@ -89,9 +83,15 @@ class Table {
     return player;
   }
 
-  deal(dealerId: string): void {
-    // функция для начала игры - раздачи карт всем игрокам и дилеру
-    //происходит после нажатия кнопки начала игры
+  @action deal(dealerId: string): void {
+    //remove players from previous game
+    for (let i = 0; i < this.players.length; i++) {
+      if (this.players[i].roundIsEnded) {
+        this.players.splice(i, 1);
+        i--;
+      }
+    }
+
     this.dealer = new Dealer(dealerId);
     this.createDeck();
     this.shuffleDeck();
@@ -103,22 +103,21 @@ class Table {
     this.currentPlayerIndex = 0;
   }
 
-  hit(): void {
-    // функция для взятия карты текущим игроком
+  @action hit(): void {
     this.currentPlayer!.hand.push(this.draw());
   }
 
-  stand(): void {
-    // функция для завершения хода текущего игрока
+  @action stand(): void {
     this.currentPlayerIndex!++;
   }
 
-  split() {
+  @action split() {
     if (this.currentPlayer && this.currentPlayerIndex !== null) {
       const subPlayer = new Player(this.currentPlayer.seatId);
       subPlayer.parentPlayer = this.currentPlayer;
       subPlayer.hand = this.currentPlayer.hand.splice(1, 1);
-      subPlayer.currentBet = [...this.currentPlayer.currentBet];
+      subPlayer.betChips = [...this.currentPlayer.betChips];
+      this.currentPlayer.balance -= this.currentPlayer.betChipsTotal;
 
       this.currentPlayer.hand.push(this.draw());
       subPlayer.hand.push(this.draw());
@@ -127,30 +126,28 @@ class Table {
     }
   }
 
-  double(): void {
+  @action double(): void {
     const player = this.currentPlayer;
-    if (player) {
-      const bets = player.currentBet;
-      player.currentBet = bets.concat(bets);
+    if (player && player.betChipsTotal <= player.balance) {
+      player.parentPlayer
+        ? (player.parentPlayer.balance -= player.betChipsTotal)
+        : (player.balance -= player.betChipsTotal);
+      player.betChips = player.betChips.concat(player.betChips);
       this.hit();
       this.stand();
-    }
+    } else alert("Insufficient funds");
   }
 
-  insurance(): void {
+  @action insurance(): void {
     this.currentPlayer &&
-      this.currentPlayer.insuarence.push(
-        this.currentPlayer?.currentBet.reduce((a, b) => a + b) / 2
-      );
+      this.currentPlayer.insuarence.push(this.currentPlayer?.betChipsTotal / 2);
   }
 
-  draw(): Card {
-    // функция для извлечения карты из колоды
+  @action draw(): Card {
     return this.deck.shift() as Card;
   }
 
-  createDeck(): void {
-    // функция для создания колоды
+  @action createDeck(): void {
     const suits: Suit[] = ["hearts", "diamonds", "clubs", "spades"];
     const ranks = [
       { rank: "ace", value: 11 },
@@ -175,16 +172,58 @@ class Table {
     }
   }
 
-  shuffleDeck(): void {
+  @action shuffleDeck(): void {
     for (let i = this.deck.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [this.deck[i], this.deck[j]] = [this.deck[j], this.deck[i]];
     }
   }
 
-  playerRemove(playerForRemoving: Player): void {
+  @action playerRemove(playerForRemoving: Player): void {
     const index = this.players.indexOf(playerForRemoving);
     index >= 0 && this.players.splice(index, 1);
+  }
+
+  @action countWinnings() {
+    this.players.forEach((player) => {
+      const betSum = player.betChipsTotal;
+      switch (player.state) {
+        case PlayerGameState["natural blackjack"]:
+          player.parentPlayer
+            ? (player.parentPlayer.balance += betSum * 2.5)
+            : (player.balance += betSum * 2.5);
+          break;
+        case PlayerGameState.blackjack:
+          if (this.dealer?.handTotal === 21) {
+            player.parentPlayer
+              ? (player.parentPlayer.balance += betSum)
+              : (player.balance += betSum);
+          } else
+            player.parentPlayer
+              ? (player.parentPlayer.balance += betSum * 2)
+              : (player.balance += betSum * 2);
+          break;
+        case PlayerGameState.active:
+          if (
+            this.dealer &&
+            (this.dealer.handTotal < player.handTotal ||
+              this.dealer.handTotal > 21)
+          ) {
+            player.parentPlayer
+              ? (player.parentPlayer.balance += betSum * 2)
+              : (player.balance += betSum * 2);
+          } else if (
+            this.dealer &&
+            this.dealer.handTotal === player.handTotal
+          ) {
+            player.parentPlayer
+              ? (player.parentPlayer.balance += betSum)
+              : (player.balance += betSum);
+          }
+          break;
+      }
+      player.roundIsEnded = true;
+    });
   }
 }
 

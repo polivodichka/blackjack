@@ -13,6 +13,9 @@ export const OnePlayerWrapper = styled.div`
   align-items: center;
   justify-content: center;
   position: relative;
+  &.active {
+    animation: pulce 2s ease-in-out infinite;
+  }
 `;
 export const SeatStyled = styled.div`
   display: block;
@@ -40,5 +43,27 @@ export const CardsTotal = styled.div`
   position: absolute;
   top: 20px;
   right: 20px;
-  z-index: 2 ;
+  z-index: 2;
+`;
+
+export const BalanceStyled = styled.div`
+  position: absolute;
+  bottom: 0;
+  &::after {
+    content: "$";
+  }
+`;
+
+export const GameEndComponent = styled.div`
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  height: 100%;
+  width: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
 `;

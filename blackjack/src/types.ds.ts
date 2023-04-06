@@ -7,7 +7,12 @@ export enum SuitCard {
 
 export type Suit = keyof typeof SuitCard;
 
-export type PlayerGameState = "win" | "loose" | "active";
+export enum PlayerGameState {
+  bust,
+  blackjack,
+  "natural blackjack",
+  active,
+}
 export interface ICard {
   id: number;
   rank: number;
