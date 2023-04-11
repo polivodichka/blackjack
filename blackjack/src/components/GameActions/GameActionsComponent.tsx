@@ -1,48 +1,48 @@
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
-import gameTable from "../../store/table";
+import game from "../../store/game";
 
 export const GameActionsComponent = observer(() => {
   const hit = useCallback(() => {
-    gameTable.hit();
+    game.table!.hit();
   }, []);
 
   const stand = useCallback(() => {
-    gameTable.stand();
+    game.table!.stand();
   }, []);
 
   const double = useCallback(() => {
-    gameTable.double();
+    game.table!.double();
   }, []);
 
   const split = useCallback(() => {
-    gameTable.split();
+    game.table!.split();
   }, []);
 
   const insurance = useCallback(() => {
-    gameTable.currentPlayer && gameTable.currentPlayer.insurance();
+    game.table!.currentPlayer && game.table!.currentPlayer.insurance();
   }, []);
   const skipInsurance = useCallback(() => {
-    gameTable.currentPlayer && gameTable.currentPlayer.insurance(0);
+    game.table!.currentPlayer && game.table!.currentPlayer.insurance(0);
   }, []);
   return (
     <>
-      {gameTable.currentPlayer &&
-        (gameTable.currentPlayer.canInsurance ? (
+      {game.table!.currentPlayer &&
+        (game.table!.currentPlayer.canInsurance ? (
           <>
             <button onClick={insurance}>Insurance</button>
             <button onClick={skipInsurance}>Skip insurance</button>
           </>
         ) : (
           <div>
-            {gameTable.currentPlayer.canHit && (
+            {game.table!.currentPlayer.canHit && (
               <button onClick={hit}>Hit</button>
             )}
             <button onClick={stand}>Stand</button>
-            {gameTable.currentPlayer.canSplit && (
+            {game.table!.currentPlayer.canSplit && (
               <button onClick={split}>Split</button>
             )}
-            {gameTable.currentPlayer.canDouble && (
+            {game.table!.currentPlayer.canDouble && (
               <button onClick={double}>Double</button>
             )}
           </div>

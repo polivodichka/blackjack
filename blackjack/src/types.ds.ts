@@ -39,3 +39,10 @@ export interface IDealer {
   id: string;
   hand: ICard;
 }
+
+export enum PlayerType {
+  parent,
+  player,
+  subplayer,
+}
+//export type PlayerType = "parent" | "player" | "subPlayer";

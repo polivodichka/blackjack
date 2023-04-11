@@ -57,28 +57,8 @@ export const CardsTotal = styled.div`
   z-index: 2;
 `;
 
-export const BalanceStyled = styled.div`
-  position: absolute;
-  bottom: 0;
-  &::after {
-    content: "$";
-  }
-`;
 export const ChipsWrapper = styled.div`
   display: flex;
   flex-direction: row;
 `;
 
-export const GameEndComponent = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  height: 100%;
-  width: 100%;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 4;
-`;

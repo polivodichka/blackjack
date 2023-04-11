@@ -1,10 +1,10 @@
 import { observer } from "mobx-react-lite";
-import gameTable from "../../store/table";
+import game from "../../store/game";
 import { CardComponent } from "../Card/CardComponent";
 import { CardsTotal, CardsWrapper, SpotStyled } from "./Spot.styled";
 
 export const DealerSpotComponent = observer(() => {
-  const dealer = gameTable.dealer;
+  const dealer = game.table!.dealer;
   return (
     <SpotStyled>
       <CardsWrapper>

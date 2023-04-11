@@ -2,14 +2,13 @@ import { observer } from "mobx-react-lite";
 import React, { FC, useCallback } from "react";
 import { betValuesOptions } from "../../constants/constants";
 import { Player } from "../../store/player";
-import gameTable from "../../store/table";
+import game from "../../store/game";
 import { Bet } from "../BetPanel/Bet";
 import { CardComponent } from "../Card/CardComponent";
 import {
   CardsTotal,
   CardsWrapper,
   ChipsWrapper,
-  GameEndComponent,
   OnePlayerWrapper,
 } from "./Spot.styled";
 
@@ -21,33 +20,19 @@ export const PlayerComponent: FC<PlayerComponentProps> = observer(
     const handleRemoveBet = useCallback(
       (index: number) => (e: React.MouseEvent<HTMLElement>) => {
         e.stopPropagation();
-        if (!gameTable.roundIsStarted) {
+        if (!game.table!.roundIsStarted) {
           player.betDeleteByIndex(index);
         }
       },
       []
     );
 
-    const handleRestart = useCallback((e: React.MouseEvent<HTMLElement>) => {
-      e.stopPropagation();
-      player.reset();
-    }, []);
-
-    const handleLeave = useCallback((e: React.MouseEvent<HTMLElement>) => {
-      e.stopPropagation();
-      gameTable.playerRemove(player);
-    }, []);
-
     return (
       <>
-        {player.roundIsEnded && !player.parentPlayer && (
-          <GameEndComponent>
-            <button onClick={handleRestart}>restart</button>
-            <button onClick={handleLeave}>leave</button>
-          </GameEndComponent>
-        )}
         <OnePlayerWrapper
-          className={player.id === gameTable.currentPlayer?.id ? "active" : ""}
+          className={
+            player.id === game.table!.currentPlayer?.id ? "active" : ""
+          }
         >
           <ChipsWrapper>
             {!!player.insuranceBet && (

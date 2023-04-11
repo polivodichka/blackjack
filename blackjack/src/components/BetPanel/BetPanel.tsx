@@ -1,14 +1,14 @@
 import { observer } from "mobx-react-lite";
 import { useCallback } from "react";
 import { betValuesOptions } from "../../constants/constants";
-import gameTable from "../../store/table";
+import game from "../../store/game";
 import { Bet } from "./Bet";
 import { BetPanelStyled } from "./BetPanel.styled";
 
 export const BetPanel = observer(() => {
   const handleBet = useCallback(
     (value: number) => () => {
-      gameTable.setCurrentBetBtnValue(value);
+      game.table!.setCurrentBetBtnValue(value);
     },
     []
   );
@@ -21,7 +21,9 @@ export const BetPanel = observer(() => {
           onBetSet={handleBet(bet.value)}
           color={bet.color}
           size={70}
-          className={gameTable.currentBetBtnValue === bet.value ? "active" : ""}
+          className={
+            game.table!.currentBetBtnValue === bet.value ? "active" : ""
+          }
         />
       ))}
     </BetPanelStyled>

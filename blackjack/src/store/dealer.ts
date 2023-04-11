@@ -2,13 +2,12 @@ import { observable, computed, action, makeObservable } from "mobx";
 import { nanoid } from "nanoid";
 import { PlayerGameState } from "../types.ds";
 import { Card } from "./card";
-import gameTable from "./table";
+import game from "./game";
 
 export class Dealer {
   readonly id: string = nanoid();
   spotId: string;
   @observable hand: Card[] = [];
-  @observable balance: number = 100;
   @observable roundIsEnded: boolean = false;
 
   constructor(spotId: string) {
@@ -20,7 +19,7 @@ export class Dealer {
   }
 
   @computed get isTurn(): boolean {
-    return this.id === gameTable.currentPlayer?.id;
+    return this.id === game.table?.currentPlayer?.id;
   }
 
   @computed get handTotal(): number {
