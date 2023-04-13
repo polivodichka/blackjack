@@ -16,9 +16,12 @@ export enum PlayerGameState {
 }
 export interface ICard {
   id: number;
-  rank: string;
-  suit: keyof typeof SuitCard;
-  value: number;
+  rank: number;
+  suit: SuitCard;
+}
+
+export interface IParticipant extends IPlayer {
+  bet: number[];
 }
 
 export enum PlayerType {
@@ -26,12 +29,8 @@ export enum PlayerType {
   player,
   subplayer,
 }
-export interface IDealer {
-  id: string;
-  spotId: string;
-  hand: ICard[];
-  roundIsEnded: boolean;
-}
+//export type PlayerType = "parent" | "player" | "subPlayer";
+
 export interface IPlayer {
   id: string;
   spotId: string;
@@ -47,16 +46,10 @@ export interface IPlayer {
 export interface ITable {
   id: string;
   allPlayers: IPlayer[];
-  dealer: IDealer | null;
+  dealer: IPlayer | null;
   currentPlayerIndex: null;
-  deck: ICard[];
-  currentBetBtnValue: number;
-}
-
-export enum GameStatus {
-  waitBets = "Waiting for all players to place their bets",
-  readyToStart = "Ready to start",
-  playing = "Playing process",
+  deck: [];
+  currentBetBtnValue: 2;
 }
 
 export enum ActionType {
@@ -67,5 +60,3 @@ export enum ActionType {
   skipInsurance,
   split,
 }
-
-//export type PlayerType = "parent" | "player" | "subPlayer";

@@ -1,17 +1,25 @@
 import { observable, computed, action, makeObservable } from "mobx";
 import { nanoid } from "nanoid";
-import { PlayerGameState } from "../types.ds";
+import { IDealer, PlayerGameState } from "../types.ds";
 import { Card } from "./card";
 import game from "./game";
 
 export class Dealer {
-  readonly id: string = nanoid();
+  readonly id: string;
   spotId: string;
-  @observable hand: Card[] = [];
-  @observable roundIsEnded: boolean = false;
+  @observable hand: Card[];
+  @observable roundIsEnded: boolean;
 
-  constructor(spotId: string) {
+  constructor(
+    spotId: string,
+    hand: Card[] = [],
+    roundIsEnded: boolean = false,
+    id: string = nanoid()
+  ) {
+    this.hand = hand;
+    this.roundIsEnded = roundIsEnded;
     this.spotId = spotId;
+    this.id = id;
     makeObservable(this);
   }
   @computed get roundIsStarted(): boolean {
@@ -61,5 +69,17 @@ export class Dealer {
 
   @action.bound reset(): void {
     this.hand = [];
+  }
+
+  @action.bound update(player: IDealer | null) {
+    if (player) {
+      const hand = player.hand
+        ? player.hand.map((card) => new Card(card.suit, card.rank, card.value))
+        : [];
+
+      this.hand = hand;
+      this.roundIsEnded = player.roundIsEnded;
+    } else game.table?.dealer && (game.table.dealer = null);
+    return this;
   }
 }

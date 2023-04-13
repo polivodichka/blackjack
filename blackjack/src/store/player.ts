@@ -1,17 +1,34 @@
 import { observable, action, makeObservable, override, computed } from "mobx";
-import { PlayerGameState, PlayerType } from "../types.ds";
+import { IPlayer, PlayerGameState, PlayerType } from "../types.ds";
 import { Dealer } from "./dealer";
 import game from "./game";
+import { Card } from "./card";
+import { nanoid } from "nanoid";
 
 export class Player extends Dealer {
-  @observable betChips: number[] = [];
-  @observable insuranceBet: number | null = null;
-  @observable parentAfterSplitPlayer: Player | null = null;
-  @observable parentPlayer: Player | null = null;
-  @observable private _balance: number = 100;
+  @observable betChips: number[];
+  @observable insuranceBet: number | null;
+  @observable parentAfterSplitPlayer: Player | null;
+  @observable parentPlayer: Player | null;
+  @observable private _balance: number;
 
-  constructor(spotId?: string) {
-    super(spotId ?? "");
+  constructor(
+    spotId: string = "",
+    hand: Card[] = [],
+    roundIsEnded: boolean = false,
+    betChips: number[] = [],
+    insuranceBet: number | null = null,
+    parentAfterSplitPlayer: Player | null = null,
+    parentPlayer: Player | null = null,
+    _balance: number = 100,
+    id: string = nanoid()
+  ) {
+    super(spotId, hand, roundIsEnded, id);
+    this.betChips = betChips;
+    this.insuranceBet = insuranceBet;
+    this.parentAfterSplitPlayer = parentAfterSplitPlayer;
+    this.parentPlayer = parentPlayer;
+    this._balance = _balance;
     makeObservable(this);
   }
 
@@ -64,7 +81,6 @@ export class Player extends Dealer {
       : 0;
   }
   @computed get balance(): number {
-    console.log(this.playerType !== PlayerType.parent && this.parentPlayer);
     if (this.playerType !== PlayerType.parent && this.parentPlayer)
       return this.parentPlayer._balance;
     else return this._balance;
@@ -79,12 +95,12 @@ export class Player extends Dealer {
       this.parentPlayer._balance -= amount;
     else this._balance -= amount;
   }
-  @action.bound bet(amount: number): void {
-    if (amount <= this.balance) {
-      this.betChips.push(amount);
-      this.decreaseBalance(amount);
-    } else alert("Insufficient funds");
-  }
+  // @action.bound bet(amount: number): void {
+  //   if (amount <= this.balance) {
+  //     this.betChips.push(amount);
+  //     this.decreaseBalance(amount);
+  //   } else alert("Insufficient funds");
+  // }
   @action.bound insurance(amount = this.betChipsTotal / 2): void {
     if (amount <= this.balance) {
       this.insuranceBet = amount;
@@ -127,5 +143,44 @@ export class Player extends Dealer {
     }
     game.table && (game.table.dealer = null);
     this.parentPlayer!.roundIsEnded = true;
+  }
+  @action.bound setBalance(newBalance: number) {
+    console.log(newBalance);
+    this._balance = newBalance;
+  }
+
+  @override update(player: IPlayer) {
+    const hand = player.hand
+      ? player.hand.map((card) => new Card(card.suit, card.rank, card.value))
+      : [];
+
+    const parentAfterSplitPlayer = player.parentAfterSplitPlayer
+      ? game.table?.allPlayers.find(
+          (findedPlayer) =>
+            findedPlayer.id === player.parentAfterSplitPlayer?.id
+        )
+      : null;
+    parentAfterSplitPlayer &&
+      parentAfterSplitPlayer.update(player.parentAfterSplitPlayer!);
+
+    const parentPlayer = player.parentPlayer
+      ? game.table?.allPlayers.find(
+          (parent) => parent.id === player.parentPlayer?.id
+        )
+      : null;
+    parentPlayer && parentPlayer.update(player.parentPlayer!);
+
+    this.spotId !== player.spotId && (this.spotId = player.spotId);
+    this.roundIsEnded !== player.roundIsEnded &&
+      (this.roundIsEnded = player.roundIsEnded);
+    this.insuranceBet !== player.insuranceBet &&
+      (this.insuranceBet = player.insuranceBet);
+    this.hand = hand;
+    this.betChips = player.betChips;
+    this.parentAfterSplitPlayer = parentAfterSplitPlayer ?? null;
+    this.parentPlayer = parentPlayer ?? null;
+    this.setBalance(player._balance);
+    
+    return this;
   }
 }

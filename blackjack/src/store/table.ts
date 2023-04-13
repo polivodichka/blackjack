@@ -1,5 +1,11 @@
 import { action, autorun, computed, makeObservable, observable } from "mobx";
-import { PlayerGameState, PlayerType, Suit } from "../types.ds";
+import {
+  GameStatus,
+  IPlayer,
+  PlayerGameState,
+  PlayerType,
+  Suit,
+} from "../types.ds";
 import { Card } from "./card";
 import { Dealer } from "./dealer";
 import { Player } from "./player";
@@ -7,14 +13,28 @@ import { nanoid } from "nanoid";
 import game from "./game";
 
 export class Table {
-  readonly id: string = nanoid();
-  @observable allPlayers: Player[] = [];
-  @observable dealer: Dealer | null = null;
-  @observable currentPlayerIndex: number | null = null;
-  @observable deck: Card[] = [];
-  @observable currentBetBtnValue: number = 2;
+  readonly id: string;
+  @observable allPlayers: Player[];
+  @observable dealer: Dealer | null;
+  @observable currentPlayerIndex: number | null;
+  @observable deck: Card[];
+  @observable currentBetBtnValue: number;
 
-  constructor() {
+  constructor(
+    id: string = nanoid(),
+    allPlayers: Player[] = [],
+    dealer: Dealer | null = null,
+    currentPlayerIndex: number | null = null,
+    deck: Card[] = [],
+    currentBetBtnValue: number = 2
+  ) {
+    this.id = id;
+    this.allPlayers = allPlayers;
+    this.dealer = dealer;
+    this.currentPlayerIndex = currentPlayerIndex;
+    this.deck = deck;
+    this.currentBetBtnValue = currentBetBtnValue;
+
     makeObservable(this);
     autorun(() => {
       if (this.dealer && this.currentPlayerIndex! === this.players.length) {
@@ -35,15 +55,31 @@ export class Table {
       (player) => player.playerType !== PlayerType.parent
     );
   }
+  @computed get parentPlayers(): Player[] {
+    return this.allPlayers.filter(
+      (player) => player.playerType === PlayerType.parent
+    );
+  }
+  @computed get gameStatus(): GameStatus {
+    if (
+      this.parentPlayers.some(
+        (parentPlayer) =>
+          !this.players.find(
+            (player) => player.parentPlayer?.id === parentPlayer.id
+          )
+      ) &&
+      Object.keys(this.spots).length < 5
+    )
+      return GameStatus.waitBets;
+    if (this.dealer && this.dealer.hand.length) return GameStatus.playing;
+    return GameStatus.readyToStart;
+  }
   @computed get ableToStartGame(): boolean {
-    console.log(this.dealer);
-    console.log(this.allPlayers);
     return (
       this.players.length > 0 &&
       !this.dealer &&
-      this.players.every(
-        (player) => player.betChipsTotal || player.parentAfterSplitPlayer
-      )
+      this.players.every((player) => player.betChipsTotal) &&
+      this.gameStatus === GameStatus.readyToStart
     );
   }
 
@@ -73,25 +109,61 @@ export class Table {
   }
 
   @computed get needInsurance(): boolean {
-    return Boolean(
-      this.dealer && this.dealer.hand.find((card) => card.rank === "ace")
-    );
+    // return Boolean(
+    //   this.dealer && this.dealer.hand.find((card) => card.rank === "ace")
+    // );
+    return true;
   }
 
   @action.bound setCurrentBetBtnValue(value: number): void {
     this.currentBetBtnValue = value;
   }
 
-  @action.bound addPlayer(spotId: string): Player {
-    console.log(this.players);
-    const player = this.players.find((player) => player.spotId === spotId);
-    if (!player) {
-      const newPlayer = new Player(spotId);
-      newPlayer.parentPlayer = game.player;
-      this.allPlayers.push(newPlayer);
-      return newPlayer;
-    }
-    return player;
+  @action.bound addPlayer(player: IPlayer): Player {
+    const hand = player.hand
+      ? player.hand.map((card) => new Card(card.suit, card.rank, card.value))
+      : [];
+
+    const parentAfterSplitPlayer = player.parentAfterSplitPlayer
+      ? this.allPlayers.find(
+          (findedPlayer) =>
+            findedPlayer.id === player.parentAfterSplitPlayer?.id
+        )
+      : null;
+    parentAfterSplitPlayer &&
+      player.parentAfterSplitPlayer &&
+      parentAfterSplitPlayer.update(player.parentAfterSplitPlayer);
+
+    const parentPlayer = player.parentPlayer
+      ? this.allPlayers.find((parent) => parent.id === player.parentPlayer?.id)
+      : null;
+    parentPlayer &&
+      player.parentPlayer &&
+      parentPlayer.update(player.parentPlayer);
+
+    const newPlayer = new Player(
+      player.spotId,
+      hand,
+      player.roundIsEnded,
+      player.betChips,
+      player.insuranceBet,
+      parentAfterSplitPlayer,
+      parentPlayer,
+      player._balance,
+      player.id
+    );
+    this.allPlayers.push(newPlayer);
+    return newPlayer;
+  }
+  @action.bound canBetAtThisSpot(spotId: string) {
+    const players = this.spots[spotId];
+    if (players && players.length > 0) {
+      return players.every(
+        (player) =>
+          player.id === game.player!.id ||
+          (player.parentPlayer && player.parentPlayer.id === game.player!.id)
+      );
+    } else return true;
   }
 
   @action.bound playerRemove(playerForRemoving: Player): void {
@@ -107,7 +179,6 @@ export class Table {
   }
 
   @action.bound rebet(parent: Player) {
-    console.log(parent, this.players);
     this.players
       .filter((player) => player.parentPlayer!.id === parent.id)
       .map((player) => {
@@ -116,8 +187,6 @@ export class Table {
     parent.roundIsEnded = false;
   }
   @action.bound removeFakePlayers(parent: Player) {
-    console.log(parent, this.players);
-
     this.players
       .filter((player) => player.parentPlayer!.id === parent.id)
       .map((player) => {
@@ -258,5 +327,10 @@ export class Table {
       }
       player.parentPlayer!.roundIsEnded = true;
     });
+  }
+
+  @action.bound comparePlayers(thisPlayer: IPlayer, serverPlayer: IPlayer) {
+    const thisKeys = Object.keys(thisPlayer);
+    const serverKeys = Object.keys(serverPlayer);
   }
 }

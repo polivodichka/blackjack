@@ -11,17 +11,23 @@ import {
   ChipsWrapper,
   OnePlayerWrapper,
 } from "./Spot.styled";
+import { socket } from "../../server/socket";
 
 type PlayerComponentProps = {
   player: Player;
+  spotId: string;
 };
 export const PlayerComponent: FC<PlayerComponentProps> = observer(
-  ({ player }) => {
+  ({ player, spotId }) => {
     const handleRemoveBet = useCallback(
       (index: number) => (e: React.MouseEvent<HTMLElement>) => {
         e.stopPropagation();
-        if (!game.table!.roundIsStarted) {
-          player.betDeleteByIndex(index);
+        if (
+          !game.table!.roundIsStarted &&
+          game.table?.canBetAtThisSpot(spotId)
+        ) {
+          socket.emit("remove_bet", game.table?.id, player.id, index);
+          // player.betDeleteByIndex(index);
         }
       },
       []

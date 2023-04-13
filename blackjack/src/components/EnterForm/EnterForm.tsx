@@ -13,16 +13,18 @@ export const EnterForm: React.FC = () => {
     onJoinTable(joinExistingTable ? tableId : undefined);
   };
   const onJoinTable = (tableId?: string) => {
-    console.log(tableId);
-    socket.emit("create_table");
-    //game.startGame();
+    tableId ? socket.emit("join_table", tableId) : socket.emit("create_table");
   };
+
   useEffect(() => {
     socket.on("tableCreated", (table, player) => {
-      game.set(player, table);
-      console.log("Table created", tableId);
-      console.log("Player added to table:", player);
-      navigate("/table");
+      game.onTableCreated(JSON.parse(table), JSON.parse(player));
+      navigate(`/table?id=${game.table!.id}`);
+      console.log("tableCreated", game.player);
+    });
+    socket.on("tableJoined", (table, player) => {
+      game.onTableJoined(JSON.parse(table));
+      console.log("tableJoined", game.player);
     });
   });
 

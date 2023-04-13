@@ -11,19 +11,20 @@ import {
   GameBoardStyled,
   GameEndComponent,
 } from "./GameBoard.styled";
+import { socket } from "../../server/socket";
 
 export const GameBoard = observer(() => {
-  const dealerSpotId = "dealerSpot";
   const spots = [null, null, null, null, null];
 
   useEffect(() => {
     if (!(game.table && game.player)) {
-      game.startGame();
+      //game.startGame();
     }
   }, []);
 
   const handlePlayBtn = useCallback(() => {
-    game.table!.deal(dealerSpotId);
+    socket.emit("deal", game.table?.id);
+    //game.table!.deal(dealerSpotId);
   }, []);
   const handleRebet = useCallback((e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
@@ -34,9 +35,12 @@ export const GameBoard = observer(() => {
     e.stopPropagation();
     game.table!.removeFakePlayers(game.player!);
   }, []);
-  if (!game.gameIsReady) return <>Loading...</>
+  if (!game.gameIsReady) return <>Loading...</>;
   return (
     <GameBoardStyled>
+      <div style={{ position: "absolute", right: 20, top: 20 }}>
+        {game.gameIsReady && game.table!.id}
+      </div>
       {game.player && game.player.roundIsEnded && (
         <GameEndComponent>
           <button onClick={handleRebet}>rebet</button>
@@ -52,8 +56,10 @@ export const GameBoard = observer(() => {
         </SpotsZone>
         <BetPanel />
       </>
-      {game.table!.ableToStartGame && (
+      {game.table!.ableToStartGame ? (
         <button onClick={handlePlayBtn}>PLAY</button>
+      ) : (
+        <div>{game.table?.gameStatus}</div>
       )}
       {game.table!.roundIsStarted && <GameActionsComponent />}
 
