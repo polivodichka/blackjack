@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { useCallback, useEffect, useState } from "react";
 import game from "../../store/game";
-import { ActionType } from "../../types.ds";
+import { ActionType, SocketEmit, SocketOn } from "../../types.ds";
 import { socket } from "../../server/socket";
 
 export const GameActionsComponent = observer(() => {
@@ -9,7 +9,7 @@ export const GameActionsComponent = observer(() => {
   const handleAction = useCallback(
     (actionType: ActionType) => () => {
       socket.emit(
-        "action",
+        SocketEmit.action,
         actionType,
         game.table?.id,
         game.table?.currentPlayer?.id
@@ -19,7 +19,7 @@ export const GameActionsComponent = observer(() => {
     []
   );
   useEffect(() => {
-    socket.on("actionMade", () => {
+    socket.on(SocketOn.actionMade, () => {
       setButtonsDisabled(false);
     });
   });

@@ -9,9 +9,9 @@ export const DealerSpotComponent = observer(() => {
     <SpotStyled>
       <CardsWrapper>
         {dealer &&
-          dealer.hand.map((card) => (
+          dealer.hand.map((card, i) => (
             <CardComponent
-              key={"dealerCard" + card.suit + card.rank}
+              key={"dealerCard" + card.suit + card.rank + i}
               suit={card.suit}
               rank={card.rank}
             />

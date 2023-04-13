@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import game from "../../store/game";
 import { socket } from "../../server/socket";
+import { SocketEmit, SocketOn } from "../../types.ds";
 
 export const EnterForm: React.FC = () => {
   const [tableId, setTableId] = useState("");
@@ -13,18 +14,18 @@ export const EnterForm: React.FC = () => {
     onJoinTable(joinExistingTable ? tableId : undefined);
   };
   const onJoinTable = (tableId?: string) => {
-    tableId ? socket.emit("join_table", tableId) : socket.emit("create_table");
+    tableId
+      ? socket.emit(SocketEmit.join_table, tableId)
+      : socket.emit(SocketEmit.create_table);
   };
 
   useEffect(() => {
-    socket.on("tableCreated", (table, player) => {
+    socket.on(SocketOn.tableCreated, (table, player) => {
       game.onTableCreated(JSON.parse(table), JSON.parse(player));
       navigate(`/table?id=${game.table!.id}`);
-      console.log("tableCreated", game.player);
     });
-    socket.on("tableJoined", (table, player) => {
+    socket.on(SocketOn.tableJoined, (table) => {
       game.onTableJoined(JSON.parse(table));
-      console.log("tableJoined", game.player);
     });
   });
 

@@ -1,33 +1,27 @@
 import { PlayerGameState, PlayerType } from "../src/types.ds";
 import { Dealer } from "./dealer";
-import { Card } from "./card";
 import { v4 } from "uuid";
 import { socket } from "../src/server";
 
 export class Player extends Dealer {
-  betChips: number[];
-  insuranceBet: number | null;
-  parentAfterSplitPlayer: Player | null;
-  parentPlayer: Player | null;
+  betChips: number[] = [];
+  insuranceBet: number | null = null;
+  parentAfterSplitPlayer: Player | null = null;
+  parentPlayer: Player | null = null;
+  roundIsEnded: boolean = false;
+
+  readonly id: string;
   private _balance: number;
 
   constructor(
     tableId: string,
     id: string = v4(),
-    spotId?: string,
-    hand?: Card[],
-    roundIsEnded?: boolean,
-    betChips?: number[],
-    insuranceBet?: number | null,
-    parentAfterSplitPlayer?: Player | null,
-    parentPlayer?: Player | null,
+    spotId: string = "",
     _balance?: number
   ) {
-    super(tableId, spotId ?? "", id, hand, roundIsEnded);
-    this.betChips = betChips ?? [];
-    this.insuranceBet = insuranceBet ?? null;
-    this.parentAfterSplitPlayer = parentAfterSplitPlayer ?? null;
-    this.parentPlayer = parentPlayer ?? null;
+    super(tableId);
+    this.spotId = spotId;
+    this.id = id;
     this._balance = _balance ?? 100;
   }
 
@@ -35,17 +29,6 @@ export class Player extends Dealer {
     if (this.parentPlayer) return PlayerType.player;
     if (this.parentAfterSplitPlayer) return PlayerType.subplayer;
     return PlayerType.parent;
-  }
-  get canHit() {
-    return this.isActive;
-  }
-
-  get canSplit() {
-    return (
-      this.hand[0].rank === this.hand[1].rank &&
-      !this.roundIsStarted &&
-      !this.isSplitted
-    );
   }
 
   get isSplitted(): boolean {
@@ -58,24 +41,6 @@ export class Player extends Dealer {
   get isSubplayer(): boolean {
     return !!this.parentAfterSplitPlayer;
   }
-
-  get canDouble() {
-    return (
-      this.isActive &&
-      !this.roundIsStarted &&
-      !(this.insuranceBet && this.insuranceBet > 0) &&
-      !this.isSplitted
-    );
-  }
-
-  // get canInsurance() {
-  //   return (
-  //     !this.isNaturalBJ &&
-  //     socket.tables[this.tableId].needInsurance &&
-  //     this.insuranceBet === null &&
-  //     !this.roundIsStarted
-  //   );
-  // }
 
   get betChipsTotal() {
     return this.betChips.length
@@ -104,25 +69,17 @@ export class Player extends Dealer {
     }
   }
   insurance(amount = this.betChipsTotal / 2): void {
-    console.log("insurance", this.id);
     if (amount <= this.balance) {
       this.insuranceBet = amount;
       this.decreaseBalance(amount);
     }
   }
-
   betDeleteByIndex(index: number): void {
     this.increaseBalance(this.betChips[index]);
     this.betChips.splice(index, 1);
-    console.log(
-      this.id,
-      this.betChips,
-      socket.tables[this.tableId].allPlayers.length
-    );
     if (this.betChips.length < 1)
       socket.tables[this.tableId].playerRemove(this);
   }
-
   get state(): PlayerGameState {
     if (this.handTotal > 21) return PlayerGameState.bust;
     if (this.handTotal === 21 && !this.roundIsStarted && !this.isSplitted)
@@ -132,7 +89,6 @@ export class Player extends Dealer {
       return PlayerGameState.active;
     return PlayerGameState.error;
   }
-
   reset(): void {
     if (this.betChipsTotal > this.balance) {
       this.betChips = [];
@@ -140,21 +96,9 @@ export class Player extends Dealer {
     this.hand = [];
     this.insuranceBet = 0;
 
-    //remove the subplayers that were after the split (mutate the players array)
-    for (
-      let i = 0;
-      i < (socket.tables[this.tableId].players.length ?? 0);
-      i++
-    ) {
-      if (
-        socket.tables[this.tableId].players[i].parentAfterSplitPlayer &&
-        socket.tables[this.tableId].players[i].parentAfterSplitPlayer?.id ===
-          this.id
-      ) {
-        socket.tables[this.tableId].players.splice(i, 1);
-        i--;
-      }
-    }
+    const table = socket.tables[this.tableId];
+    table.removeFakePlayers(this.parentPlayer ?? this);
+
     socket.tables[this.tableId].dealer = null;
     this.parentPlayer!.roundIsEnded = true;
   }

@@ -14,17 +14,16 @@ export enum PlayerGameState {
   active,
   error,
 }
+export enum PlayerType {
+  parent,
+  player,
+  subplayer,
+}
 export interface ICard {
   id: number;
   rank: string;
   suit: keyof typeof SuitCard;
   value: number;
-}
-
-export enum PlayerType {
-  parent,
-  player,
-  subplayer,
 }
 export interface IDealer {
   id: string;
@@ -43,7 +42,6 @@ export interface IPlayer {
   parentPlayer: IPlayer | null;
   _balance: number;
 }
-
 export interface ITable {
   id: string;
   allPlayers: IPlayer[];
@@ -68,4 +66,28 @@ export enum ActionType {
   split,
 }
 
-//export type PlayerType = "parent" | "player" | "subPlayer";
+export enum EndGameActions {
+  rebet,
+  newBet,
+}
+
+export enum SocketOn {
+  tableCreated = "tableCreated",
+  tableJoined = "tableJoined",
+  actionMade = "actionMade",
+  disconnectPlayer = "disconnectPlayer",
+  betUpdate = "betUpdate",
+  dealt = "dealt",
+  dealerMadeAction = "dealerMadeAction",
+  winnersCounted = "winnersCounted",
+  gameEnded = "gameEnded",
+}
+export enum SocketEmit {
+  join_table = "join_table",
+  create_table = "create_table",
+  action = "action",
+  deal = "deal",
+  end_game = "end_game",
+  remove_bet = "remove_bet",
+  set_bet = "set_bet",
+}

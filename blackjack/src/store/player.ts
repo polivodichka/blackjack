@@ -3,7 +3,6 @@ import { IPlayer, PlayerGameState, PlayerType } from "../types.ds";
 import { Dealer } from "./dealer";
 import game from "./game";
 import { Card } from "./card";
-import { nanoid } from "nanoid";
 
 export class Player extends Dealer {
   @observable betChips: number[];
@@ -13,15 +12,15 @@ export class Player extends Dealer {
   @observable private _balance: number;
 
   constructor(
-    spotId: string = "",
-    hand: Card[] = [],
-    roundIsEnded: boolean = false,
-    betChips: number[] = [],
-    insuranceBet: number | null = null,
-    parentAfterSplitPlayer: Player | null = null,
-    parentPlayer: Player | null = null,
-    _balance: number = 100,
-    id: string = nanoid()
+    spotId: string,
+    hand: Card[],
+    roundIsEnded: boolean,
+    betChips: number[],
+    insuranceBet: number | null,
+    parentAfterSplitPlayer: Player | null,
+    parentPlayer: Player | null,
+    _balance: number,
+    id: string
   ) {
     super(spotId, hand, roundIsEnded, id);
     this.betChips = betChips;
@@ -32,50 +31,7 @@ export class Player extends Dealer {
     makeObservable(this);
   }
 
-  @computed get playerType(): PlayerType {
-    if (this.parentPlayer) return PlayerType.player;
-    if (this.parentAfterSplitPlayer) return PlayerType.subplayer;
-    return PlayerType.parent;
-  }
-  @override get canHit() {
-    return this.isActive;
-  }
-
-  @computed get canSplit() {
-    return (
-      this.hand[0].rank === this.hand[1].rank &&
-      !this.roundIsStarted &&
-      !this.isSplitted
-    );
-  }
-
-  @computed get isSplitted(): boolean {
-    return this.isSubplayer || (game.table?.spots[this.spotId].length ?? 1) > 1;
-  }
-
-  @computed get isSubplayer(): boolean {
-    return !!this.parentAfterSplitPlayer;
-  }
-
-  @computed get canDouble() {
-    return (
-      this.isActive &&
-      !this.roundIsStarted &&
-      !(this.insuranceBet && this.insuranceBet > 0) &&
-      !this.isSplitted
-    );
-  }
-
-  @computed get canInsurance() {
-    return (
-      !this.isNaturalBJ &&
-      game.table?.needInsurance &&
-      this.insuranceBet === null &&
-      !this.roundIsStarted
-    );
-  }
-
-  @computed get betChipsTotal() {
+  @computed get betChipsTotal(): number {
     return this.betChips.length
       ? this.betChips.reduce((bet1, bet2) => bet1 + bet2)
       : 0;
@@ -85,88 +41,92 @@ export class Player extends Dealer {
       return this.parentPlayer._balance;
     else return this._balance;
   }
-  @action increaseBalance(amount: number) {
-    if (this.playerType !== PlayerType.parent && this.parentPlayer)
-      this.parentPlayer._balance += amount;
-    else this._balance += amount;
+  @computed get playerType(): PlayerType {
+    if (this.parentPlayer) return PlayerType.player;
+    if (this.parentAfterSplitPlayer) return PlayerType.subplayer;
+    return PlayerType.parent;
   }
-  @action decreaseBalance(amount: number) {
-    if (this.playerType !== PlayerType.parent && this.parentPlayer)
-      this.parentPlayer._balance -= amount;
-    else this._balance -= amount;
+  @computed get canHit(): boolean {
+    return this.isActive;
   }
-  // @action.bound bet(amount: number): void {
-  //   if (amount <= this.balance) {
-  //     this.betChips.push(amount);
-  //     this.decreaseBalance(amount);
-  //   } else alert("Insufficient funds");
-  // }
-  @action.bound insurance(amount = this.betChipsTotal / 2): void {
-    if (amount <= this.balance) {
-      this.insuranceBet = amount;
-      this.decreaseBalance(amount);
-    } else alert("Insufficient funds");
+  @computed get canSplit(): boolean {
+    return (
+      this.hand[0].rank === this.hand[1].rank &&
+      !this.roundIsStarted &&
+      !this.isSplitted
+    );
   }
-
-  @action.bound betDeleteByIndex(index: number): void {
-    this.increaseBalance(this.betChips[index]);
-    this.betChips.splice(index, 1);
-    if (this.betChips.length < 1) game.table?.playerRemove(this);
+  @computed get isSplitted(): boolean {
+    return this.isSubplayer || (game.table?.spots[this.spotId].length ?? 1) > 1;
   }
-
-  @override get state(): PlayerGameState {
+  @computed get isSubplayer(): boolean {
+    return !!this.parentAfterSplitPlayer;
+  }
+  @computed get canDouble(): boolean {
+    return (
+      this.isActive &&
+      !this.roundIsStarted &&
+      !(this.insuranceBet && this.insuranceBet > 0) &&
+      !this.isSplitted
+    );
+  }
+  @computed get canInsurance(): boolean {
+    return (
+      (!this.isNaturalBJ &&
+        !this.isBJ &&
+        game.table?.needInsurance &&
+        this.insuranceBet === null &&
+        !this.roundIsStarted) ??
+      false
+    );
+  }
+  @computed get state(): PlayerGameState {
     if (this.handTotal > 21) return PlayerGameState.bust;
-    if (this.handTotal === 21 && !this.roundIsStarted && !this.isSplitted)
+    if (this.handTotal === 21 && !this.roundIsStarted)
       return PlayerGameState["natural blackjack"];
     if (this.handTotal === 21) return PlayerGameState.blackjack;
     if (this.handTotal < 21 && this.handTotal > 0)
       return PlayerGameState.active;
     return PlayerGameState.error;
   }
-
-  @override reset(): void {
-    if (this.betChipsTotal > this.balance) {
-      this.betChips = [];
-    } else this.decreaseBalance(this.betChipsTotal);
-    this.hand = [];
-    this.insuranceBet = 0;
-
-    //remove the subplayers that were after the split (mutate the players array)
-    for (let i = 0; i < (game.table?.players.length ?? 0); i++) {
-      if (
-        game.table?.players[i].parentAfterSplitPlayer &&
-        game.table?.players[i].parentAfterSplitPlayer?.id === this.id
-      ) {
-        game.table?.players.splice(i, 1);
-        i--;
-      }
-    }
-    game.table && (game.table.dealer = null);
-    this.parentPlayer!.roundIsEnded = true;
+  @computed get isNaturalBJ(): boolean {
+    return this.state === PlayerGameState["natural blackjack"];
+  }
+  @computed get isBJ(): boolean {
+    return this.state === PlayerGameState.blackjack;
+  }
+  @computed get isBust(): boolean {
+    return this.state === PlayerGameState.bust;
+  }
+  @computed get isActive(): boolean {
+    return this.state === PlayerGameState.active;
+  }
+  @action.bound increaseBalance(amount: number) {
+    if (this.playerType !== PlayerType.parent && this.parentPlayer)
+      this.parentPlayer._balance += amount;
+    else this._balance += amount;
+  }
+  @action.bound decreaseBalance(amount: number) {
+    if (this.playerType !== PlayerType.parent && this.parentPlayer)
+      this.parentPlayer._balance -= amount;
+    else this._balance -= amount;
   }
   @action.bound setBalance(newBalance: number) {
-    console.log(newBalance);
     this._balance = newBalance;
   }
-
   @override update(player: IPlayer) {
     const hand = player.hand
       ? player.hand.map((card) => new Card(card.suit, card.rank, card.value))
       : [];
 
     const parentAfterSplitPlayer = player.parentAfterSplitPlayer
-      ? game.table?.allPlayers.find(
-          (findedPlayer) =>
-            findedPlayer.id === player.parentAfterSplitPlayer?.id
-        )
+      ? game.findPlayerById(player.parentAfterSplitPlayer?.id)
       : null;
     parentAfterSplitPlayer &&
       parentAfterSplitPlayer.update(player.parentAfterSplitPlayer!);
 
     const parentPlayer = player.parentPlayer
-      ? game.table?.allPlayers.find(
-          (parent) => parent.id === player.parentPlayer?.id
-        )
+      ? game.findPlayerById(player.parentPlayer?.id)
       : null;
     parentPlayer && parentPlayer.update(player.parentPlayer!);
 
@@ -180,7 +140,7 @@ export class Player extends Dealer {
     this.parentAfterSplitPlayer = parentAfterSplitPlayer ?? null;
     this.parentPlayer = parentPlayer ?? null;
     this.setBalance(player._balance);
-    
+
     return this;
   }
 }

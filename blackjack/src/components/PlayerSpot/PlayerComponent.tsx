@@ -12,6 +12,7 @@ import {
   OnePlayerWrapper,
 } from "./Spot.styled";
 import { socket } from "../../server/socket";
+import { SocketEmit } from "../../types.ds";
 
 type PlayerComponentProps = {
   player: Player;
@@ -26,8 +27,7 @@ export const PlayerComponent: FC<PlayerComponentProps> = observer(
           !game.table!.roundIsStarted &&
           game.table?.canBetAtThisSpot(spotId)
         ) {
-          socket.emit("remove_bet", game.table?.id, player.id, index);
-          // player.betDeleteByIndex(index);
+          socket.emit(SocketEmit.remove_bet, game.table?.id, player.id, index);
         }
       },
       []

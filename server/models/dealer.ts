@@ -4,29 +4,16 @@ import { Card } from "./card";
 import { socket } from "../src/server";
 
 export class Dealer {
-  readonly id: string;
-  spotId: string;
-  hand: Card[];
-  roundIsEnded: boolean;
+  readonly id: string = v4();
+  spotId: string = v4();
+  hand: Card[] = [];
   tableId: string;
-
-  constructor(
-    tableId: string,
-    spotId: string = v4(),
-    id: string = v4(),
-    hand?: Card[],
-    roundIsEnded?: boolean
-  ) {
+  constructor(tableId: string) {
     this.tableId = tableId;
-    this.id = id;
-    this.hand = hand ?? [];
-    this.roundIsEnded = roundIsEnded ?? false;
-    this.spotId = spotId;
   }
   get roundIsStarted(): boolean {
     return !(this.hand.length === 2);
   }
-
   get isTurn(): boolean {
     return this.id === socket.tables[this.tableId].currentPlayer?.id;
   }
@@ -66,9 +53,5 @@ export class Dealer {
   }
   get isActive(): boolean {
     return this.state === PlayerGameState.active;
-  }
-
-  reset(): void {
-    this.hand = [];
   }
 }

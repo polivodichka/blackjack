@@ -4,6 +4,7 @@ import game from "../../store/game";
 import { PlayerComponent } from "./PlayerComponent";
 import { PlayersWrapper, SpotStyled } from "./Spot.styled";
 import { socket } from "../../server/socket";
+import { SocketEmit } from "../../types.ds";
 
 type PlayerProps = {
   id: string;
@@ -23,18 +24,12 @@ export const PlayerSpotComponent: FC<PlayerProps> = observer(({ id }) => {
   const handleSetNewBet = useCallback(() => {
     game.table?.canBetAtThisSpot(id) &&
       socket.emit(
-        "set_bet",
+        SocketEmit.set_bet,
         game.table!.id,
         id,
         game.player?.id,
         game.table!.currentBetBtnValue ?? 0
       );
-    // if (!game.table!.roundIsStarted) {
-    //   const player = game.table!.spots[id]
-    //     ? game.table!.spots[id][0]
-    //     : game.table!.addPlayer(id);
-    //   player?.bet(game.table!.currentBetBtnValue ?? 0);
-    // }
   }, []);
 
   return (

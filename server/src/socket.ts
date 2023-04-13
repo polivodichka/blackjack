@@ -1,9 +1,8 @@
 import { Server as HttpServer } from "http";
 import { Socket, Server } from "socket.io";
-import { v4 } from "uuid";
 import { Table } from "../models/table";
 import { Player } from "../models/player";
-import { ActionType } from "./types.ds";
+import { ActionType, EndGameActions } from "./types.ds";
 
 export class ServerSocket {
   public static instance: ServerSocket;
@@ -95,11 +94,8 @@ export class ServerSocket {
       "remove_bet",
       (tableId: string, playerId: string, betIndex: number) => {
         const table = this.tables[tableId];
-        const player = table.allPlayers.find(
-          (player) => player.id === playerId
-        );
+        const player = this.findPlayerById(playerId, table);
         player?.betDeleteByIndex(betIndex);
-        console.log(!!player);
         this.io
           .to(table.id)
           .emit("betUpdate", JSON.stringify(table.allPlayers), "betRemoved");
@@ -110,16 +106,14 @@ export class ServerSocket {
 
       if (table) {
         table.deal();
-        this.io.to(table.id).emit("dealMade", JSON.stringify(table));
+        this.io.to(table.id).emit("dealt", JSON.stringify(table));
       }
     });
     socket.on(
       "action",
       (actionType: ActionType, tableId: string, playerId: string) => {
         const table = this.tables[tableId];
-        const player = table.allPlayers.find(
-          (player) => player.id === playerId
-        );
+        const player = this.findPlayerById(playerId, table);
         if (table) {
           switch (actionType) {
             case ActionType.hit:
@@ -146,6 +140,41 @@ export class ServerSocket {
               break;
           }
           this.io.to(table.id).emit("actionMade", JSON.stringify(table));
+          if (
+            table.dealer &&
+            table.currentPlayerIndex! === table.players.length ///тут мб надо только активные игроки(со ставками)
+          ) {
+            table.currentPlayerIndex = null;
+            while (table.dealer.canHit) {
+              table.dealer.hand.push(table.draw());
+              this.io
+                .to(table.id)
+                .emit("dealerMadeAction", JSON.stringify(table));
+            }
+            table.countWinnings();
+            this.io.to(table.id).emit("winnersCounted", JSON.stringify(table));
+          }
+          if (table.currentPlayer && table.currentPlayer.isBust) {
+            table.stand();
+          }
+        }
+      }
+    );
+    socket.on(
+      "end_game",
+      (tableId: string, playerId: string, action: EndGameActions) => {
+        const table = this.tables[tableId];
+        const player = this.findPlayerById(playerId, table);
+        if (table && player) {
+          switch (action) {
+            case EndGameActions.newBet:
+              table.removeFakePlayers(player);
+              break;
+            case EndGameActions.rebet:
+              table.rebet(player);
+              break;
+          }
+          this.io.to(table.id).emit("gameEnded", JSON.stringify(table));
         }
       }
     );
@@ -158,10 +187,7 @@ export class ServerSocket {
       for (const prop in this.tables) {
         if (this.tables[prop].players) {
           tableId = prop;
-          player = this.tables[prop].allPlayers.find((p) => p.id === socket.id);
-          if (player) {
-            break;
-          }
+          player = this.findPlayerById(socket.id, this.tables[prop]);
         }
       }
       if (player && tableId.length) {
@@ -175,4 +201,7 @@ export class ServerSocket {
       }
     });
   };
+  private findPlayerById(playerId: string, table: Table): Player | undefined {
+    return table.allPlayers.find((player) => player.id === playerId);
+  }
 }
