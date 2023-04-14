@@ -2,7 +2,9 @@ import styled from 'styled-components';
 import { Color } from '../../constants/constants';
 
 export const GameBoardStyled = styled.div`
-  background-color: ${Color.MAIN};
+  //background-color: ${Color.MAIN};
+  background: linear-gradient(#141e30, #243b55);
+  color: white;
   height: 100%;
   width: 100%;
   display: flex;

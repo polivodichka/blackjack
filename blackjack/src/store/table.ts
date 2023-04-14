@@ -109,7 +109,7 @@ export class Table {
       parentAfterSplitPlayer ?? null,
       parentPlayer ?? null,
       player._balance,
-      player.id
+      player.id,
     );
     this.allPlayers.push(newPlayer);
     return newPlayer;

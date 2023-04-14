@@ -76,6 +76,8 @@ export class Game {
     const target: IPlayer[] = JSON.parse(
       JSON.stringify(this.table?.allPlayers)
     ) as IPlayer[];
+    console.log(target, source);
+
     source.forEach((player) => {
       const findedObjPlayer = target.find(
         (findedPlayer) => findedPlayer.id === player.id

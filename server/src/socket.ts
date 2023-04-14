@@ -45,29 +45,37 @@ export class ServerSocket {
       );
     });
     socket.on("join_table", (tableId: string) => {
-      const table = this.tables[tableId];
-      if (table && Object.keys(table.spots).length <= 5) {
+        const table = this.tables[tableId];
+        if (table && Object.keys(table.spots).length <= 5) {
         const player = table.addPlayer("", socket.id);
 
-        socket.join(table.id);
+          socket.join(table.id);
 
-        socket.broadcast
-          .to(table.id)
-          .emit("tableJoined", JSON.stringify(table));
-        socket.emit(
-          "tableCreated",
-          JSON.stringify(table),
-          JSON.stringify(player)
-        );
-        console.info("Table joined ", table.id);
-      } else if (!table) {
-        console.info("No such table");
-        socket.emit("errorOnTableCreation", "No such table!");
-      } else if (Object.keys(table.spots).length > 5) {
-        console.info("Too much players ");
-        socket.emit("errorOnTableCreation", "Too much players!");
+          socket.broadcast
+            .to(table.id)
+            .emit("tableJoined", JSON.stringify(table));
+          // socket.broadcast
+          //   .to(table.id)
+          //   .emit(
+          //     "message",
+          //     `${
+          //       playerName.charAt(0).toUpperCase() +
+          //       playerName.slice(1).toLowerCase()
+          //     } has joined`
+          //   );
+          socket.emit(
+            "tableCreated",
+            JSON.stringify(table),
+            JSON.stringify(player)
+          );
+          console.info("Table joined ", table.id);
+        } else if (!table) {
+          socket.emit("error", "No such table!");
+        } else if (Object.keys(table.spots).length > 5) {
+          socket.emit("error", "Too much players!");
+        }
       }
-    });
+    );
     socket.on(
       "set_bet",
       (tableId: string, spotId: string, parentId: string, amount: TBet) => {
@@ -85,6 +93,7 @@ export class ServerSocket {
           } else {
             socket.emit("errorOnBetSet", "Insufficient funds");
           }
+          console.info('bet')
         } else {
           socket.emit("errorOnBetSet", "Error on bet set");
         }

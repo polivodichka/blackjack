@@ -1,5 +1,11 @@
 import { io, Socket } from 'socket.io-client';
-import { ActionType, EndGameActions, SocketEmit, SocketOn, TBet } from '../types.ds';
+import {
+  ActionType,
+  EndGameActions,
+  SocketEmit,
+  SocketOn,
+  TBet,
+} from '../types.ds';
 
 const socketWithoutTypes: Socket = io('http://localhost:5000');
 
@@ -13,13 +19,19 @@ interface SocketEventsOn {
   [SocketOn.dealerMadeAction]: (table: string) => void;
   [SocketOn.winnersCounted]: (table: string) => void;
   [SocketOn.gameEnded]: (table: string) => void;
+  [SocketOn.error]: (message: string) => void;
+  [SocketOn.message]: (message: string) => void;
 }
 
 type SocketEventNamesOn = keyof SocketEventsOn;
 
 interface SocketEventsEmit {
-  [SocketEmit.join_table]: (table: string) => void;
-  [SocketEmit.create_table]: () => void;
+  [SocketEmit.join_table]: (
+    table: string,
+    name: string,
+    balance: number
+  ) => void;
+  [SocketEmit.create_table]: (name: string, balance: number) => void;
   [SocketEmit.action]: (
     actionType: ActionType,
     tableId: string | undefined,

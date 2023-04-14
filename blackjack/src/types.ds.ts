@@ -55,6 +55,7 @@ export interface IPlayer {
   parentAfterSplitPlayer: IPlayer | null;
   parentPlayer: IPlayer | null;
   _balance: number;
+  name: string;
 }
 export interface ITable {
   id: string;
@@ -95,6 +96,8 @@ export enum SocketOn {
   dealerMadeAction = 'dealerMadeAction',
   winnersCounted = 'winnersCounted',
   gameEnded = 'gameEnded',
+  error = 'error',
+  message = 'message',
 }
 export enum SocketEmit {
   join_table = 'join_table',
@@ -106,4 +109,3 @@ export enum SocketEmit {
   set_bet = 'set_bet',
 }
 export type TBet = 2 | 5 | 10 | 20 | 40 | 60 | 100;
-
