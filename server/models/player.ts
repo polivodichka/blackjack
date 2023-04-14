@@ -4,6 +4,7 @@ import { v4 } from "uuid";
 import { socket } from "../src/server";
 
 export class Player extends Dealer {
+  name: string;
   betChips: TBet[] = [];
   insuranceBet: number | null = null;
   parentAfterSplitPlayer: Player | null = null;
@@ -14,12 +15,14 @@ export class Player extends Dealer {
   private _balance: number;
 
   constructor(
+    name: string,
     tableId: string,
     id: string = v4(),
     spotId: string = "",
     _balance?: number
   ) {
     super(tableId);
+    this.name = name;
     this.spotId = spotId;
     this.id = id;
     this._balance = _balance ?? 100;

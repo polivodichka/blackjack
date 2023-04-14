@@ -18,9 +18,9 @@ export const BetPanel: React.FC = observer(() => {
   );
   return (
     <BetPanelStyled>
-      {betValuesOptions.map((bet) => (
+      {betValuesOptions.map((bet, i) => (
         <Bet
-          key={`${bet}bet`}
+          key={`${bet}bet${i}`}
           value={bet.value}
           onBetSet={handleBet(bet.value)}
           color={bet.color}

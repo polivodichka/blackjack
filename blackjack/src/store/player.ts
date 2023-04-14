@@ -5,6 +5,7 @@ import { game } from './game';
 import { Card } from './card';
 
 export class Player extends Dealer {
+  @observable public name: string;
   @observable public betChips: TBet[];
   @observable public insuranceBet: number | null;
   @observable public parentAfterSplitPlayer: Player | null;
@@ -12,6 +13,7 @@ export class Player extends Dealer {
   @observable private _balance: number;
 
   public constructor(
+    name: string,
     spotId: string,
     hand: Card[],
     roundIsEnded: boolean,
@@ -23,6 +25,7 @@ export class Player extends Dealer {
     id: string
   ) {
     super(spotId, hand, roundIsEnded, id);
+    this.name = name;
     this.betChips = betChips;
     this.insuranceBet = insuranceBet;
     this.parentAfterSplitPlayer = parentAfterSplitPlayer;
@@ -174,6 +177,9 @@ export class Player extends Dealer {
 
     if (this.insuranceBet !== player.insuranceBet) {
       this.insuranceBet = player.insuranceBet;
+    }
+    if (this.name !== player.name) {
+      this.name = player.name;
     }
 
     this.hand = hand;

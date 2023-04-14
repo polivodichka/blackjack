@@ -101,6 +101,7 @@ export class Table {
     }
 
     const newPlayer = new Player(
+      player.name,
       player.spotId,
       hand,
       player.roundIsEnded,
@@ -109,7 +110,7 @@ export class Table {
       parentAfterSplitPlayer ?? null,
       parentPlayer ?? null,
       player._balance,
-      player.id,
+      player.id
     );
     this.allPlayers.push(newPlayer);
     return newPlayer;

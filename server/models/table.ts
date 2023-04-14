@@ -39,13 +39,14 @@ export class Table {
     return this.players.length > 0 && !!this.dealer;
   }
   addPlayer(
+    name: string,
     spotId: string,
     id: string = v4(),
     parentPlayerId?: string
   ): Player {
     const player = this.players.find((player) => player.spotId === spotId);
     if (!player) {
-      const newPlayer = new Player(this.id, id, spotId);
+      const newPlayer = new Player(name, this.id, id, spotId);
       const parentPlayer = this.allPlayers.find(
         (player) => player.id === parentPlayerId
       );
@@ -109,7 +110,7 @@ export class Table {
     const player = this.currentPlayer;
     if (player && this.currentPlayerIndex !== null) {
       if (player.betChipsTotal <= player.balance) {
-        const subPlayer = new Player(this.id, undefined, player.spotId);
+        const subPlayer = new Player("", this.id, undefined, player.spotId);
         subPlayer.parentAfterSplitPlayer = player;
         subPlayer.parentPlayer = player.parentPlayer;
         subPlayer.hand = player.hand.splice(1, 1);

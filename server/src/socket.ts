@@ -29,9 +29,9 @@ export class ServerSocket {
   StartListeners = (socket: Socket) => {
     console.info("Message received from " + socket.id);
 
-    socket.on("create_table", () => {
+    socket.on("create_table", (name: string) => {
       const table = new Table();
-      const player = table.addPlayer("", socket.id);
+      const player = table.addPlayer(name, "", socket.id);
 
       this.tables[table.id] = table;
       socket.join(table.id);
@@ -44,38 +44,36 @@ export class ServerSocket {
         JSON.stringify(player)
       );
     });
-    socket.on("join_table", (tableId: string) => {
-        const table = this.tables[tableId];
-        if (table && Object.keys(table.spots).length <= 5) {
-        const player = table.addPlayer("", socket.id);
+    socket.on("join_table", (tableId: string, name: string) => {
+      const table = this.tables[tableId];
+      if (table && Object.keys(table.spots).length <= 5) {
+        const player = table.addPlayer(name, "", socket.id);
 
-          socket.join(table.id);
+        socket.join(table.id);
 
-          socket.broadcast
-            .to(table.id)
-            .emit("tableJoined", JSON.stringify(table));
-          // socket.broadcast
-          //   .to(table.id)
-          //   .emit(
-          //     "message",
-          //     `${
-          //       playerName.charAt(0).toUpperCase() +
-          //       playerName.slice(1).toLowerCase()
-          //     } has joined`
-          //   );
-          socket.emit(
-            "tableCreated",
-            JSON.stringify(table),
-            JSON.stringify(player)
+        socket.broadcast
+          .to(table.id)
+          .emit("tableJoined", JSON.stringify(table));
+        socket.broadcast
+          .to(table.id)
+          .emit(
+            "message",
+            `${
+              name.charAt(0).toUpperCase() + name .slice(1).toLowerCase()
+            } has joined`
           );
-          console.info("Table joined ", table.id);
-        } else if (!table) {
-          socket.emit("error", "No such table!");
-        } else if (Object.keys(table.spots).length > 5) {
-          socket.emit("error", "Too much players!");
-        }
+        socket.emit(
+          "tableCreated",
+          JSON.stringify(table),
+          JSON.stringify(player)
+        );
+        console.info("Table joined ", table.id);
+      } else if (!table) {
+        socket.emit("error", "No such table!");
+      } else if (Object.keys(table.spots).length > 5) {
+        socket.emit("error", "Too much players!");
       }
-    );
+    });
     socket.on(
       "set_bet",
       (tableId: string, spotId: string, parentId: string, amount: TBet) => {
@@ -83,7 +81,7 @@ export class ServerSocket {
         if (table && !table.roundIsStarted) {
           const player = table.spots[spotId]
             ? table.spots[spotId][0]
-            : table.addPlayer(spotId, undefined, parentId);
+            : table.addPlayer("", spotId, undefined, parentId);
 
           if (amount <= player.balance) {
             player.bet(amount);
@@ -93,7 +91,7 @@ export class ServerSocket {
           } else {
             socket.emit("errorOnBetSet", "Insufficient funds");
           }
-          console.info('bet')
+          console.info("bet");
         } else {
           socket.emit("errorOnBetSet", "Error on bet set");
         }
