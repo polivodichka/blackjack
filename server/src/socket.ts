@@ -29,9 +29,9 @@ export class ServerSocket {
   StartListeners = (socket: Socket) => {
     console.info("Message received from " + socket.id);
 
-    socket.on("create_table", (name: string) => {
+    socket.on("create_table", (name: string, balance: number) => {
       const table = new Table();
-      const player = table.addPlayer(name, "", socket.id);
+      const player = table.addPlayer(name, "",balance,  socket.id);
 
       this.tables[table.id] = table;
       socket.join(table.id);
@@ -44,46 +44,50 @@ export class ServerSocket {
         JSON.stringify(player)
       );
     });
-    socket.on("join_table", (tableId: string, name: string) => {
-      const table = this.tables[tableId];
-      if (table && Object.keys(table.spots).length <= 5) {
-        const player = table.addPlayer(name, "", socket.id);
+    socket.on(
+      "join_table",
+      (tableId: string, name: string, balance: number) => {
+        const table = this.tables[tableId];
+        if (table && Object.keys(table.spots).length <= 5) {
+          const player = table.addPlayer(name, "", balance, socket.id);
 
-        socket.join(table.id);
+          socket.join(table.id);
 
-        socket.broadcast
-          .to(table.id)
-          .emit("tableJoined", JSON.stringify(table));
-        socket.broadcast
-          .to(table.id)
-          .emit(
-            "message",
-            `${
-              name.charAt(0).toUpperCase() + name .slice(1).toLowerCase()
-            } has joined`
+          socket.broadcast
+            .to(table.id)
+            .emit("tableJoined", JSON.stringify(table));
+          socket.broadcast
+            .to(table.id)
+            .emit(
+              "message",
+              `${
+                name.charAt(0).toUpperCase() + name.slice(1).toLowerCase()
+              } has joined`
+            );
+          socket.emit(
+            "tableCreated",
+            JSON.stringify(table),
+            JSON.stringify(player)
           );
-        socket.emit(
-          "tableCreated",
-          JSON.stringify(table),
-          JSON.stringify(player)
-        );
-        console.info("Table joined ", table.id);
-      } else if (!table) {
-        socket.emit("error", "No such table!");
-      } else if (Object.keys(table.spots).length > 5) {
-        socket.emit("error", "Too much players!");
+          console.info("Table joined ", table.id);
+        } else if (!table) {
+          socket.emit("error", "No such table!");
+        } else if (Object.keys(table.spots).length > 5) {
+          socket.emit("error", "Too much players!");
+        }
       }
-    });
+    );
     socket.on(
       "set_bet",
       (tableId: string, spotId: string, parentId: string, amount: TBet) => {
         const table = this.tables[tableId];
-        if (table && !table.roundIsStarted) {
+        const parent = this.findPlayerById(parentId, table);
+        if (table && !table.roundIsStarted && parent) {
           const player = table.spots[spotId]
             ? table.spots[spotId][0]
-            : table.addPlayer("", spotId, undefined, parentId);
+            : table.addPlayer("", spotId, 0, undefined, parentId);
 
-          if (amount <= player.balance) {
+          if (amount <= parent.balance) {
             player.bet(amount);
             this.io
               .to(table.id)
