@@ -1,8 +1,8 @@
-interface MyObject {
-  [key: string]: any;
-}
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+type MyObject = Record<string, any>;
 
-export const isObjectsEqual = (obj1: MyObject, obj2: MyObject) => {
+export const isObjectsEqual = (obj1: MyObject, obj2: MyObject): boolean => {
   const keys1 = Object.keys(obj1);
   const keys2 = Object.keys(obj2);
   if (keys1.length !== keys2.length) {

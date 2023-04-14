@@ -1,12 +1,12 @@
-import { FC } from "react";
-import { Suit, SuitCard } from "../../types.ds";
-import { CardStyled } from "./Card.styled";
+import React from 'react';
+import { Rank, Suit, SuitCard } from '../../types.ds';
+import { CardStyled } from './Card.styled';
 
 type CardProps = {
   suit: Suit;
-  rank: string;
+  rank: Rank;
 };
-export const CardComponent: FC<CardProps> = ({ suit, rank }) => {
+export const CardComponent: React.FC<CardProps> = ({ suit, rank }) => {
   const shortRank = convertRank(rank);
   return (
     <CardStyled className={`face ${suit}`}>
@@ -21,16 +21,13 @@ export const CardComponent: FC<CardProps> = ({ suit, rank }) => {
   );
 };
 
-function convertRank(rank: string) {
+function convertRank(rank: Rank) {
   switch (rank) {
-    case "king":
-      return "K";
-    case "queen":
-      return "Q";
-    case "jack":
-      return "J";
-    case "ace":
-      return "A";
+    case Rank.king:
+    case Rank.queen:
+    case Rank.jack:
+    case Rank.ace:
+      return rank.charAt(0).toUpperCase();
     default:
       return rank;
   }

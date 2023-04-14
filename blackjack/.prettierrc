@@ -1,0 +1,13 @@
+{
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "options": {
+        "parser": "typescript",
+        "singleQuote": true, 
+        "tabWidth": 2,
+        "semi": true
+      }
+    }
+  ]
+}

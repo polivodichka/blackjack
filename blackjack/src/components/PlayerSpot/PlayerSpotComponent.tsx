@@ -1,44 +1,49 @@
-import { observer } from "mobx-react-lite";
-import { FC, useCallback } from "react";
-import game from "../../store/game";
-import { PlayerComponent } from "./PlayerComponent";
-import { PlayersWrapper, SpotStyled } from "./Spot.styled";
-import { socket } from "../../server/socket";
-import { SocketEmit } from "../../types.ds";
+import { observer } from 'mobx-react-lite';
+import React, { useMemo } from 'react';
+import { game } from '../../store/game';
+import { PlayerComponent } from './PlayerComponent';
+import { PlayersWrapper, SpotStyled } from './Spot.styled';
+import { socket } from '../../server/socket';
+import { SocketEmit } from '../../types.ds';
 
 type PlayerProps = {
   id: string;
 };
 
-export const PlayerSpotComponent: FC<PlayerProps> = observer(({ id }) => {
-  const spotClass = useCallback(() => {
+export const PlayerSpotComponent: React.FC<PlayerProps> = observer(({ id }) => {
+  const gameTable = game.table ?? null;
+  const spotClass = useMemo(() => {
     const className = [];
-    if (game.table!.currentPlayer && game.table!.currentPlayer.spotId === id)
-      className.push("active");
+    if (gameTable?.currentPlayer && gameTable.currentPlayer.spotId === id) {
+      className.push('active');
+    }
 
-    if (!game.table!.spots[id] && !game.table!.dealer) className.push("empty");
+    if (!gameTable?.spots[id] && !gameTable?.dealer) {
+      className.push('empty');
+    }
 
-    return className;
-  }, [game.table!.currentPlayer, game.table!.dealer, game.table!.spots.length]);
+    return className.join(' ');
+  }, [gameTable?.currentPlayer]);
 
-  const handleSetNewBet = useCallback(() => {
-    game.table?.canBetAtThisSpot(id) &&
+  const handleSetNewBet = () => {
+    if (gameTable?.canBetAtThisSpot(id)) {
       socket.emit(
         SocketEmit.set_bet,
-        game.table!.id,
+        gameTable.id,
         id,
         game.player?.id,
-        game.table!.currentBetBtnValue ?? 0
+        gameTable.currentBetBtnValue ?? 0
       );
-  }, []);
+    }
+  };
 
   return (
-    <SpotStyled className={spotClass().join(" ")} onClick={handleSetNewBet}>
+    <SpotStyled className={spotClass} onClick={handleSetNewBet}>
       <PlayersWrapper>
-        {game.table!.spots[id] &&
-          game.table!.spots[id].map((player) => (
+        {gameTable?.spots[id] &&
+          gameTable.spots[id].map((player) => (
             <PlayerComponent
-              key={player.id + "-player"}
+              key={`${player.id}-player`}
               player={player}
               spotId={id}
             />

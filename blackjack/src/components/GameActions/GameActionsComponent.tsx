@@ -1,10 +1,11 @@
-import { observer } from "mobx-react-lite";
-import { useCallback, useEffect, useState } from "react";
-import game from "../../store/game";
-import { ActionType, SocketEmit, SocketOn } from "../../types.ds";
-import { socket } from "../../server/socket";
+import React from 'react';
+import { observer } from 'mobx-react-lite';
+import { useCallback, useEffect, useState } from 'react';
+import { game } from '../../store/game';
+import { ActionType, SocketEmit, SocketOn } from '../../types.ds';
+import { socket } from '../../server/socket';
 
-export const GameActionsComponent = observer(() => {
+export const GameActionsComponent: React.FC = observer(() => {
   const [buttonsDisabled, setButtonsDisabled] = useState<boolean>(false);
   const handleAction = useCallback(
     (actionType: ActionType) => () => {
@@ -24,60 +25,66 @@ export const GameActionsComponent = observer(() => {
     });
   });
 
-  return (
-    <>
-      {(game.table?.currentPlayer?.id === game.player?.id ||
-        game.table?.currentPlayer?.parentPlayer?.id === game.player?.id) &&
-        game.table!.currentPlayer &&
-        (game.table!.currentPlayer.canInsurance ? (
-          <>
+  const canShowActionsToThisPlayer =
+    game.table?.currentPlayer?.id === game.player?.id ||
+    game.table?.currentPlayer?.parentPlayer?.id === game.player?.id;
+  const currentPlayer = game.table ? game.table.currentPlayer : undefined;
+
+  if (canShowActionsToThisPlayer && currentPlayer) {
+    if (currentPlayer.canInsurance) {
+      return (
+        <>
+          <button
+            disabled={buttonsDisabled}
+            onClick={handleAction(ActionType.insurance)}
+          >
+            Insurance
+          </button>
+          <button
+            disabled={buttonsDisabled}
+            onClick={handleAction(ActionType.skipInsurance)}
+          >
+            Skip insurance
+          </button>
+        </>
+      );
+    } else {
+      return (
+        <div>
+          {currentPlayer.canHit && (
             <button
               disabled={buttonsDisabled}
-              onClick={handleAction(ActionType.insurance)}
+              onClick={handleAction(ActionType.hit)}
             >
-              Insurance
+              Hit
             </button>
+          )}
+          <button
+            disabled={buttonsDisabled}
+            onClick={handleAction(ActionType.stand)}
+          >
+            Stand
+          </button>
+          {currentPlayer.canSplit && (
             <button
               disabled={buttonsDisabled}
-              onClick={handleAction(ActionType.skipInsurance)}
+              onClick={handleAction(ActionType.split)}
             >
-              Skip insurance
+              Split
             </button>
-          </>
-        ) : (
-          <div>
-            {game.table!.currentPlayer.canHit && (
-              <button
-                disabled={buttonsDisabled}
-                onClick={handleAction(ActionType.hit)}
-              >
-                Hit
-              </button>
-            )}
+          )}
+          {currentPlayer.canDouble && (
             <button
               disabled={buttonsDisabled}
-              onClick={handleAction(ActionType.stand)}
+              onClick={handleAction(ActionType.double)}
             >
-              Stand
+              Double
             </button>
-            {game.table!.currentPlayer.canSplit && (
-              <button
-                disabled={buttonsDisabled}
-                onClick={handleAction(ActionType.split)}
-              >
-                Split
-              </button>
-            )}
-            {game.table!.currentPlayer.canDouble && (
-              <button
-                disabled={buttonsDisabled}
-                onClick={handleAction(ActionType.double)}
-              >
-                Double
-              </button>
-            )}
-          </div>
-        ))}
-    </>
-  );
+          )}
+        </div>
+      );
+    }
+  } else {
+    return <></>;
+  }
 });

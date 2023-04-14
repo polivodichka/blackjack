@@ -1,28 +1,34 @@
-import { observer } from "mobx-react-lite";
-import { useCallback } from "react";
-import { betValuesOptions } from "../../constants/constants";
-import game from "../../store/game";
-import { Bet } from "./Bet";
-import { BetPanelStyled } from "./BetPanel.styled";
+import React from 'react';
+import { observer } from 'mobx-react-lite';
+import { useCallback } from 'react';
+import { betValuesOptions } from '../../constants/constants';
+import { game } from '../../store/game';
+import { Bet } from './Bet';
+import { BetPanelStyled } from './BetPanel.styled';
+import { TBet } from '../../types.ds';
 
-export const BetPanel = observer(() => {
+export const BetPanel: React.FC = observer(() => {
   const handleBet = useCallback(
-    (value: number) => () => {
-      game.table!.setCurrentBetBtnValue(value);
+    (value: TBet) => () => {
+      if (game.table) {
+        game.table.setCurrentBetBtnValue(value);
+      }
     },
     []
   );
   return (
     <BetPanelStyled>
-      {betValuesOptions.map((bet, index) => (
+      {betValuesOptions.map((bet) => (
         <Bet
-          key={index + "bet"}
+          key={`${bet}bet`}
           value={bet.value}
           onBetSet={handleBet(bet.value)}
           color={bet.color}
           size={70}
           className={
-            game.table!.currentBetBtnValue === bet.value ? "active" : ""
+            game.table && game.table.currentBetBtnValue === bet.value
+              ? 'active'
+              : ''
           }
         />
       ))}

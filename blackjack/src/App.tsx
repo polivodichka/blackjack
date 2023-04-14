@@ -1,17 +1,15 @@
-import { useEffect, useState } from "react";
-import "./App.css";
-import { GameBoard } from "./components/GameBoard/GameBoard";
-import { nanoid } from "nanoid";
-import { Route, Routes } from "react-router-dom";
-import EnterForm from "./components/EnterForm/EnterForm";
+import './App.css';
+import React from 'react';
 
-function App() {
+import { GameBoard } from './components/GameBoard/GameBoard';
+import { Route, Routes } from 'react-router-dom';
+import { EnterForm } from './components/EnterForm/EnterForm';
+
+export const App: React.FC = () => {
   return (
     <Routes>
       <Route path="/" element={<EnterForm />} />
       <Route path="/table" element={<GameBoard />} />
     </Routes>
   );
-}
-
-export default App;
+};

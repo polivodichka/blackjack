@@ -1,7 +1,5 @@
-import React from 'react'
+import React from 'react';
 
 export const Deck = () => {
-    return (
-        <div>Deck</div>
-    )
-}
+  return <div>Deck</div>;
+};

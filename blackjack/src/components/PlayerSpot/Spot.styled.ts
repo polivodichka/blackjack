@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const PlayersWrapper = styled.div`
   display: flex;
@@ -61,4 +61,3 @@ export const ChipsWrapper = styled.div`
   display: flex;
   flex-direction: row;
 `;
-

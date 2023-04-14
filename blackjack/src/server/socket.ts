@@ -1,7 +1,7 @@
-import { io, Socket } from "socket.io-client";
-import { ActionType, EndGameActions, SocketEmit, SocketOn } from "../types.ds";
+import { io, Socket } from 'socket.io-client';
+import { ActionType, EndGameActions, SocketEmit, SocketOn, TBet } from '../types.ds';
 
-const socketWithoutTypes: Socket = io("http://localhost:5000");
+const socketWithoutTypes: Socket = io('http://localhost:5000');
 
 interface SocketEventsOn {
   [SocketOn.tableCreated]: (player: string, table: string) => void;
@@ -40,7 +40,7 @@ interface SocketEventsEmit {
     tableId: string | undefined,
     spotId: string,
     playerId: string | undefined,
-    bet: number
+    bet: TBet
   ) => void;
 }
 

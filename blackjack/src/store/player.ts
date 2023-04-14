@@ -1,21 +1,21 @@
-import { observable, action, makeObservable, override, computed } from "mobx";
-import { IPlayer, PlayerGameState, PlayerType } from "../types.ds";
-import { Dealer } from "./dealer";
-import game from "./game";
-import { Card } from "./card";
+import { observable, action, makeObservable, override, computed } from 'mobx';
+import { IPlayer, PlayerGameState, PlayerType, TBet } from '../types.ds';
+import { Dealer } from './dealer';
+import { game } from './game';
+import { Card } from './card';
 
 export class Player extends Dealer {
-  @observable betChips: number[];
-  @observable insuranceBet: number | null;
-  @observable parentAfterSplitPlayer: Player | null;
-  @observable parentPlayer: Player | null;
+  @observable public betChips: TBet[];
+  @observable public insuranceBet: number | null;
+  @observable public parentAfterSplitPlayer: Player | null;
+  @observable public parentPlayer: Player | null;
   @observable private _balance: number;
 
-  constructor(
+  public constructor(
     spotId: string,
     hand: Card[],
     roundIsEnded: boolean,
-    betChips: number[],
+    betChips: TBet[],
     insuranceBet: number | null,
     parentAfterSplitPlayer: Player | null,
     parentPlayer: Player | null,
@@ -31,38 +31,51 @@ export class Player extends Dealer {
     makeObservable(this);
   }
 
-  @computed get betChipsTotal(): number {
+  @computed public get betChipsTotal(): number {
     return this.betChips.length
-      ? this.betChips.reduce((bet1, bet2) => bet1 + bet2)
+      ? (this.betChips as number[]).reduce((bet1, bet2) => bet1 + bet2)
       : 0;
   }
-  @computed get balance(): number {
-    if (this.playerType !== PlayerType.parent && this.parentPlayer)
+
+  @computed public get balance(): number {
+    if (this.playerType !== PlayerType.parent && this.parentPlayer) {
       return this.parentPlayer._balance;
-    else return this._balance;
+    } else {
+      return this._balance;
+    }
   }
-  @computed get playerType(): PlayerType {
-    if (this.parentPlayer) return PlayerType.player;
-    if (this.parentAfterSplitPlayer) return PlayerType.subplayer;
+
+  @computed public get playerType(): PlayerType {
+    if (this.parentPlayer) {
+      return PlayerType.player;
+    }
+    if (this.parentAfterSplitPlayer) {
+      return PlayerType.subplayer;
+    }
     return PlayerType.parent;
   }
-  @computed get canHit(): boolean {
+
+  @computed public get canHit(): boolean {
     return this.isActive;
   }
-  @computed get canSplit(): boolean {
+
+  @computed public get canSplit(): boolean {
     return (
       this.hand[0].rank === this.hand[1].rank &&
       !this.roundIsStarted &&
       !this.isSplitted
     );
   }
-  @computed get isSplitted(): boolean {
+
+  @computed public get isSplitted(): boolean {
     return this.isSubplayer || (game.table?.spots[this.spotId].length ?? 1) > 1;
   }
-  @computed get isSubplayer(): boolean {
+
+  @computed public get isSubplayer(): boolean {
     return !!this.parentAfterSplitPlayer;
   }
-  @computed get canDouble(): boolean {
+
+  @computed public get canDouble(): boolean {
     return (
       this.isActive &&
       !this.roundIsStarted &&
@@ -70,7 +83,8 @@ export class Player extends Dealer {
       !this.isSplitted
     );
   }
-  @computed get canInsurance(): boolean {
+
+  @computed public get canInsurance(): boolean {
     return (
       (!this.isNaturalBJ &&
         !this.isBJ &&
@@ -80,41 +94,56 @@ export class Player extends Dealer {
       false
     );
   }
-  @computed get state(): PlayerGameState {
-    if (this.handTotal > 21) return PlayerGameState.bust;
-    if (this.handTotal === 21 && !this.roundIsStarted)
-      return PlayerGameState["natural blackjack"];
-    if (this.handTotal === 21) return PlayerGameState.blackjack;
-    if (this.handTotal < 21 && this.handTotal > 0)
-      return PlayerGameState.active;
-    return PlayerGameState.error;
+
+  @computed private get state(): PlayerGameState {
+    if (this.handTotal > 21) {
+      return PlayerGameState.Bust;
+    }
+    if (this.handTotal === 21 && !this.roundIsStarted) {
+      return PlayerGameState.NaturalBlackjack;
+    }
+    if (this.handTotal === 21) {
+      return PlayerGameState.Blackjack;
+    }
+    if (this.handTotal < 21 && this.handTotal > 0) {
+      return PlayerGameState.Active;
+    }
+    return PlayerGameState.Error;
   }
-  @computed get isNaturalBJ(): boolean {
-    return this.state === PlayerGameState["natural blackjack"];
+
+  @computed private get isNaturalBJ(): boolean {
+    return this.state === PlayerGameState.NaturalBlackjack;
   }
-  @computed get isBJ(): boolean {
-    return this.state === PlayerGameState.blackjack;
+
+  @computed private get isBJ(): boolean {
+    return this.state === PlayerGameState.Blackjack;
   }
-  @computed get isBust(): boolean {
-    return this.state === PlayerGameState.bust;
+
+  @computed private get isBust(): boolean {
+    return this.state === PlayerGameState.Bust;
   }
-  @computed get isActive(): boolean {
-    return this.state === PlayerGameState.active;
+
+  @computed private get isActive(): boolean {
+    return this.state === PlayerGameState.Active;
   }
-  @action.bound increaseBalance(amount: number) {
-    if (this.playerType !== PlayerType.parent && this.parentPlayer)
+
+  @action.bound public increaseBalance(amount: number): void {
+    if (this.playerType !== PlayerType.parent && this.parentPlayer) {
       this.parentPlayer._balance += amount;
-    else this._balance += amount;
+    } else {
+      this._balance += amount;
+    }
   }
-  @action.bound decreaseBalance(amount: number) {
-    if (this.playerType !== PlayerType.parent && this.parentPlayer)
+
+  @action.bound public decreaseBalance(amount: number): void {
+    if (this.playerType !== PlayerType.parent && this.parentPlayer) {
       this.parentPlayer._balance -= amount;
-    else this._balance -= amount;
+    } else {
+      this._balance -= amount;
+    }
   }
-  @action.bound setBalance(newBalance: number) {
-    this._balance = newBalance;
-  }
-  @override update(player: IPlayer) {
+
+  @override public update(player: IPlayer): Player {
     const hand = player.hand
       ? player.hand.map((card) => new Card(card.suit, card.rank, card.value))
       : [];
@@ -122,24 +151,36 @@ export class Player extends Dealer {
     const parentAfterSplitPlayer = player.parentAfterSplitPlayer
       ? game.findPlayerById(player.parentAfterSplitPlayer?.id)
       : null;
-    parentAfterSplitPlayer &&
-      parentAfterSplitPlayer.update(player.parentAfterSplitPlayer!);
+
+    if (player.parentAfterSplitPlayer) {
+      parentAfterSplitPlayer?.update(player.parentAfterSplitPlayer);
+    }
 
     const parentPlayer = player.parentPlayer
       ? game.findPlayerById(player.parentPlayer?.id)
       : null;
-    parentPlayer && parentPlayer.update(player.parentPlayer!);
 
-    this.spotId !== player.spotId && (this.spotId = player.spotId);
-    this.roundIsEnded !== player.roundIsEnded &&
-      (this.roundIsEnded = player.roundIsEnded);
-    this.insuranceBet !== player.insuranceBet &&
-      (this.insuranceBet = player.insuranceBet);
+    if (player.parentPlayer) {
+      parentPlayer?.update(player.parentPlayer);
+    }
+
+    if (this.spotId !== player.spotId) {
+      this.spotId = player.spotId;
+    }
+
+    if (this.roundIsEnded !== player.roundIsEnded) {
+      this.roundIsEnded = player.roundIsEnded;
+    }
+
+    if (this.insuranceBet !== player.insuranceBet) {
+      this.insuranceBet = player.insuranceBet;
+    }
+
     this.hand = hand;
     this.betChips = player.betChips;
     this.parentAfterSplitPlayer = parentAfterSplitPlayer ?? null;
     this.parentPlayer = parentPlayer ?? null;
-    this.setBalance(player._balance);
+    this._balance = player._balance;
 
     return this;
   }

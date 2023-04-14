@@ -1,5 +1,5 @@
-import styled from "styled-components";
-import { makeColorDarker } from "../../utils/makeColorDarker";
+import styled from 'styled-components';
+import { makeColorDarker } from '../../utils/makeColorDarker';
 
 export const BetPanelStyled = styled.div`
   display: flex;
@@ -9,7 +9,7 @@ export const BetPanelStyled = styled.div`
 `;
 
 export const ChipStyled = styled.button.attrs(
-  (props: { color: string; bet: number; size: number }) => props
+  (props: { color: string; bet: number; size: number; }) => props
 )`
   cursor: pointer;
   position: relative;
@@ -52,7 +52,7 @@ export const ChipStyled = styled.button.attrs(
 
   &:before {
     position: absolute;
-    content: "";
+    content: '';
     z-index: 1;
     max-width: 80%;
     width: 80%;
@@ -124,7 +124,7 @@ export const ChipStyled = styled.button.attrs(
   &:after {
     z-index: 2;
     position: absolute;
-    content: "${(props) => props.bet}";
+    content: '${(props) => props.bet}';
     text-align: center;
     font: bold ${(props) => props.size * 0.35}px /
       ${(props) => props.size * 0.75}px Arial;
@@ -136,19 +136,19 @@ export const ChipStyled = styled.button.attrs(
     left: 50%;
     transform: translate(-50%, -50%);
     text-shadow: ${(props) => {
-          const size = props.size * 0.015;
-          return `${-size}px ${-size}px`;
-        }}
+    const size = props.size * 0.015;
+    return `${-size}px ${-size}px`;
+  }}
         0px rgba(0, 0, 0, 0.3),
       ${(props) => {
-          const size = props.size * 0.015;
-          return `${size}px ${size}px`;
-        }}
+    const size = props.size * 0.015;
+    return `${size}px ${size}px`;
+  }}
         0px rgba(255, 255, 255, 0.2),
       ${(props) => {
-          const size = props.size * 0.007;
-          return `${size}px ${size}px`;
-        }}
+    const size = props.size * 0.007;
+    return `${size}px ${size}px`;
+  }}
         0px rgba(0, 0, 0, 0.3);
 
     background: ${(props) => props.color};

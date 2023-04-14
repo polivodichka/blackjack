@@ -1,8 +1,8 @@
-import styled from "styled-components";
-import { COLOR } from "../../constants/constants";
+import styled from 'styled-components';
+import { Color } from '../../constants/constants';
 
 export const GameBoardStyled = styled.div`
-  background-color: ${COLOR.MAIN};
+  background-color: ${Color.MAIN};
   height: 100%;
   width: 100%;
   display: flex;
@@ -16,7 +16,7 @@ export const BalanceStyled = styled.div`
   top: 20px;
   left: 20px;
   &::after {
-    content: "$";
+    content: '$';
   }
 `;
 
