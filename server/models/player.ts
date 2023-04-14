@@ -1,10 +1,10 @@
-import { PlayerGameState, PlayerType } from "../src/types.ds";
+import { PlayerGameState, PlayerType, TBet } from "../src/types.ds";
 import { Dealer } from "./dealer";
 import { v4 } from "uuid";
 import { socket } from "../src/server";
 
 export class Player extends Dealer {
-  betChips: number[] = [];
+  betChips: TBet[] = [];
   insuranceBet: number | null = null;
   parentAfterSplitPlayer: Player | null = null;
   parentPlayer: Player | null = null;
@@ -44,7 +44,7 @@ export class Player extends Dealer {
 
   get betChipsTotal() {
     return this.betChips.length
-      ? this.betChips.reduce((bet1, bet2) => bet1 + bet2)
+      ? (this.betChips as number[]).reduce((bet1, bet2) => bet1 + bet2)
       : 0;
   }
   get balance(): number {
@@ -62,7 +62,7 @@ export class Player extends Dealer {
       this.parentPlayer._balance -= amount;
     else this._balance -= amount;
   }
-  bet(amount: number): void {
+  bet(amount: TBet): void {
     if (amount <= this.balance) {
       this.betChips.push(amount);
       this.decreaseBalance(amount);
@@ -81,13 +81,13 @@ export class Player extends Dealer {
       socket.tables[this.tableId].playerRemove(this);
   }
   get state(): PlayerGameState {
-    if (this.handTotal > 21) return PlayerGameState.bust;
+    if (this.handTotal > 21) return PlayerGameState.Bust;
     if (this.handTotal === 21 && !this.roundIsStarted && !this.isSplitted)
-      return PlayerGameState["natural blackjack"];
-    if (this.handTotal === 21) return PlayerGameState.blackjack;
+      return PlayerGameState.NaturalBlackjack;
+    if (this.handTotal === 21) return PlayerGameState.Blackjack;
     if (this.handTotal < 21 && this.handTotal > 0)
-      return PlayerGameState.active;
-    return PlayerGameState.error;
+      return PlayerGameState.Active;
+    return PlayerGameState.Error;
   }
   reset(): void {
     if (this.betChipsTotal > this.balance) {

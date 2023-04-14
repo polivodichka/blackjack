@@ -1,4 +1,4 @@
-import { PlayerGameState, PlayerType, Suit } from "../src/types.ds";
+import { PlayerGameState, PlayerType, Rank, Suit } from "../src/types.ds";
 import { Card } from "./card";
 import { Dealer } from "./dealer";
 import { Player } from "./player";
@@ -147,17 +147,17 @@ export class Table {
         if (this.dealer.isNaturalBJ) player.increaseBalance(insurance * 2);
 
         switch (player.state) {
-          case PlayerGameState["natural blackjack"]:
+          case PlayerGameState.NaturalBlackjack:
             player.increaseBalance(betSum * 2.5);
             break;
 
-          case PlayerGameState.blackjack:
+          case PlayerGameState.Blackjack:
             if (this.dealer.isBJ || this.dealer.isNaturalBJ) {
               player.increaseBalance(betSum);
             } else player.increaseBalance(betSum * 2);
             break;
 
-          case PlayerGameState.active:
+          case PlayerGameState.Active:
             if (
               this.dealer.handTotal < player.handTotal ||
               this.dealer.isBust
@@ -175,19 +175,19 @@ export class Table {
   private createDeck(): void {
     const suits: Suit[] = ["hearts", "diamonds", "clubs", "spades"];
     const ranks = [
-      { rank: "ace", value: 11 },
-      { rank: "2", value: 2 },
-      { rank: "3", value: 3 },
-      { rank: "4", value: 4 },
-      { rank: "5", value: 5 },
-      { rank: "6", value: 6 },
-      { rank: "7", value: 7 },
-      { rank: "8", value: 8 },
-      { rank: "9", value: 9 },
-      { rank: "10", value: 10 },
-      { rank: "jack", value: 10 },
-      { rank: "queen", value: 10 },
-      { rank: "king", value: 10 },
+      { rank: Rank.ace, value: 11 },
+      { rank: Rank._2, value: 2 },
+      { rank: Rank._3, value: 3 },
+      { rank: Rank._4, value: 4 },
+      { rank: Rank._5, value: 5 },
+      { rank: Rank._6, value: 6 },
+      { rank: Rank._7, value: 7 },
+      { rank: Rank._8, value: 8 },
+      { rank: Rank._9, value: 9 },
+      { rank: Rank._10, value: 10 },
+      { rank: Rank.jack, value: 10 },
+      { rank: Rank.queen, value: 10 },
+      { rank: Rank.king, value: 10 },
     ];
 
     for (const suit of suits) {

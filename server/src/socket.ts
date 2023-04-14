@@ -2,7 +2,7 @@ import { Server as HttpServer } from "http";
 import { Socket, Server } from "socket.io";
 import { Table } from "../models/table";
 import { Player } from "../models/player";
-import { ActionType, EndGameActions } from "./types.ds";
+import { ActionType, EndGameActions, TBet } from "./types.ds";
 
 export class ServerSocket {
   public static instance: ServerSocket;
@@ -70,7 +70,7 @@ export class ServerSocket {
     });
     socket.on(
       "set_bet",
-      (tableId: string, spotId: string, parentId: string, amount: number) => {
+      (tableId: string, spotId: string, parentId: string, amount: TBet) => {
         const table = this.tables[tableId];
         if (table && !table.roundIsStarted) {
           const player = table.spots[spotId]

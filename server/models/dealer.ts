@@ -1,5 +1,5 @@
 import { v4 } from "uuid";
-import { PlayerGameState } from "../src/types.ds";
+import { PlayerGameState, Rank } from "../src/types.ds";
 import { Card } from "./card";
 import { socket } from "../src/server";
 
@@ -12,7 +12,7 @@ export class Dealer {
     this.tableId = tableId;
   }
   get roundIsStarted(): boolean {
-    return !(this.hand.length === 2);
+    return this.hand.length !== 2;
   }
   get isTurn(): boolean {
     return this.id === socket.tables[this.tableId].currentPlayer?.id;
@@ -20,7 +20,7 @@ export class Dealer {
 
   get handTotal(): number {
     let total = this.hand.reduce((sum, card) => sum + card.value, 0);
-    let aces = this.hand.filter((card) => card.rank === "ace");
+    let aces = this.hand.filter((card) => card.rank === Rank.ace);
     while (aces.length > 0 && total > 21) {
       total -= 10;
       aces.pop();
@@ -33,25 +33,25 @@ export class Dealer {
   }
 
   get state(): PlayerGameState {
-    if (this.handTotal > 21) return PlayerGameState.bust;
+    if (this.handTotal > 21) return PlayerGameState.Bust;
     if (this.handTotal === 21 && !this.roundIsStarted)
-      return PlayerGameState["natural blackjack"];
-    if (this.handTotal === 21) return PlayerGameState.blackjack;
+      return PlayerGameState.NaturalBlackjack;
+    if (this.handTotal === 21) return PlayerGameState.Blackjack;
     if (this.handTotal < 21 && this.handTotal > 0)
-      return PlayerGameState.active;
-    return PlayerGameState.error;
+      return PlayerGameState.Active;
+    return PlayerGameState.Error;
   }
 
   get isNaturalBJ(): boolean {
-    return this.state === PlayerGameState["natural blackjack"];
+    return this.state === PlayerGameState.NaturalBlackjack;
   }
   get isBJ(): boolean {
-    return this.state === PlayerGameState.blackjack;
+    return this.state === PlayerGameState.Blackjack;
   }
   get isBust(): boolean {
-    return this.state === PlayerGameState.bust;
+    return this.state === PlayerGameState.Bust;
   }
   get isActive(): boolean {
-    return this.state === PlayerGameState.active;
+    return this.state === PlayerGameState.Active;
   }
 }
