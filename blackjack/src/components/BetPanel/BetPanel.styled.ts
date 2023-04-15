@@ -18,11 +18,11 @@ export const ChipStyled = styled.button.attrs(
   max-width: ${(props) => props.size}px;
   height: ${(props) => props.size}px;
   max-height: ${(props) => props.size}px;
-  box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.5), 0 0 3px 0 rgba(0, 0, 0, 0.4) inset;
+  //box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.5), 0 0 3px 0 rgba(0, 0, 0, 0.4) inset;
+  border: none;
   border-radius: 50%;
   background-position: center center;
   transition: transform 0.7s ease-in-out;
-
   background-image: linear-gradient(
       0deg,
       transparent 0,
@@ -154,14 +154,42 @@ export const ChipStyled = styled.button.attrs(
     background: ${(props) => props.color};
     color: ${(props) => makeColorDarker(props.color, 5)};
   }
+  &:hover,
+  &.active {
+    &::after {
+      color: #fff;
+      text-shadow: none;
+      text-shadow: ${(props) => {
+    const size = props.size * 0.015;
+    return `${-size}px ${-size}px`;
+  }}
+          0px rgba(255, 255, 255, 0.3),
+        ${(props) => {
+    const size = props.size * 0.015;
+    return `${size}px ${size}px`;
+  }}
+          0px rgba(0, 0, 0, 0.2),
+        ${(props) => {
+    const size = props.size * 0.007;
+    return `${size}px ${size}px`;
+  }}
+          0px rgba(255, 255, 255, 0.3);
+    }
+  }
   &:hover {
     transform: scale(1.3);
+    box-shadow: 0 0 5px ${(props) => props.color},
+      0 0 25px ${(props) => props.color}, 0 0 50px ${(props) => props.color},
+      0 0 100px ${(props) => props.color};
     /* -webkit-animation: 5s rotate-right linear infinite;
     animation: 5s rotate-right linear infinite; */
   }
   &.active {
     -webkit-animation: 10s rotate-right linear infinite;
     animation: 10s rotate-right linear infinite;
+    box-shadow: 0 0 5px ${(props) => props.color},
+      0 0 25px ${(props) => props.color}, 0 0 50px ${(props) => props.color},
+      0 0 100px ${(props) => props.color};
   }
   @-webkit-keyframes rotate-right {
     0% {

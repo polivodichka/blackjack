@@ -12,7 +12,7 @@ const socketWithoutTypes: Socket = io('http://localhost:5000');
 interface SocketEventsOn {
   [SocketOn.tableCreated]: (player: string, table: string) => void;
   [SocketOn.tableJoined]: (table: string) => void;
-  [SocketOn.disconnectPlayer]: (player: string) => void;
+  [SocketOn.disconnectPlayer]: (table: string) => void;
   [SocketOn.betUpdate]: (players: string) => void;
   [SocketOn.dealt]: (table: string) => void;
   [SocketOn.actionMade]: (table: string) => void;
@@ -29,7 +29,8 @@ interface SocketEventsEmit {
   [SocketEmit.join_table]: (
     table: string,
     name: string,
-    balance: number
+    balance: number,
+    id?: string | undefined
   ) => void;
   [SocketEmit.create_table]: (name: string, balance: number) => void;
   [SocketEmit.action]: (

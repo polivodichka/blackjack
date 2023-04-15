@@ -17,21 +17,27 @@ export const BetPanel: React.FC = observer(() => {
     []
   );
   return (
-    <BetPanelStyled>
-      {betValuesOptions.map((bet, i) => (
-        <Bet
-          key={`${bet}bet${i}`}
-          value={bet.value}
-          onBetSet={handleBet(bet.value)}
-          color={bet.color}
-          size={70}
-          className={
-            game.table && game.table.currentBetBtnValue === bet.value
-              ? 'active'
-              : ''
-          }
-        />
-      ))}
-    </BetPanelStyled>
+    <>
+      {!game.table?.roundIsStarted ? (
+        <BetPanelStyled>
+          {betValuesOptions.map((bet, i) => (
+            <Bet
+              key={`${bet}bet${i}`}
+              value={bet.value}
+              onBetSet={handleBet(bet.value)}
+              color={bet.color}
+              size={70}
+              className={
+                game.table && game.table.currentBetBtnValue === bet.value
+                  ? 'active'
+                  : ''
+              }
+            />
+          ))}
+        </BetPanelStyled>
+      ) : (
+        React.Fragment
+      )}
+    </>
   );
 });

@@ -4,13 +4,36 @@ body,
   height: 100%;
   margin: 0;
   padding: 0;
+
+  --toastify-color-dark: #0d131e;
+  --toastify-color-progress-dark: #03e9f4;
+  --toastify-color-error: var(--toastify-color-dark);
+  --toastify-color-progress-error: var(--toastify-color-progress-dark);
+  --toastify-icon-color-error: var(--toastify-color-progress-dark);
+
+  letter-spacing: 2px;
+  font-weight: 700;
+  font-family: "Yanone Kaffeesatz";
+
+}
+
+:root svg {
+  display: block !important;
+}
+
+
+svg:not(:root) {
+  display: none;
 }
 
 @keyframes pulse {
-  0%, 100%{
+
+  0%,
+  100% {
     transform: scale(1);
   }
-  50%{
+
+  50% {
     transform: scale(1.05);
   }
 }

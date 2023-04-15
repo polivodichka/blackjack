@@ -1,4 +1,4 @@
-import { observable, action, makeObservable, override, computed } from 'mobx';
+import { observable, makeObservable, override, computed } from 'mobx';
 import { IPlayer, PlayerGameState, PlayerType, TBet } from '../types.ds';
 import { Dealer } from './dealer';
 import { game } from './game';
@@ -130,22 +130,6 @@ export class Player extends Dealer {
     return this.state === PlayerGameState.Active;
   }
 
-  @action.bound public increaseBalance(amount: number): void {
-    if (this.playerType !== PlayerType.parent && this.parentPlayer) {
-      this.parentPlayer._balance += amount;
-    } else {
-      this._balance += amount;
-    }
-  }
-
-  @action.bound public decreaseBalance(amount: number): void {
-    if (this.playerType !== PlayerType.parent && this.parentPlayer) {
-      this.parentPlayer._balance -= amount;
-    } else {
-      this._balance -= amount;
-    }
-  }
-
   @override public update(player: IPlayer): Player {
     const hand = player.hand
       ? player.hand.map((card) => new Card(card.suit, card.rank, card.value))
@@ -188,6 +172,18 @@ export class Player extends Dealer {
     this.parentPlayer = parentPlayer ?? null;
     this._balance = player._balance;
 
+    localStorage.setItem('balance', String(this._balance));
+
     return this;
+  }
+
+  public handIsEmpty(): boolean {
+    const playingChildren = game.table?.playingPlayers.filter(
+      (player) =>
+        player.id === this.id ||
+        player.parentAfterSplitPlayer?.id === this.id ||
+        player.parentPlayer?.id === this.id
+    );
+    return !playingChildren
   }
 }

@@ -15,12 +15,9 @@ export class Game {
   public constructor() {
     makeObservable(this);
 
-    socket.on(SocketOn.disconnectPlayer, (playerId) => {
-      const playerForRemoving = this.findPlayerById(playerId);
-      if (playerForRemoving) {
-        this.table?.playerRemove(playerForRemoving);
-      }
-    });
+    socket.on(SocketOn.disconnectPlayer, (tableStr) =>
+      this.handleTableUpdate(tableStr)
+    );
 
     socket.on(SocketOn.betUpdate, (playersStr) =>
       this.updateAllPlayersArray(JSON.parse(playersStr))
@@ -40,9 +37,16 @@ export class Game {
       this.handleTableUpdate(tableStr)
     );
 
-    socket.on(SocketOn.gameEnded, (tableStr) =>
-      this.handleTableUpdate(tableStr)
-    );
+    socket.on(SocketOn.gameEnded, (tableStr) => {
+      this.handleTableUpdate(tableStr);
+      if (
+        this.table?.dealer &&
+        !this.table?.roundIsStarted &&
+        this.player?.handIsEmpty
+      ) {
+        this.table.dealer = null;
+      }
+    });
   }
 
   @computed public get gameIsReady(): boolean {
@@ -50,9 +54,10 @@ export class Game {
   }
 
   @action.bound public onTableCreated(table: ITable, player: IPlayer): void {
+    console.log(player);
     this.table = new Table(table.id);
     this.updateTableInfo(table);
-
+    console.log(this);
     this.player = this.findPlayerById(player.id) ?? null;
   }
 
@@ -67,12 +72,24 @@ export class Game {
       : undefined;
   }
 
+  public getNameBySpotId(id: string): string {
+    const spot = this.table?.spots[id];
+    if (spot) {
+      const spotParent = spot ? spot[0].parentPlayer : undefined;
+      const name = spotParent ? spotParent.name : '';
+      return name;
+    } else {
+      return '';
+    }
+  }
+
   private handleTableUpdate(tableStr: string) {
     const table = JSON.parse(tableStr) as ITable;
     this.updateTableInfo(table);
   }
 
   private updateAllPlayersArray(source: IPlayer[]) {
+    console.log('source', source);
     const target: IPlayer[] = JSON.parse(
       JSON.stringify(this.table?.allPlayers)
     ) as IPlayer[];
@@ -117,7 +134,9 @@ export class Game {
     );
 
     let dealer: Dealer | null;
-    if (this.table?.dealer) {
+    if (!table.dealer) {
+      dealer = null;
+    } else if (this.table?.dealer) {
       dealer = this.table.dealer.update(table.dealer);
     } else if (table.dealer) {
       dealer = new Dealer(
@@ -132,6 +151,7 @@ export class Game {
 
     if (this.table) {
       this.table.dealer = dealer;
+      this.table.roundIsStarted = table.roundIsStarted;
       this.table.currentPlayerIndex = table.currentPlayerIndex;
       this.updateAllPlayersArray(table.allPlayers);
     }

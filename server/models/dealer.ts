@@ -17,7 +17,6 @@ export class Dealer {
   get isTurn(): boolean {
     return this.id === socket.tables[this.tableId].currentPlayer?.id;
   }
-
   get handTotal(): number {
     let total = this.hand.reduce((sum, card) => sum + card.value, 0);
     let aces = this.hand.filter((card) => card.rank === Rank.ace);

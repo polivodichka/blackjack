@@ -31,7 +31,7 @@ export class ServerSocket {
 
     socket.on("create_table", (name: string, balance: number) => {
       const table = new Table();
-      const player = table.addPlayer(name, "",balance,  socket.id);
+      const player = table.addPlayer(name, "", balance, socket.id);
 
       this.tables[table.id] = table;
       socket.join(table.id);
@@ -81,7 +81,7 @@ export class ServerSocket {
       "set_bet",
       (tableId: string, spotId: string, parentId: string, amount: TBet) => {
         const table = this.tables[tableId];
-        const parent = this.findPlayerById(parentId, table);
+        const parent = table ? this.findPlayerById(parentId, table) : undefined;
         if (table && !table.roundIsStarted && parent) {
           const player = table.spots[spotId]
             ? table.spots[spotId][0]
@@ -93,11 +93,10 @@ export class ServerSocket {
               .to(table.id)
               .emit("betUpdate", JSON.stringify(table.allPlayers), "betSet");
           } else {
-            socket.emit("errorOnBetSet", "Insufficient funds");
+            socket.emit("error", "Insufficient funds");
           }
-          console.info("bet");
         } else {
-          socket.emit("errorOnBetSet", "Error on bet set");
+          socket.emit("error", "Error on bet set");
         }
       }
     );
@@ -105,7 +104,7 @@ export class ServerSocket {
       "remove_bet",
       (tableId: string, playerId: string, betIndex: number) => {
         const table = this.tables[tableId];
-        const player = this.findPlayerById(playerId, table);
+        const player = table ? this.findPlayerById(playerId, table) : undefined;
         player?.betDeleteByIndex(betIndex);
         this.io
           .to(table.id)
@@ -124,7 +123,7 @@ export class ServerSocket {
       "action",
       (actionType: ActionType, tableId: string, playerId: string) => {
         const table = this.tables[tableId];
-        const player = this.findPlayerById(playerId, table);
+        const player = table ? this.findPlayerById(playerId, table) : undefined;
         if (table) {
           switch (actionType) {
             case ActionType.hit:
@@ -150,12 +149,21 @@ export class ServerSocket {
               player && player.insurance(0);
               break;
           }
+          if (
+            table.currentPlayer &&
+            (table.currentPlayer.isBust ||
+              table.currentPlayer.isBJ ||
+              table.currentPlayer.isNaturalBJ)
+          ) {
+            console.log(table.currentPlayer.handTotal);
+            table.stand();
+          }
           this.io.to(table.id).emit("actionMade", JSON.stringify(table));
+
           if (
             table.dealer &&
-            table.currentPlayerIndex! === table.players.length ///тут мб надо только активные игроки(со ставками)
+            table.currentPlayerIndex === table.playingPlayers.length
           ) {
-            table.currentPlayerIndex = null;
             while (table.dealer.canHit) {
               table.dealer.hand.push(table.draw());
               this.io
@@ -164,9 +172,7 @@ export class ServerSocket {
             }
             table.countWinnings();
             this.io.to(table.id).emit("winnersCounted", JSON.stringify(table));
-          }
-          if (table.currentPlayer && table.currentPlayer.isBust) {
-            table.stand();
+            table.currentPlayerIndex = null;
           }
         }
       }
@@ -175,7 +181,7 @@ export class ServerSocket {
       "end_game",
       (tableId: string, playerId: string, action: EndGameActions) => {
         const table = this.tables[tableId];
-        const player = this.findPlayerById(playerId, table);
+        const player = table ? this.findPlayerById(playerId, table) : undefined;
         if (table && player) {
           switch (action) {
             case EndGameActions.newBet:
@@ -185,6 +191,7 @@ export class ServerSocket {
               table.rebet(player);
               break;
           }
+          table.roundIsStarted = false;
           this.io.to(table.id).emit("gameEnded", JSON.stringify(table));
         }
       }
@@ -198,17 +205,34 @@ export class ServerSocket {
       for (const prop in this.tables) {
         if (this.tables[prop].players) {
           tableId = prop;
-          player = this.findPlayerById(socket.id, this.tables[prop]);
+          const table = this.tables[prop];
+          player = table ? this.findPlayerById(socket.id, table) : undefined;
         }
       }
       if (player && tableId.length) {
         const table = this.tables[tableId];
+        socket.broadcast
+          .to(table.id)
+          .emit(
+            "message",
+            `${
+              player.name.charAt(0).toUpperCase() +
+              player.name.slice(1).toLowerCase()
+            } left`
+          );
         table.removeFakePlayers(player);
         table.playerRemove(player);
+
         if (!table.allPlayers.length) {
+          console.info("table deleted");
           delete this.tables[table.id];
-        } else
-          socket.broadcast.to(table.id).emit("disconnectPlayer", socket.id);
+        } else {
+          if (!table.playingPlayers.length) {
+            table.dealer = null;
+            table.roundIsStarted = false;
+          }
+          socket.broadcast.to(table.id).emit("disconnectPlayer", JSON.stringify(table));
+        }
       }
     });
   };

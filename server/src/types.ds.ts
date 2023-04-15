@@ -1,25 +1,25 @@
 export enum SuitCard {
-  hearts = '♥︎',
-  diamonds = '♦',
-  spades = '♠︎',
-  clubs = '♣',
+  hearts = "♥︎",
+  diamonds = "♦",
+  spades = "♠︎",
+  clubs = "♣",
 }
 
 export type Suit = keyof typeof SuitCard;
 export enum Rank {
-  ace = 'ace',
-  _2 = '2',
-  _3 = '3',
-  _4 = '4',
-  _5 = '5',
-  _6 = '6',
-  _7 = '7',
-  _8 = '8',
-  _9 = '9',
-  _10 = '10',
-  jack = 'jack',
-  queen = 'queen',
-  king = 'king',
+  ace = "ace",
+  _2 = "2",
+  _3 = "3",
+  _4 = "4",
+  _5 = "5",
+  _6 = "6",
+  _7 = "7",
+  _8 = "8",
+  _9 = "9",
+  _10 = "10",
+  jack = "jack",
+  queen = "queen",
+  king = "king",
 }
 export enum PlayerGameState {
   Bust,
@@ -63,12 +63,7 @@ export interface ITable {
   currentPlayerIndex: null;
   deck: ICard[];
   currentBetBtnValue: number;
-}
-
-export enum GameStatus {
-  waitBets = 'Waiting for all players to place their bets',
-  readyToStart = 'Ready to start',
-  playing = 'Playing process',
+  roundIsStarted: boolean;
 }
 
 export enum ActionType {
@@ -86,24 +81,23 @@ export enum EndGameActions {
 }
 
 export enum SocketOn {
-  tableCreated = 'tableCreated',
-  tableJoined = 'tableJoined',
-  actionMade = 'actionMade',
-  disconnectPlayer = 'disconnectPlayer',
-  betUpdate = 'betUpdate',
-  dealt = 'dealt',
-  dealerMadeAction = 'dealerMadeAction',
-  winnersCounted = 'winnersCounted',
-  gameEnded = 'gameEnded',
+  tableCreated = "tableCreated",
+  tableJoined = "tableJoined",
+  actionMade = "actionMade",
+  disconnectPlayer = "disconnectPlayer",
+  betUpdate = "betUpdate",
+  dealt = "dealt",
+  dealerMadeAction = "dealerMadeAction",
+  winnersCounted = "winnersCounted",
+  gameEnded = "gameEnded",
 }
 export enum SocketEmit {
-  join_table = 'join_table',
-  create_table = 'create_table',
-  action = 'action',
-  deal = 'deal',
-  end_game = 'end_game',
-  remove_bet = 'remove_bet',
-  set_bet = 'set_bet',
+  join_table = "join_table",
+  create_table = "create_table",
+  action = "action",
+  deal = "deal",
+  end_game = "end_game",
+  remove_bet = "remove_bet",
+  set_bet = "set_bet",
 }
 export type TBet = 2 | 5 | 10 | 20 | 40 | 60 | 100;
-

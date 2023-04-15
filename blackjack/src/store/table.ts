@@ -11,6 +11,7 @@ export class Table {
   @observable public allPlayers: Player[] = [];
   @observable public dealer: Dealer | null = null;
   @observable public currentPlayerIndex: number | null = null;
+  @observable public roundIsStarted = false;
   @observable public currentBetBtnValue: TBet = 2;
 
   public constructor(id: string = nanoid()) {
@@ -22,6 +23,10 @@ export class Table {
     return this.allPlayers.filter(
       (player) => player.playerType !== PlayerType.parent
     );
+  }
+
+  public get playingPlayers(): Player[] {
+    return this.allPlayers.filter((player) => !!player.hand.length);
   }
 
   @computed public get parentPlayers(): Player[] {
@@ -54,12 +59,16 @@ export class Table {
             (player) => player.parentPlayer?.id === parentPlayer.id
           )
       ) &&
-      Object.keys(this.spots).length < 5
+      Object.keys(this.spots).length < 5 &&
+      !this.dealer
     ) {
       return GameStatus.waitBets;
     }
     if (this.dealer?.hand.length) {
       return GameStatus.playing;
+    }
+    if (!!this.playingPlayers.length) {
+      return GameStatus.waitEndAndBets;
     }
     return GameStatus.readyToStart;
   }
@@ -69,12 +78,9 @@ export class Table {
       this.players.length > 0 &&
       !this.dealer &&
       this.players.every((player) => player.betChipsTotal) &&
-      this.gameStatus === GameStatus.readyToStart
+      this.gameStatus === GameStatus.readyToStart &&
+      this.playingPlayers.length === 0
     );
-  }
-
-  @computed public get roundIsStarted(): boolean {
-    return this.players.length > 0 && !!this.dealer;
   }
 
   @computed public get needInsurance(): boolean {
@@ -146,8 +152,5 @@ export class Table {
         this.allPlayers.splice(index, 1);
       }
     });
-    if (!this.players.length) {
-      this.dealer = null;
-    }
   }
 }

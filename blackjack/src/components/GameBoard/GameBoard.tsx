@@ -1,8 +1,11 @@
+import { HandySvg } from 'handy-svg';
 import { observer } from 'mobx-react-lite';
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ButtonWithSvg, StyledBtn, toastSettings } from '../../App.styled';
 import { socket } from '../../server/socket';
 import { game } from '../../store/game';
-import { EndGameActions, SocketEmit } from '../../types.ds';
+import { EndGameActions, SocketEmit, SocketOn } from '../../types.ds';
 import { BetPanel } from '../BetPanel/BetPanel';
 import { GameActionsComponent } from '../GameActions/GameActionsComponent';
 import { DealerSpotComponent } from '../PlayerSpot/DealerSpotComponent';
@@ -13,8 +16,16 @@ import {
   GameBoardStyled,
   GameEndComponent,
 } from './GameBoard.styled';
+import copyIcon from '../../assets/copy.svg';
+import { toast } from 'react-toastify';
 
 export const GameBoard: React.FC = observer(() => {
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!(game.table && game.player)) {
+      navigate('/');
+    }
+  }, []);
   const handlePlayBtn = () => {
     socket.emit(SocketEmit.deal, game.table?.id);
   };
@@ -29,10 +40,23 @@ export const GameBoard: React.FC = observer(() => {
     return <>Loading...</>;
   }
 
+  const handleCopyClick = () => {
+    navigator.clipboard
+      .writeText(game.table?.id ?? '')
+      .then(() => {
+        toast('Table id successfully copied!', toastSettings);
+      })
+      .catch(() => {
+        toast.error('Failed to copy!', toastSettings);
+      });
+  };
+
   const gameEndComponent = game.player?.roundIsEnded && (
     <GameEndComponent>
-      <button onClick={handleEndGame(EndGameActions.rebet)}>rebet</button>
-      <button onClick={handleEndGame(EndGameActions.newBet)}>new bet</button>
+      <StyledBtn onClick={handleEndGame(EndGameActions.rebet)}>rebet</StyledBtn>
+      <StyledBtn onClick={handleEndGame(EndGameActions.newBet)}>
+        new bet
+      </StyledBtn>
     </GameEndComponent>
   );
 
@@ -45,7 +69,7 @@ export const GameBoard: React.FC = observer(() => {
   );
 
   const playButtonOrGameStatus = game.table?.ableToStartGame ? (
-    <button onClick={handlePlayBtn}>PLAY</button>
+    <StyledBtn onClick={handlePlayBtn}>PLAY</StyledBtn>
   ) : (
     <div>{game.table?.gameStatus}</div>
   );
@@ -56,8 +80,18 @@ export const GameBoard: React.FC = observer(() => {
 
   return (
     <GameBoardStyled>
-      <div style={{ position: 'absolute', right: 20, top: 20 }}>
-        {game.gameIsReady && game.table?.id}
+      <div
+        style={{
+          position: 'absolute',
+          right: 20,
+          top: 20,
+          display: 'flex',
+          alignItems: 'center',
+        }}
+      >
+        <ButtonWithSvg onClick={handleCopyClick}>
+          <HandySvg src={copyIcon} width="17" height="17" />
+        </ButtonWithSvg>
       </div>
       {gameEndComponent}
       <DealerSpotComponent />

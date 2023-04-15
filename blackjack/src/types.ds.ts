@@ -64,12 +64,14 @@ export interface ITable {
   currentPlayerIndex: null;
   deck: ICard[];
   currentBetBtnValue: number;
+  roundIsStarted: boolean;
 }
 
 export enum GameStatus {
-  waitBets = 'Waiting for all players to place their bets',
+  waitBets = 'Waiting for the players to place their bets',
   readyToStart = 'Ready to start',
   playing = 'Playing process',
+  waitEndAndBets = 'Waiting for the players to finish the previous round and place their bets',
 }
 
 export enum ActionType {

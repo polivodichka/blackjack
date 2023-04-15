@@ -8,9 +8,9 @@ export enum Color {
   bet40 = '#87CEFA',
   bet60 = '#00CED1',
   bet100 = '#7FB3D5',
-  extra1 = '#5DADEC',
-  MAIN = '#AED6F1',
-  extra2 = '#00BFFF',
+  MainAccent = '#03e9f4',
+  MainDark = '#141e30',
+  Main = '#243b55',
 }
 export const betValuesOptions: {
   value: TBet;

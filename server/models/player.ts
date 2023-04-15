@@ -55,6 +55,9 @@ export class Player extends Dealer {
       return this.parentPlayer._balance;
     else return this._balance;
   }
+  set balance(amount: number) {
+    this._balance = amount;
+  }
   increaseBalance(amount: number) {
     if (this.playerType !== PlayerType.parent && this.parentPlayer)
       this.parentPlayer._balance += amount;
@@ -91,18 +94,5 @@ export class Player extends Dealer {
     if (this.handTotal < 21 && this.handTotal > 0)
       return PlayerGameState.Active;
     return PlayerGameState.Error;
-  }
-  reset(): void {
-    if (this.betChipsTotal > this.balance) {
-      this.betChips = [];
-    } else this.decreaseBalance(this.betChipsTotal);
-    this.hand = [];
-    this.insuranceBet = 0;
-
-    const table = socket.tables[this.tableId];
-    table.removeFakePlayers(this.parentPlayer ?? this);
-
-    socket.tables[this.tableId].dealer = null;
-    this.parentPlayer!.roundIsEnded = true;
   }
 }

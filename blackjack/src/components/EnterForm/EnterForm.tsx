@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { game } from '../../store/game';
@@ -11,10 +11,10 @@ import {
   Label,
   Form,
   InputWrapper,
-  SubmitBtn,
   CheckboxInputWrapper,
   CheckboxLabel,
 } from './EnterForm.styled';
+import { StyledBtn } from '../../App.styled';
 
 interface FormValues {
   name: string;
@@ -29,10 +29,13 @@ export const EnterForm: React.FC = () => {
     handleSubmit,
     formState: { errors },
     watch,
+    setError,
   } = useForm<FormValues>();
+  const [disabled, setDisabled] = useState<boolean>(false);
   const navigate = useNavigate();
 
   const onSubmit = (data: FormValues) => {
+    setDisabled(true);
     const { name, balance, joinExistingTable, tableId } = data;
     if (joinExistingTable && !tableId) {
       return;
@@ -50,11 +53,24 @@ export const EnterForm: React.FC = () => {
     socket.on(SocketOn.tableCreated, (table, player) => {
       game.onTableCreated(JSON.parse(table), JSON.parse(player));
       if (game.table && game.player) {
-        navigate(`/table?id=${game.table.id}&player=${game.player.id}`);
+        navigate(`/table?id=${game.table.id}`);
+        localStorage.setItem('playerId', game.player.id);
+        localStorage.setItem('playerName', game.player.name);
+        localStorage.setItem('balance', String(game.player.balance));
       }
     });
     socket.on(SocketOn.tableJoined, (table) => {
       game.onTableJoined(JSON.parse(table));
+    });
+    socket.on(SocketOn.error, (_) => {
+      setDisabled(false);
+      setError('tableId', { message: 'Invalid table ID' });
+      const tableIdInput = document.querySelector<HTMLInputElement>(
+        'input[name="tableId"]'
+      );
+      if (tableIdInput) {
+        tableIdInput.value = '';
+      }
     });
   });
 
@@ -87,6 +103,11 @@ export const EnterForm: React.FC = () => {
             autoComplete="off"
             className={`${watch('balance') ? 'filled' : ''}`}
             type="number"
+            onKeyPress={(event) => {
+              if (event.key === '+' || event.key === '-') {
+                event.preventDefault();
+              }
+            }}
             {...register('balance', {
               required: 'Balance is required',
               min: {
@@ -127,9 +148,13 @@ export const EnterForm: React.FC = () => {
             <Label>Table id:</Label>
           </InputWrapper>
         )}
-        <SubmitBtn type="submit" className="button buttonBlue">
+        <StyledBtn
+          type="submit"
+          className="button buttonBlue"
+          disabled={disabled}
+        >
           {watch('joinExistingTable') ? 'Join table' : 'Create table'}
-        </SubmitBtn>
+        </StyledBtn>
       </Form>
     </Wrapper>
   );

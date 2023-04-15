@@ -1,12 +1,3 @@
-:root {
-  --toastify-color-dark: #230036;
-  --toastify-color-progress-dark: #bb86fc;
-  --toastify-color-error: var(--toastify-color-dark);
-  --toastify-color-progress-error: var(--toastify-color-progress-dark);
-  --toastify-icon-color-error: var(--toastify-color-progress-dark);
-
-}
-
 .App {
   text-align: center;
 }

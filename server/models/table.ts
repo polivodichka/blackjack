@@ -10,11 +10,18 @@ export class Table {
   dealer: Dealer | null = null;
   currentPlayerIndex: number | null = null;
   deck: Card[] = [];
+  roundIsStarted: boolean = false;
 
   get players(): Player[] {
     return this.allPlayers.filter(
       (player) => player.playerType !== PlayerType.parent
     );
+  }
+  get playingPlayers(): Player[] {
+    return this.allPlayers.filter((player) => !!player.hand.length);
+  }
+  get handsEmpty(): boolean {
+    return this.players.every((player) => player.hand.length === 0);
   }
   get currentPlayer(): Player | null {
     return typeof this.currentPlayerIndex === "number"
@@ -35,9 +42,9 @@ export class Table {
       {}
     );
   }
-  get roundIsStarted(): boolean {
-    return this.players.length > 0 && !!this.dealer;
-  }
+  // get roundIsStarted(): boolean {
+  //   return this.players.length > 0 && !!this.dealer;
+  // }
   addPlayer(
     name: string,
     spotId: string,
@@ -57,38 +64,38 @@ export class Table {
     }
     return player;
   }
-  playerRemove(playerForRemoving: Player): void {
-    const subPlayers = this.players.filter(
-      (player) => player.parentAfterSplitPlayer?.id === playerForRemoving.id
-    );
-    subPlayers.push(playerForRemoving);
-    subPlayers.forEach((player) => {
-      const index = this.allPlayers.indexOf(player);
-      index >= 0 && this.allPlayers.splice(index, 1);
-    });
-    if (!this.players.length) this.dealer = null;
+  playerRemove(player: Player): void {
+    this.removeFakePlayers(player);
+    const index = this.allPlayers.indexOf(player);
+    index >= 0 && this.allPlayers.splice(index, 1);
+    console.log(this.players.length, "length");
+    if (this.handsEmpty) this.dealer = null;
+    console.log(this.dealer);
   }
-  rebet(parent: Player) {
-    this.players
-      .filter((player) => player.parentPlayer!.id === parent.id)
-      .map((player) => {
-        player.reset();
-      });
-    parent.roundIsEnded = false;
-  }
+
   removeFakePlayers(parent: Player) {
     this.players
       .filter(
         (player) =>
           player.parentPlayer!.id === parent.id ||
-          player.parentAfterSplitPlayer!.id === parent.id
+          player.parentAfterSplitPlayer?.id === parent.id
       )
       .map((player) => {
         this.playerRemove(player);
       });
     parent.roundIsEnded = false;
   }
+  rebet(parent: Player) {
+    this.players
+      .filter((player) => player.parentPlayer!.id === parent.id)
+      .map((player) => {
+        player.hand = [];
+      });
+    parent.roundIsEnded = false;
+    if (this.handsEmpty) this.dealer = null;
+  }
   deal(): void {
+    this.roundIsStarted = true;
     this.dealer = new Dealer(this.id);
     this.createDeck();
     this.shuffleDeck();

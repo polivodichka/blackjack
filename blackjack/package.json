@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "handy-svg": "^1.0.8",
     "mobx": "^6.9.0",
     "mobx-react-lite": "^3.4.3",
     "nanoid": "^4.0.2",
@@ -14,7 +15,8 @@
     "react-toast": "^1.0.3",
     "react-toastify": "^9.1.2",
     "socket.io-client": "^4.6.1",
-    "styled-components": "^5.3.9"
+    "styled-components": "^5.3.9",
+    "tippy.js": "^6.3.7"
   },
   "scripts": {
     "start": "react-scripts start",

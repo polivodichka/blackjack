@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { Color } from '../../constants/constants';
 
 export const Wrapper = styled.div`
   height: 100%;
@@ -24,7 +25,7 @@ export const Form = styled.form`
 `;
 export const Input = styled.input`
   font-size: 18px;
-  padding: 10px 10px 10px 5px;
+  padding: 5px;
   -webkit-appearance: none;
   display: block;
   background: transparent;
@@ -44,7 +45,7 @@ export const Input = styled.input`
     top: -20px;
     transform: scale(0.75);
     left: -2px;
-    color: #03e9f4;
+    color: ${Color.MainAccent};
   }
   &:focus ~ .bar:before,
   &:focus ~ .bar:after {
@@ -53,7 +54,7 @@ export const Input = styled.input`
 `;
 export const InputWrapper = styled.div`
   position: relative;
-  margin-bottom: 25px;
+  margin-bottom: 35px;
 `;
 export const Label = styled.label`
   color: #fff;
@@ -62,7 +63,7 @@ export const Label = styled.label`
   position: absolute;
   pointer-events: none;
   left: 5px;
-  top: 10px;
+  top: 5px;
   transition: all 0.2s ease;
 `;
 
@@ -72,34 +73,14 @@ export const ErrorMsg = styled.p`
   font-size: small;
   bottom: -30px;
 `;
-export const SubmitBtn = styled.button`
-  align-self: center;
-  background: none;
-  cursor: pointer;
-  border: 2px solid #03e9f4;
-  color: #03e9f4;
-  padding: 10px 20px;
-  font-size: 16px;
-  text-decoration: none;
-  text-transform: uppercase;
-  overflow: hidden;
-  transition: 0.5s;
-  letter-spacing: 4px;
-  &:hover {
-    background: #03e9f4;
-    color: #fff;
-    border-radius: 5px;
-    box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4,
-      0 0 100px #03e9f4;
-  }
-`;
+
 export const CheckboxInputWrapper = styled.div`
   position: relative;
   display: flex;
   flex-direction: row;
   align-items: center;
   height: 28px;
-  margin-bottom: 20px; /* add margin bottom */
+  margin-bottom: 30px;
 
   .checkbox-label {
     background-color: #fff;
@@ -132,10 +113,10 @@ export const CheckboxInputWrapper = styled.div`
   }
 
   input[type='checkbox']:checked + label {
-    background-color: #03e9f4;
-    border-color: #03e9f4;
-    box-shadow: 0 0 5px #03e9f4, 0 0 25px #03e9f4, 0 0 50px #03e9f4,
-      0 0 100px #03e9f4;
+    background-color: ${Color.MainAccent};
+    border-color: ${Color.MainAccent};
+    box-shadow: 0 0 5px ${Color.MainAccent}, 0 0 25px ${Color.MainAccent},
+      0 0 50px ${Color.MainAccent}, 0 0 100px ${Color.MainAccent};
   }
 
   input[type='checkbox']:checked + label:after {

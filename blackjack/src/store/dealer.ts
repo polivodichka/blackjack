@@ -36,17 +36,18 @@ export class Dealer {
     return total;
   }
 
-  @action.bound public update(player: IDealer | null): Dealer {
-    if (player) {
-      const hand = player.hand
-        ? player.hand.map((card) => new Card(card.suit, card.rank, card.value))
+  @action.bound public update(dealer: IDealer | null): Dealer {
+    if (dealer) {
+      const hand = dealer.hand
+        ? dealer.hand.map((card) => new Card(card.suit, card.rank, card.value))
         : [];
 
       this.hand = hand;
-      this.roundIsEnded = player.roundIsEnded;
+      this.roundIsEnded = dealer.roundIsEnded;
     } else if (game.table?.dealer) {
       game.table.dealer = null;
     }
+
     return this;
   }
 }
