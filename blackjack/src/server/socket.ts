@@ -1,11 +1,11 @@
-import { io, Socket } from 'socket.io-client';
-import {
-  ActionType,
-  EndGameActions,
-  SocketEmit,
-  SocketOn,
-  TBet,
-} from '../types.ds';
+import { Socket } from 'socket.io-client';
+import { io } from 'socket.io-client';
+
+import { EndGameActions } from '../types.ds';
+import { ActionType } from '../types.ds';
+import { SocketEmit } from '../types.ds';
+import { SocketOn } from '../types.ds';
+import { TBet } from '../types.ds';
 
 const socketWithoutTypes: Socket = io('http://localhost:5000');
 

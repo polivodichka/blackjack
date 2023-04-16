@@ -91,6 +91,7 @@ export class Table {
     );
   }
 
+
   @computed public get needInsurance(): boolean {
     return Boolean(this.dealer?.hand.find((card) => card.rank === Rank.ace));
   }
@@ -128,19 +129,6 @@ export class Table {
     );
     this.allPlayers.push(newPlayer);
     return newPlayer;
-  }
-
-  @computed public canBetAtThisSpot(spotId: string): boolean {
-    const players = this.spots[spotId];
-    if (players && players.length > 0) {
-      return players.every(
-        (player) =>
-          player.id === game.player?.id ||
-          (player.parentPlayer && player.parentPlayer.id === game.player?.id)
-      );
-    } else {
-      return true;
-    }
   }
 
   @action.bound public playerRemove(playerForRemoving: Player): void {

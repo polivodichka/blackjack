@@ -1,62 +1,67 @@
-import { PlayerGameState, PlayerType, Rank, Suit } from "../src/types.ds";
-import { Card } from "./card";
-import { Dealer } from "./dealer";
-import { Player } from "./player";
-import { v4 } from "uuid";
+import { Card } from './card';
+import { Dealer } from './dealer';
+import { Player } from './player';
+import { PlayerGameState } from '../types.ds';
+import { PlayerType } from '../types.ds';
+import { Rank } from '../types.ds';
+import { Suit } from '../types.ds';
+
+import { v4 } from 'uuid';
 
 export class Table {
-  readonly id: string = v4();
-  allPlayers: Player[] = [];
-  dealer: Dealer | null = null;
-  currentPlayerIndex: number | null = null;
-  deck: Card[] = [];
-  roundIsStarted: boolean = false;
+  public readonly id: string = v4();
+  public allPlayers: Player[] = [];
+  public dealer: Dealer | null = null;
+  public currentPlayerIndex: number | null = null;
+  public deck: Card[] = [];
+  public roundIsStarted = false;
 
-  get players(): Player[] {
+  public get players(): Player[] {
     return this.allPlayers.filter(
       (player) => player.playerType !== PlayerType.parent
     );
   }
-  get playingPlayers(): Player[] {
+
+  public get playingPlayers(): Player[] {
     return this.allPlayers.filter((player) => !!player.hand.length);
   }
-  get handsEmpty(): boolean {
+
+  private get handsEmpty(): boolean {
     return this.players.every((player) => player.hand.length === 0);
   }
-  get currentPlayer(): Player | null {
-    return typeof this.currentPlayerIndex === "number"
+
+  public get currentPlayer(): Player | null {
+    return typeof this.currentPlayerIndex === 'number'
       ? this.players[this.currentPlayerIndex]
       : null;
   }
-  get spots(): {
-    [key: string]: Player[];
-  } {
-    return this.players.reduce<{ [key: string]: Player[] }>(
-      (result, player) => {
-        if (player.spotId && !result[player.spotId]) {
-          result[player.spotId] = [];
-        }
-        player.spotId && result[player.spotId].push(player);
-        return result;
-      },
-      {}
-    );
+
+  public get spots(): Record<string, Player[]> {
+    return this.players.reduce<Record<string, Player[]>>((result, player) => {
+      if (player.spotId && !result[player.spotId]) {
+        result[player.spotId] = [];
+      }
+      if (player.spotId) {
+        result[player.spotId].push(player);
+      }
+      return result;
+    }, {});
   }
-  // get roundIsStarted(): boolean {
-  //   return this.players.length > 0 && !!this.dealer;
-  // }
-  addPlayer(
+
+  public addPlayer(
     name: string,
     spotId: string,
     balance: number,
     id: string = v4(),
     parentPlayerId?: string
   ): Player {
-    const player = this.players.find((player) => player.spotId === spotId);
+    const player = this.players.find(
+      (findedPlayer) => findedPlayer.spotId === spotId
+    );
     if (!player) {
       const newPlayer = new Player(name, this.id, id, spotId, balance);
       const parentPlayer = this.allPlayers.find(
-        (player) => player.id === parentPlayerId
+        (findedPlayer) => findedPlayer.id === parentPlayerId
       );
       newPlayer.parentPlayer = parentPlayer ?? null;
       this.allPlayers.push(newPlayer);
@@ -64,18 +69,23 @@ export class Table {
     }
     return player;
   }
-  playerRemove(player: Player): void {
+
+  public playerRemove(player: Player): void {
     this.removeFakePlayers(player);
     const index = this.allPlayers.indexOf(player);
-    index >= 0 && this.allPlayers.splice(index, 1);
-    if (this.handsEmpty) this.dealer = null;
+    if (index >= 0) {
+      this.allPlayers.splice(index, 1);
+    }
+    if (this.handsEmpty) {
+      this.dealer = null;
+    }
   }
 
-  removeFakePlayers(parent: Player) {
+  public removeFakePlayers(parent: Player): void {
     this.players
       .filter(
         (player) =>
-          player.parentPlayer!.id === parent.id ||
+          player.parentPlayer?.id === parent.id ||
           player.parentAfterSplitPlayer?.id === parent.id
       )
       .map((player) => {
@@ -83,7 +93,8 @@ export class Table {
       });
     parent.roundIsEnded = false;
   }
-  rebet(parent: Player) {
+
+  public rebet(parent: Player): void {
     this.players
       .filter(
         (player) =>
@@ -94,7 +105,7 @@ export class Table {
       });
     const playersWithBet = this.players.filter(
       (player) =>
-        player.parentPlayer!.id === parent.id && !player.parentAfterSplitPlayer
+        player.parentPlayer?.id === parent.id && !player.parentAfterSplitPlayer
     );
     playersWithBet.map((player) => {
       player.hand = [];
@@ -102,9 +113,12 @@ export class Table {
     });
     parent.balance -= parent.betChipsTotalWithChildren;
     parent.roundIsEnded = false;
-    if (this.handsEmpty) this.dealer = null;
+    if (this.handsEmpty) {
+      this.dealer = null;
+    }
   }
-  deal(): void {
+
+  public deal(): void {
     this.roundIsStarted = true;
     this.dealer = new Dealer(this.id);
     this.createDeck();
@@ -116,19 +130,24 @@ export class Table {
 
     this.currentPlayerIndex = 0;
   }
-  hit(): void {
-    this.currentPlayer &&
-      this.currentPlayer.hand &&
+
+  public hit(): void {
+    if (this.currentPlayer?.hand) {
       this.currentPlayer.hand.push(this.draw());
+    }
   }
-  stand(): void {
-    this.currentPlayerIndex!++;
+
+  public stand(): void {
+    if (this.currentPlayerIndex !== null) {
+      this.currentPlayerIndex++;
+    }
   }
-  split() {
+
+  public split(): void {
     const player = this.currentPlayer;
     if (player && this.currentPlayerIndex !== null) {
       if (player.betChipsTotal <= player.balance) {
-        const subPlayer = new Player("", this.id, undefined, player.spotId, 0);
+        const subPlayer = new Player('', this.id, undefined, player.spotId, 0);
         subPlayer.parentAfterSplitPlayer = player;
         subPlayer.parentPlayer = player.parentPlayer;
         subPlayer.hand = player.hand.splice(1, 1);
@@ -141,11 +160,14 @@ export class Table {
         const index = this.currentPlayer
           ? this.allPlayers.indexOf(this.currentPlayer)
           : -1;
-        index >= 0 && this.allPlayers.splice(index, 0, subPlayer);
+        if (index >= 0) {
+          this.allPlayers.splice(index, 0, subPlayer);
+        }
       }
     }
   }
-  double(): void {
+
+  public double(): void {
     const player = this.currentPlayer;
     if (player && player.betChipsTotal <= player.balance) {
       player.decreaseBalance(player.betChipsTotal);
@@ -154,16 +176,20 @@ export class Table {
       this.stand();
     }
   }
-  draw(): Card {
+
+  public draw(): Card {
     return this.deck.shift() as Card;
   }
-  countWinnings() {
+
+  public countWinnings(): void {
     this.players.forEach((player) => {
       const betSum = player.betChipsTotal;
       const insurance = player.insuranceBet ?? 0;
       if (this.dealer) {
         //insurance
-        if (this.dealer.isNaturalBJ) player.increaseBalance(insurance * 2);
+        if (this.dealer.isNaturalBJ) {
+          player.increaseBalance(insurance * 2);
+        }
 
         switch (player.state) {
           case PlayerGameState.NaturalBlackjack:
@@ -173,7 +199,9 @@ export class Table {
           case PlayerGameState.Blackjack:
             if (this.dealer.isBJ || this.dealer.isNaturalBJ) {
               player.increaseBalance(betSum);
-            } else player.increaseBalance(betSum * 2);
+            } else {
+              player.increaseBalance(betSum * 2);
+            }
             break;
 
           case PlayerGameState.Active:
@@ -188,11 +216,14 @@ export class Table {
             break;
         }
       }
-      player.parentPlayer!.roundIsEnded = true;
+      if (player.parentPlayer) {
+        player.parentPlayer.roundIsEnded = true;
+      }
     });
   }
+
   private createDeck(): void {
-    const suits: Suit[] = ["hearts", "diamonds", "clubs", "spades"];
+    const suits: Suit[] = ['hearts', 'diamonds', 'clubs', 'spades'];
     const ranks = [
       { rank: Rank.ace, value: 11 },
       { rank: Rank._2, value: 2 },
@@ -218,6 +249,7 @@ export class Table {
       }
     }
   }
+
   private shuffleDeck(): void {
     for (let i = this.deck.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
@@ -225,5 +257,3 @@ export class Table {
     }
   }
 }
-
-export default new Table();

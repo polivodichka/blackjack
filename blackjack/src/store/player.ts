@@ -2,6 +2,7 @@ import { makeObservable } from 'mobx';
 import { observable } from 'mobx';
 import { computed } from 'mobx';
 import { override } from 'mobx';
+import { action } from 'mobx';
 
 import { PlayerGameState } from '../types.ds';
 import { PlayerType } from '../types.ds';
@@ -147,7 +148,7 @@ export class Player extends Dealer {
     return playingChildren?.length === 0;
   }
 
-  @computed public canBetAtThisSpot(spotId: string): boolean {
+  @action.bound public canBetAtThisSpot(spotId: string): boolean {
     const table = game.table;
     const players = table?.spots[spotId];
     if (players && players.length > 0) {

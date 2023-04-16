@@ -30,7 +30,7 @@ export const BetPanel: React.FC = observer(() => {
               size={70}
               active={
                 (game.table && game.table.currentBetBtnValue === bet.value) ??
-                false
+              false
               }
             />
           ))}
