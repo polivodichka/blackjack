@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
-export const GameBoardStyled = styled.div`
+export const Wrapper = styled.div`
+  position: relative;
   background: linear-gradient(#141e30, #243b55);
   color: white;
   height: 100%;
@@ -13,9 +14,12 @@ export const GameBoardStyled = styled.div`
 
 export const BalanceStyled = styled.div`
   position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 5px;
   top: 20px;
   left: 20px;
-  &::after {
+  div::after {
     content: '$';
   }
 `;
@@ -32,4 +36,12 @@ export const GameEndComponent = styled.div`
   align-items: center;
   justify-content: center;
   z-index: 4;
+`;
+
+export const OptionsPanel = styled.div`
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  display: flex;
+  align-items: center;
 `;

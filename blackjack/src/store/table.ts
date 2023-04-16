@@ -1,9 +1,17 @@
-import { action, computed, makeObservable, observable } from 'mobx';
-import { GameStatus, IPlayer, PlayerType, Rank, TBet } from '../types.ds';
-import { Card } from './card';
+import { makeObservable } from 'mobx';
+import { observable } from 'mobx';
+import { computed } from 'mobx';
+import { nanoid } from 'nanoid';
+import { action } from 'mobx';
+
+import { GameStatus } from '../types.ds';
+import { PlayerType } from '../types.ds';
+import { IPlayer } from '../types.ds';
+import { Rank } from '../types.ds';
+import { TBet } from '../types.ds';
 import { Dealer } from './dealer';
 import { Player } from './player';
-import { nanoid } from 'nanoid';
+import { Card } from './card';
 import { game } from './game';
 
 export class Table {
@@ -25,7 +33,7 @@ export class Table {
     );
   }
 
-  public get playingPlayers(): Player[] {
+  @computed public get playingPlayers(): Player[] {
     return this.allPlayers.filter((player) => !!player.hand.length);
   }
 
@@ -122,7 +130,7 @@ export class Table {
     return newPlayer;
   }
 
-  @action.bound public canBetAtThisSpot(spotId: string): boolean {
+  @computed public canBetAtThisSpot(spotId: string): boolean {
     const players = this.spots[spotId];
     if (players && players.length > 0) {
       return players.every(
@@ -133,10 +141,6 @@ export class Table {
     } else {
       return true;
     }
-  }
-
-  @action.bound public setCurrentBetBtnValue(value: TBet): void {
-    this.currentBetBtnValue = value;
   }
 
   @action.bound public playerRemove(playerForRemoving: Player): void {

@@ -100,6 +100,7 @@ export enum SocketOn {
   gameEnded = 'gameEnded',
   error = 'error',
   message = 'message',
+  balanceToppedUp = 'balanceToppedUp',
 }
 export enum SocketEmit {
   join_table = 'join_table',
@@ -109,5 +110,17 @@ export enum SocketEmit {
   end_game = 'end_game',
   remove_bet = 'remove_bet',
   set_bet = 'set_bet',
+  topup_balance = 'topup_balance',
 }
 export type TBet = 2 | 5 | 10 | 20 | 40 | 60 | 100;
+
+export enum ModalTypes {
+  CreateOrJoin = 'CreateOrJoin',
+  Balance = 'Balance',
+  GameEnd = 'GameEnd',
+}
+
+export interface IModal {
+  type: ModalTypes;
+  hide: boolean;
+}

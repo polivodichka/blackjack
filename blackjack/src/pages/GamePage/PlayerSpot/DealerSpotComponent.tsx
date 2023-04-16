@@ -1,8 +1,9 @@
 import { observer } from 'mobx-react-lite';
-import { game } from '../../store/game';
-import { CardComponent } from '../Card/CardComponent';
-import { CardsTotal, CardsWrapper, SpotStyled } from './Spot.styled';
 import React from 'react';
+
+import { CardsTotal, CardsWrapper, SpotStyled } from './Spot.styled';
+import { CardComponent } from '../Card/CardComponent';
+import { game } from '../../../store/game';
 
 export const DealerSpotComponent: React.FC = observer(() => {
   const dealer = game.table?.dealer;

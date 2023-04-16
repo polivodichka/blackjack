@@ -1,10 +1,11 @@
 import { observer } from 'mobx-react-lite';
 import React, { useMemo } from 'react';
-import { game } from '../../store/game';
-import { PlayerComponent } from './PlayerComponent';
+
 import { PlayersWrapper, SpotStyled, OnePlayerWrapper } from './Spot.styled';
-import { socket } from '../../server/socket';
-import { SocketEmit } from '../../types.ds';
+import { PlayerComponent } from './PlayerComponent';
+import { socket } from '../../../server/socket';
+import { SocketEmit } from '../../../types.ds';
+import { game } from '../../../store/game';
 
 type PlayerProps = {
   id: string;
@@ -12,6 +13,7 @@ type PlayerProps = {
 
 export const PlayerSpotComponent: React.FC<PlayerProps> = observer(({ id }) => {
   const gameTable = game.table ?? null;
+
   const spotClass = useMemo(() => {
     const className = [];
     if (gameTable?.currentPlayer && gameTable.currentPlayer.spotId === id) {
@@ -26,7 +28,11 @@ export const PlayerSpotComponent: React.FC<PlayerProps> = observer(({ id }) => {
   }, [gameTable?.currentPlayer, gameTable?.dealer, gameTable?.spots, id]);
 
   const handleSetNewBet = () => {
-    if (gameTable?.canBetAtThisSpot(id) && !gameTable?.roundIsStarted) {
+    if (
+      gameTable &&
+      game.player?.canBetAtThisSpot(id) &&
+      !gameTable?.roundIsStarted
+    ) {
       socket.emit(
         SocketEmit.set_bet,
         gameTable.id,
@@ -39,9 +45,7 @@ export const PlayerSpotComponent: React.FC<PlayerProps> = observer(({ id }) => {
 
   return (
     <OnePlayerWrapper>
-      <div>
-        {game.getNameBySpotId(id)}
-      </div>
+      <div>{game.getNameBySpotId(id)}</div>
       <SpotStyled className={spotClass} onClick={handleSetNewBet}>
         <PlayersWrapper>
           {gameTable?.spots[id] &&

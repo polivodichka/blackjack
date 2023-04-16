@@ -83,11 +83,11 @@ export class ServerSocket {
         const table = this.tables[tableId];
         const parent = table ? this.findPlayerById(parentId, table) : undefined;
         if (table && !table.roundIsStarted && parent) {
-          const player = table.spots[spotId]
-            ? table.spots[spotId][0]
-            : table.addPlayer("", spotId, 0, undefined, parentId);
-
           if (amount <= parent.balance) {
+            const player = table.spots[spotId]
+              ? table.spots[spotId][0]
+              : table.addPlayer("", spotId, 0, undefined, parentId);
+
             player.bet(amount);
             this.io
               .to(table.id)
@@ -130,20 +130,22 @@ export class ServerSocket {
               table.hit();
               break;
             case ActionType.double:
-              table.double();
+              if (player && player.betChipsTotal <= player.balance) {
+                table.double();
+              } else socket.emit("error", "Insufficient funds");
               break;
             case ActionType.split:
               if (player && player.betChipsTotal <= player.balance) {
                 table.split();
-              } else socket.emit("error", "ERROR");
+              } else socket.emit("error", "Insufficient funds");
               break;
             case ActionType.stand:
               table.stand();
               break;
             case ActionType.insurance:
-              if (player && player.betChipsTotal <= player.balance) {
+              if (player && player.betChipsTotal / 2 <= player.balance) {
                 player.insurance();
-              } else socket.emit("error", "ERROR");
+              } else socket.emit("error", "Insufficient funds");
               break;
             case ActionType.skipInsurance:
               player && player.insurance(0);
@@ -178,6 +180,18 @@ export class ServerSocket {
       }
     );
     socket.on(
+      "topup_balance",
+      (balance: number, tableId: string, playerId: string) => {
+        const table = this.tables[tableId];
+        const player = table ? this.findPlayerById(playerId, table) : undefined;
+        if (player) {
+          player.balance = +balance + +player.balance;
+          socket.emit("balanceToppedUp", JSON.stringify(player));
+          socket.emit("message", "Balance successfully topped up!");
+        }
+      }
+    );
+    socket.on(
       "end_game",
       (tableId: string, playerId: string, action: EndGameActions) => {
         const table = this.tables[tableId];
@@ -188,7 +202,12 @@ export class ServerSocket {
               table.removeFakePlayers(player);
               break;
             case EndGameActions.rebet:
-              table.rebet(player);
+              if (player && player.betChipsTotalWithChildren <= player.balance) {
+                table.rebet(player);
+              } else {
+                table.removeFakePlayers(player);
+                socket.emit("error", "Insufficient funds");
+              }
               break;
           }
           table.roundIsStarted = false;
@@ -231,7 +250,9 @@ export class ServerSocket {
             table.dealer = null;
             table.roundIsStarted = false;
           }
-          socket.broadcast.to(table.id).emit("disconnectPlayer", JSON.stringify(table));
+          socket.broadcast
+            .to(table.id)
+            .emit("disconnectPlayer", JSON.stringify(table));
         }
       }
     });

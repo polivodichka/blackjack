@@ -1,10 +1,15 @@
+/* eslint-disable @typescript-eslint/indent */
 import styled from 'styled-components';
-import { makeColorDarker } from '../../utils/makeColorDarker';
 
-export const BetPanelStyled = styled.div`
+import { makeColorDarker } from '../../../utils/makeColorDarker';
+
+export const BetPanelStyled = styled.div.attrs(
+  (props: { size: number; }) => props
+)`
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   align-items: center;
+  gap: ${(props) => props.size * 0.35}px;
   width: 100%;
 `;
 
@@ -22,7 +27,6 @@ export const ChipStyled = styled.button.attrs(
   border: none;
   border-radius: 50%;
   background-position: center center;
-  transition: transform 0.7s ease-in-out;
   background-image: linear-gradient(
       0deg,
       transparent 0,
@@ -50,6 +54,8 @@ export const ChipStyled = styled.button.attrs(
       ${(props) => props.color} 100%
     );
 
+  transition: color 0.3s ease-in-out, box-shadow 0.3s ease-in-out,
+    transform 0.7s ease-in-out;
   &:before {
     position: absolute;
     content: '';
@@ -122,6 +128,7 @@ export const ChipStyled = styled.button.attrs(
   }
 
   &:after {
+    transition: color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
     z-index: 2;
     position: absolute;
     content: '${(props) => props.bet}';
@@ -136,19 +143,19 @@ export const ChipStyled = styled.button.attrs(
     left: 50%;
     transform: translate(-50%, -50%);
     text-shadow: ${(props) => {
-    const size = props.size * 0.015;
-    return `${-size}px ${-size}px`;
-  }}
+          const size = props.size * 0.015;
+          return `${-size}px ${-size}px`;
+        }}
         0px rgba(0, 0, 0, 0.3),
       ${(props) => {
-    const size = props.size * 0.015;
-    return `${size}px ${size}px`;
-  }}
+          const size = props.size * 0.015;
+          return `${size}px ${size}px`;
+        }}
         0px rgba(255, 255, 255, 0.2),
       ${(props) => {
-    const size = props.size * 0.007;
-    return `${size}px ${size}px`;
-  }}
+          const size = props.size * 0.007;
+          return `${size}px ${size}px`;
+        }}
         0px rgba(0, 0, 0, 0.3);
 
     background: ${(props) => props.color};
@@ -160,19 +167,19 @@ export const ChipStyled = styled.button.attrs(
       color: #fff;
       text-shadow: none;
       text-shadow: ${(props) => {
-    const size = props.size * 0.015;
-    return `${-size}px ${-size}px`;
-  }}
+            const size = props.size * 0.015;
+            return `${-size}px ${-size}px`;
+          }}
           0px rgba(255, 255, 255, 0.3),
         ${(props) => {
-    const size = props.size * 0.015;
-    return `${size}px ${size}px`;
-  }}
+            const size = props.size * 0.015;
+            return `${size}px ${size}px`;
+          }}
           0px rgba(0, 0, 0, 0.2),
         ${(props) => {
-    const size = props.size * 0.007;
-    return `${size}px ${size}px`;
-  }}
+            const size = props.size * 0.007;
+            return `${size}px ${size}px`;
+          }}
           0px rgba(255, 255, 255, 0.3);
     }
   }
@@ -181,8 +188,6 @@ export const ChipStyled = styled.button.attrs(
     box-shadow: 0 0 5px ${(props) => props.color},
       0 0 25px ${(props) => props.color}, 0 0 50px ${(props) => props.color},
       0 0 100px ${(props) => props.color};
-    /* -webkit-animation: 5s rotate-right linear infinite;
-    animation: 5s rotate-right linear infinite; */
   }
   &.active {
     -webkit-animation: 10s rotate-right linear infinite;

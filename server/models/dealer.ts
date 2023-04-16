@@ -5,7 +5,7 @@ import { socket } from "../src/server";
 
 export class Dealer {
   readonly id: string = v4();
-  spotId: string = v4();
+  spotId: string | null = v4();
   hand: Card[] = [];
   tableId: string;
   constructor(tableId: string) {

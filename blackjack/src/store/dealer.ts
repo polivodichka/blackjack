@@ -1,11 +1,16 @@
-import { action, computed, makeObservable, observable } from 'mobx';
-import { IDealer, Rank } from '../types.ds';
+import { makeObservable } from 'mobx';
+import { observable } from 'mobx';
+import { computed } from 'mobx';
+import { action } from 'mobx';
+
+import { IDealer } from '../types.ds';
+import { Rank } from '../types.ds';
 import { Card } from './card';
 import { game } from './game';
 
 export class Dealer {
   public readonly id: string;
-  public spotId: string;
+  @observable public spotId: string;
   @observable public hand: Card[];
   @observable public roundIsEnded: boolean;
 

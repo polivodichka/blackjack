@@ -12,10 +12,12 @@ export enum Color {
   MainDark = '#141e30',
   Main = '#243b55',
 }
-export const betValuesOptions: {
+
+type BetValueOptionType = {
   value: TBet;
   color: Color;
-}[] = [
+};
+export const betValuesOptions: BetValueOptionType[] = [
   { value: 2, color: Color.bet2 },
   { value: 5, color: Color.bet5 },
   { value: 10, color: Color.bet10 },

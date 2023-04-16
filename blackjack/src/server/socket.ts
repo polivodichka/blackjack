@@ -21,6 +21,7 @@ interface SocketEventsOn {
   [SocketOn.gameEnded]: (table: string) => void;
   [SocketOn.error]: (message: string) => void;
   [SocketOn.message]: (message: string) => void;
+  [SocketOn.balanceToppedUp]: (player: string) => void;
 }
 
 type SocketEventNamesOn = keyof SocketEventsOn;
@@ -54,6 +55,11 @@ interface SocketEventsEmit {
     spotId: string,
     playerId: string | undefined,
     bet: TBet
+  ) => void;
+  [SocketEmit.topup_balance]: (
+    balance: number,
+    tableId: string,
+    playerId: string,
   ) => void;
 }
 

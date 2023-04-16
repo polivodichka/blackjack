@@ -1,8 +1,15 @@
-import { observable, makeObservable, override, computed } from 'mobx';
-import { IPlayer, PlayerGameState, PlayerType, TBet } from '../types.ds';
+import { makeObservable } from 'mobx';
+import { observable } from 'mobx';
+import { computed } from 'mobx';
+import { override } from 'mobx';
+
+import { PlayerGameState } from '../types.ds';
+import { PlayerType } from '../types.ds';
+import { IPlayer } from '../types.ds';
+import { TBet } from '../types.ds';
 import { Dealer } from './dealer';
-import { game } from './game';
 import { Card } from './card';
+import { game } from './game';
 
 export class Player extends Dealer {
   @observable public name: string;
@@ -41,21 +48,24 @@ export class Player extends Dealer {
   }
 
   @computed public get balance(): number {
-    if (this.playerType !== PlayerType.parent && this.parentPlayer) {
-      return this.parentPlayer._balance;
-    } else {
-      return this._balance;
-    }
+    return this.playerType !== PlayerType.parent && this.parentPlayer
+      ? this.parentPlayer._balance
+      : this._balance;
   }
 
   @computed public get playerType(): PlayerType {
-    if (this.parentPlayer) {
-      return PlayerType.player;
-    }
-    if (this.parentAfterSplitPlayer) {
-      return PlayerType.subplayer;
-    }
-    return PlayerType.parent;
+    return this.parentPlayer
+      ? PlayerType.player
+      : this.parentAfterSplitPlayer
+        ? PlayerType.subplayer
+        : PlayerType.parent;
+  }
+
+  @computed public get isTurn(): boolean {
+    return (
+      game.table?.currentPlayer?.id === this.id ||
+      game.table?.currentPlayer?.parentPlayer?.id === this?.id
+    );
   }
 
   @computed public get canHit(): boolean {
@@ -89,29 +99,26 @@ export class Player extends Dealer {
 
   @computed public get canInsurance(): boolean {
     return (
-      (!this.isNaturalBJ &&
-        !this.isBJ &&
-        game.table?.needInsurance &&
-        this.insuranceBet === null &&
-        !this.roundIsStarted) ??
-      false
+      !this.isNaturalBJ &&
+      !this.isBJ &&
+      (game.table?.needInsurance ?? false) &&
+      this.insuranceBet === null &&
+      !this.roundIsStarted
     );
   }
 
   @computed private get state(): PlayerGameState {
     if (this.handTotal > 21) {
       return PlayerGameState.Bust;
-    }
-    if (this.handTotal === 21 && !this.roundIsStarted) {
+    } else if (this.handTotal === 21 && !this.roundIsStarted) {
       return PlayerGameState.NaturalBlackjack;
-    }
-    if (this.handTotal === 21) {
+    } else if (this.handTotal === 21) {
       return PlayerGameState.Blackjack;
-    }
-    if (this.handTotal < 21 && this.handTotal > 0) {
+    } else if (this.handTotal > 0) {
       return PlayerGameState.Active;
+    } else {
+      return PlayerGameState.Error;
     }
-    return PlayerGameState.Error;
   }
 
   @computed private get isNaturalBJ(): boolean {
@@ -128,6 +135,30 @@ export class Player extends Dealer {
 
   @computed private get isActive(): boolean {
     return this.state === PlayerGameState.Active;
+  }
+
+  @computed public get handIsEmpty(): boolean {
+    const playingChildren = game.table?.playingPlayers.filter(
+      (player) =>
+        player.id === this.id ||
+        player.parentAfterSplitPlayer?.id === this.id ||
+        player.parentPlayer?.id === this.id
+    );
+    return playingChildren?.length === 0;
+  }
+
+  @computed public canBetAtThisSpot(spotId: string): boolean {
+    const table = game.table;
+    const players = table?.spots[spotId];
+    if (players && players.length > 0) {
+      return players.every(
+        (player) =>
+          player.id === this.id ||
+          (player.parentPlayer && player.parentPlayer.id === this.id)
+      );
+    } else {
+      return true;
+    }
   }
 
   @override public update(player: IPlayer): Player {
@@ -172,18 +203,6 @@ export class Player extends Dealer {
     this.parentPlayer = parentPlayer ?? null;
     this._balance = player._balance;
 
-    localStorage.setItem('balance', String(this._balance));
-
     return this;
-  }
-
-  public handIsEmpty(): boolean {
-    const playingChildren = game.table?.playingPlayers.filter(
-      (player) =>
-        player.id === this.id ||
-        player.parentAfterSplitPlayer?.id === this.id ||
-        player.parentPlayer?.id === this.id
-    );
-    return !playingChildren
   }
 }

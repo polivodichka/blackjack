@@ -33,10 +33,10 @@ export class Table {
   } {
     return this.players.reduce<{ [key: string]: Player[] }>(
       (result, player) => {
-        if (!result[player.spotId]) {
+        if (player.spotId && !result[player.spotId]) {
           result[player.spotId] = [];
         }
-        result[player.spotId].push(player);
+        player.spotId && result[player.spotId].push(player);
         return result;
       },
       {}
@@ -68,9 +68,7 @@ export class Table {
     this.removeFakePlayers(player);
     const index = this.allPlayers.indexOf(player);
     index >= 0 && this.allPlayers.splice(index, 1);
-    console.log(this.players.length, "length");
     if (this.handsEmpty) this.dealer = null;
-    console.log(this.dealer);
   }
 
   removeFakePlayers(parent: Player) {
@@ -87,10 +85,22 @@ export class Table {
   }
   rebet(parent: Player) {
     this.players
-      .filter((player) => player.parentPlayer!.id === parent.id)
+      .filter(
+        (player) =>
+          player.parentPlayer?.id === parent.id && player.parentAfterSplitPlayer
+      )
       .map((player) => {
-        player.hand = [];
+        this.playerRemove(player);
       });
+    const playersWithBet = this.players.filter(
+      (player) =>
+        player.parentPlayer!.id === parent.id && !player.parentAfterSplitPlayer
+    );
+    playersWithBet.map((player) => {
+      player.hand = [];
+      player.insuranceBet = null;
+    });
+    parent.balance -= parent.betChipsTotalWithChildren;
     parent.roundIsEnded = false;
     if (this.handsEmpty) this.dealer = null;
   }
@@ -142,7 +152,7 @@ export class Table {
       player.betChips = player.betChips.concat(player.betChips);
       this.hit();
       this.stand();
-    } else alert("Insufficient funds");
+    }
   }
   draw(): Card {
     return this.deck.shift() as Card;

@@ -2,6 +2,7 @@ import { PlayerGameState, PlayerType, TBet } from "../src/types.ds";
 import { Dealer } from "./dealer";
 import { v4 } from "uuid";
 import { socket } from "../src/server";
+import { Table } from "./table";
 
 export class Player extends Dealer {
   name: string;
@@ -18,7 +19,7 @@ export class Player extends Dealer {
     name: string,
     tableId: string,
     id: string = v4(),
-    spotId: string = "",
+    spotId: string | null = null,
     _balance?: number
   ) {
     super(tableId);
@@ -34,11 +35,16 @@ export class Player extends Dealer {
     return PlayerType.parent;
   }
 
+  get table(): Table {
+    return socket.tables[this.tableId];
+  }
+
+  get spot(): Player[] | null {
+    return this.spotId ? this.table.spots[this.spotId] : null;
+  }
+
   get isSplitted(): boolean {
-    return (
-      this.isSubplayer ||
-      (socket.tables[this.tableId].spots[this.spotId].length ?? 1) > 1
-    );
+    return this.isSubplayer || (this.spot?.length ?? 1) > 1;
   }
 
   get isSubplayer(): boolean {
@@ -48,6 +54,20 @@ export class Player extends Dealer {
   get betChipsTotal() {
     return this.betChips.length
       ? (this.betChips as number[]).reduce((bet1, bet2) => bet1 + bet2)
+      : 0;
+  }
+  get betChipsTotalWithChildren() {
+    const players = this.table.allPlayers.filter(
+      (player) =>
+        player.id === this.id ||
+        player.parentAfterSplitPlayer?.id === this.id ||
+        player.parentPlayer?.id === this.id
+    );
+    const chips = players
+      .map((player) => player.betChips)
+      .reduce((a, b) => a.concat(b));
+    return chips.length
+      ? (chips as number[]).reduce((bet1, bet2) => bet1 + bet2)
       : 0;
   }
   get balance(): number {
@@ -83,8 +103,7 @@ export class Player extends Dealer {
   betDeleteByIndex(index: number): void {
     this.increaseBalance(this.betChips[index]);
     this.betChips.splice(index, 1);
-    if (this.betChips.length < 1)
-      socket.tables[this.tableId].playerRemove(this);
+    if (this.betChips.length < 1) this.table.playerRemove(this);
   }
   get state(): PlayerGameState {
     if (this.handTotal > 21) return PlayerGameState.Bust;

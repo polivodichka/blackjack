@@ -1,7 +1,8 @@
 import { ToastOptions } from 'react-toastify';
 import styled from 'styled-components';
-import { Color } from './constants/constants';
-import { makeColorDarker } from './utils/makeColorDarker';
+
+import { makeColorDarker } from '../../utils/makeColorDarker';
+import { Color } from '../../constants/constants';
 
 export const StyledBtn = styled.button`
   align-self: center;
@@ -11,6 +12,7 @@ export const StyledBtn = styled.button`
   background: none;
   cursor: pointer;
   border: 2px solid ${Color.MainAccent};
+  border-radius: 5px;
   color: ${Color.MainAccent};
   padding: 10px 20px;
   font-size: 16px;
@@ -19,22 +21,16 @@ export const StyledBtn = styled.button`
   overflow: hidden;
   transition: 0.5s;
   letter-spacing: 4px;
-  &:hover {
+  &:hover:enabled {
     background: ${Color.MainAccent};
     color: #fff;
-    border-radius: 5px;
     box-shadow: 0 0 5px ${Color.MainAccent}, 0 0 25px ${Color.MainAccent},
       0 0 50px ${Color.MainAccent}, 0 0 100px ${Color.MainAccent};
   }
   &:disabled {
-    border: 2px solid ${makeColorDarker(Color.MainAccent, 20)};
-    background: ${makeColorDarker(Color.MainAccent, 20)};
-    color: #fff;
+    border: 2px solid ${makeColorDarker(Color.MainAccent, 50)};
+    color: ${makeColorDarker(Color.MainAccent, 50)};
     border-radius: 5px;
-    box-shadow: 0 0 5px ${makeColorDarker(Color.MainAccent, 20)},
-      0 0 25px ${makeColorDarker(Color.MainAccent, 20)},
-      0 0 50px ${makeColorDarker(Color.MainAccent, 20)},
-      0 0 100px ${makeColorDarker(Color.MainAccent, 20)};
   }
 `;
 
@@ -44,12 +40,16 @@ export const ButtonWithSvg = styled(StyledBtn)`
     fill: transparent;
     stroke: ${Color.MainAccent};
   }
-  &:hover svg {
+  &:hover:enabled svg {
     fill: transparent;
     stroke: #fff;
   }
+  &:disabled svg {
+    stroke: ${makeColorDarker(Color.MainAccent, 30)};
+  }
 `;
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export const toastSettings: ToastOptions<{}> = {
   position: 'top-right',
   autoClose: 1000,

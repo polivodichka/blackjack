@@ -1,5 +1,6 @@
 import React from 'react';
-import { Rank, Suit, SuitCard } from '../../types.ds';
+
+import { Rank, Suit, SuitCard } from '../../../types.ds';
 import { CardStyled } from './Card.styled';
 
 type CardProps = {

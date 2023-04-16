@@ -1,16 +1,27 @@
-import { action, computed, makeObservable, observable } from 'mobx';
+import { makeObservable } from 'mobx';
+import { observable } from 'mobx';
+import { computed } from 'mobx';
+import { action } from 'mobx';
 
+import { isObjectsEqual } from '../utils/isObjectsEqual';
+import { socket } from '../server/socket';
+import { ModalTypes } from '../types.ds';
+import { SocketOn } from '../types.ds';
+import { IPlayer } from '../types.ds';
+import { IModal } from '../types.ds';
+import { ITable } from '../types.ds';
+import { Dealer } from './dealer';
 import { Player } from './player';
 import { Table } from './table';
-import { socket } from '../server/socket';
-import { IPlayer, ITable, SocketOn } from '../types.ds';
 import { Card } from './card';
-import { Dealer } from './dealer';
-import { isObjectsEqual } from '../utils/isObjectsEqual';
 
 export class Game {
   @observable public player: Player | null = null;
   @observable public table: Table | null = null;
+  @observable public modal: IModal = {
+    type: ModalTypes.CreateOrJoin,
+    hide: false,
+  };
 
   public constructor() {
     makeObservable(this);
@@ -22,6 +33,13 @@ export class Game {
     socket.on(SocketOn.betUpdate, (playersStr) =>
       this.updateAllPlayersArray(JSON.parse(playersStr))
     );
+    socket.on(SocketOn.balanceToppedUp, (playerStr) => {
+      const playerObj = JSON.parse(playerStr) as IPlayer;
+      const player = this.findPlayerById(playerObj.id);
+      if (player) {
+        player.update(playerObj);
+      }
+    });
 
     socket.on(SocketOn.dealt, (tableStr) => this.handleTableUpdate(tableStr));
 
@@ -46,6 +64,7 @@ export class Game {
       ) {
         this.table.dealer = null;
       }
+      this.modal.hide = true;
     });
   }
 
@@ -54,10 +73,8 @@ export class Game {
   }
 
   @action.bound public onTableCreated(table: ITable, player: IPlayer): void {
-    console.log(player);
     this.table = new Table(table.id);
     this.updateTableInfo(table);
-    console.log(this);
     this.player = this.findPlayerById(player.id) ?? null;
   }
 
@@ -89,11 +106,9 @@ export class Game {
   }
 
   private updateAllPlayersArray(source: IPlayer[]) {
-    console.log('source', source);
     const target: IPlayer[] = JSON.parse(
       JSON.stringify(this.table?.allPlayers)
     ) as IPlayer[];
-    console.log(target, source);
 
     source.forEach((player) => {
       const findedObjPlayer = target.find(
@@ -159,3 +174,6 @@ export class Game {
 }
 
 export const game = new Game();
+export const gTable = game.table;
+export const gPlayer = game.player;
+export const gModal = game.modal;

@@ -1,18 +1,20 @@
-import { observer } from 'mobx-react-lite';
 import React, { useCallback, MouseEvent } from 'react';
-import { Player } from '../../store/player';
-import { game } from '../../store/game';
-import { Bet } from '../BetPanel/Bet';
-import { CardComponent } from '../Card/CardComponent';
+import { observer } from 'mobx-react-lite';
+
 import {
-  CardsTotal,
+  OnePlayerWrapper,
   CardsWrapper,
   ChipsWrapper,
-  OnePlayerWrapper,
+  CardsTotal,
 } from './Spot.styled';
-import { socket } from '../../server/socket';
-import { SocketEmit } from '../../types.ds';
-import { getBetColor } from '../../utils/getBetColor';
+import { getBetColor } from '../../../utils/getBetColor';
+import { CardComponent } from '../Card/CardComponent';
+import { Color } from '../../../constants/constants';
+import { socket } from '../../../server/socket';
+import { Player } from '../../../store/player';
+import { SocketEmit } from '../../../types.ds';
+import { game } from '../../../store/game';
+import { Bet } from '../BetPanel/Bet';
 
 type PlayerComponentProps = {
   player: Player;
@@ -25,7 +27,7 @@ export const PlayerComponent: React.FC<PlayerComponentProps> = observer(
         e.stopPropagation();
         if (
           !game.table?.roundIsStarted &&
-          game.table?.canBetAtThisSpot(spotId)
+          game.player?.canBetAtThisSpot(spotId)
         ) {
           socket.emit(SocketEmit.remove_bet, game.table?.id, player.id, index);
         }
@@ -33,13 +35,20 @@ export const PlayerComponent: React.FC<PlayerComponentProps> = observer(
       [player.id, spotId]
     );
 
+    const activeClassName = player.id === game.table?.currentPlayer?.id ? 'active' : '';
+
     return (
       <OnePlayerWrapper
-        className={player.id === game.table?.currentPlayer?.id ? 'active' : ''}
+        className={activeClassName}
       >
         <ChipsWrapper>
           {!!player.insuranceBet && (
-            <Bet value={player.insuranceBet} color="#ccff00" size={40} />
+            <Bet
+              value={player.insuranceBet}
+              color={Color.MainAccent}
+              size={40}
+              active={false}
+            />
           )}
         </ChipsWrapper>
         <ChipsWrapper>
@@ -50,6 +59,7 @@ export const PlayerComponent: React.FC<PlayerComponentProps> = observer(
               onBetSet={handleRemoveBet(index)}
               color={getBetColor(bet)}
               size={40}
+              active={false}
             />
           ))}
         </ChipsWrapper>

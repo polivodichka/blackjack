@@ -1,4 +1,5 @@
 import React from 'react';
+
 import { ChipStyled } from './BetPanel.styled';
 
 type BetProps = {
@@ -6,18 +7,18 @@ type BetProps = {
   onBetSet?: (e: React.MouseEvent<HTMLElement>) => void;
   color: string;
   size: number;
-  className?: string;
+  active: boolean;
 };
 export const Bet: React.FC<BetProps> = ({
   value,
   onBetSet = () => {},
   color,
   size,
-  className,
+  active,
 }) => {
   return (
     <ChipStyled
-      className={className ?? ''}
+      className={active ? 'active' : ''}
       color={color}
       bet={value}
       onClick={onBetSet}
