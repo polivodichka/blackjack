@@ -59,12 +59,12 @@ export const EnterForm: React.FC = () => {
       if (game.table && game.player) {
         navigate(`/table?id=${game.table.id}`);
       }
-      game.modal.hide = true;
+      game.modalUpdate(true);
     });
 
     socket.on(SocketOn.tableJoined, (table) => {
       game.onTableJoined(JSON.parse(table));
-      game.modal.hide = true;
+      game.modalUpdate(true);
     });
 
     socket.on(SocketOn.error, () => {

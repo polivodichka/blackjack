@@ -18,7 +18,7 @@ export const ModalsManager: React.FC = observer(() => {
   const ModalComponent = MODAL_COMPONENTS[game.modal.type];
   const handleHide = () => {
     if (ModalComponent === MODAL_COMPONENTS.Balance) {
-      game.modal.hide = true;
+      game.modalUpdate(true)
     }
   };
   return ModalComponent ? (

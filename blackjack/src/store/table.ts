@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/lines-between-class-members */
 import { makeObservable } from 'mobx';
 import { observable } from 'mobx';
 import { computed } from 'mobx';
@@ -17,10 +18,10 @@ import { game } from './game';
 export class Table {
   public readonly id: string;
   @observable public allPlayers: Player[] = [];
-  @observable public dealer: Dealer | null = null;
-  @observable public currentPlayerIndex: number | null = null;
-  @observable public roundIsStarted = false;
   @observable public currentBetBtnValue: TBet = 2;
+  @observable private _dealer: Dealer | null = null;
+  @observable private _currentPlayerIndex: number | null = null;
+  @observable private _roundIsStarted = false;
 
   public constructor(id: string = nanoid()) {
     this.id = id;
@@ -44,8 +45,8 @@ export class Table {
   }
 
   @computed public get currentPlayer(): Player | null {
-    return typeof this.currentPlayerIndex === 'number'
-      ? this.players[this.currentPlayerIndex]
+    return typeof this._currentPlayerIndex === 'number'
+      ? this.players[this._currentPlayerIndex]
       : null;
   }
 
@@ -68,11 +69,11 @@ export class Table {
           )
       ) &&
       Object.keys(this.spots).length < 5 &&
-      !this.dealer
+      !this._dealer
     ) {
       return GameStatus.waitBets;
     }
-    if (this.dealer?.hand.length) {
+    if (this._dealer?.hand.length) {
       return GameStatus.playing;
     }
     if (!!this.playingPlayers.length) {
@@ -84,16 +85,36 @@ export class Table {
   @computed public get ableToStartGame(): boolean {
     return (
       this.players.length > 0 &&
-      !this.dealer &&
+      !this._dealer &&
       this.players.every((player) => player.betChipsTotal) &&
       this.gameStatus === GameStatus.readyToStart &&
       this.playingPlayers.length === 0
     );
   }
 
-
   @computed public get needInsurance(): boolean {
-    return Boolean(this.dealer?.hand.find((card) => card.rank === Rank.ace));
+    return Boolean(this._dealer?.hand.find((card) => card.rank === Rank.ace));
+  }
+
+  @computed public set dealer(value: Dealer | null) {
+    this._dealer = value;
+  }
+  public get dealer(): Dealer | null {
+    return this._dealer;
+  }
+
+  @computed public set roundIsStarted(value: boolean) {
+    this._roundIsStarted = value;
+  }
+  public get roundIsStarted(): boolean {
+    return this._roundIsStarted;
+  }
+
+  @computed public set currentPlayerIndex(value: number | null) {
+    this._currentPlayerIndex = value;
+  }
+  public get currentPlayerIndex(): number | null {
+    return this._currentPlayerIndex;
   }
 
   @action.bound public addPlayer(player: IPlayer): Player {

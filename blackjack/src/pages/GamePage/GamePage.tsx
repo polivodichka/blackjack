@@ -4,7 +4,11 @@ import React, { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { HandySvg } from 'handy-svg';
 
-import { ButtonWithSvg, StyledBtn, toastSettings } from '../../components/App/App.styled';
+import {
+  ButtonWithSvg,
+  toastSettings,
+  StyledBtn,
+} from '../../components/App/App.styled';
 import { GameActionsComponent } from './GameActions/GameActionsComponent';
 import { BalanceStyled, OptionsPanel, Wrapper } from './GamePage.styled';
 import { DealerSpotComponent } from './PlayerSpot/DealerSpotComponent';
@@ -22,17 +26,15 @@ export const GamePage: React.FC = observer(() => {
   useEffect(() => {
     if (!(game.table && game.player)) {
       navigate('/');
-      game.modal.hide = false;
-      game.modal.type = ModalTypes.CreateOrJoin;
+      game.modalUpdate(false, ModalTypes.CreateOrJoin);
     }
   }, [navigate]);
 
   useEffect(() => {
     if (game.player?.roundIsEnded) {
-      game.modal.type = ModalTypes.GameEnd;
-      game.modal.hide = false;
+      game.modalUpdate(false, ModalTypes.GameEnd);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game.player?.roundIsEnded]);
 
   const handlePlayBtn = () => {
@@ -50,8 +52,7 @@ export const GamePage: React.FC = observer(() => {
       });
   };
   const handleTopUpClick = () => {
-    game.modal.type = ModalTypes.Balance;
-    game.modal.hide = false;
+    game.modalUpdate(false, ModalTypes.Balance);
   };
 
   const spotsZone = (

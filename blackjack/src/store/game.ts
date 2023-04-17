@@ -65,7 +65,7 @@ export class Game {
         this.table.dealer = null;
       }
       if (this.player?.handIsEmpty) {
-        this.modal.hide = true;
+        this.modalUpdate(true);
       }
     });
   }
@@ -82,6 +82,14 @@ export class Game {
 
   @action.bound public onTableJoined(table: ITable): void {
     this.updateAllPlayersArray(table.allPlayers);
+  }
+
+  @action.bound public modalUpdate(
+    hide: boolean,
+    type = this.modal.type
+  ): void {
+    this.modal.type = type;
+    this.modal.hide = hide;
   }
 
   public findPlayerById(playerId: string): Player | undefined {
@@ -107,7 +115,7 @@ export class Game {
     this.updateTableInfo(table);
   }
 
-  private updateAllPlayersArray(source: IPlayer[]) {
+  @action.bound private updateAllPlayersArray(source: IPlayer[]) {
     const target: IPlayer[] = JSON.parse(
       JSON.stringify(this.table?.allPlayers)
     ) as IPlayer[];
@@ -176,6 +184,3 @@ export class Game {
 }
 
 export const game = new Game();
-export const gTable = game.table;
-export const gPlayer = game.player;
-export const gModal = game.modal;

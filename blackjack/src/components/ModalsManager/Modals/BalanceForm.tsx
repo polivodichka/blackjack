@@ -42,14 +42,14 @@ export const BalanceForm: React.FC = () => {
   };
   const onCancel = () => {
     reset();
-    game.modal.hide = true;
+    game.modalUpdate(true);
   };
 
   useEffect(() => {
     socket.on(SocketOn.balanceToppedUp, () => {
       reset();
       setDisabled(false);
-      game.modal.hide = true;
+      game.modalUpdate(true)
     });
   }, [reset]);
 

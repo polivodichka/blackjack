@@ -9,9 +9,9 @@ import { game } from '../../../store/game';
 export const GameEndForm: React.FC = () => {
   const handleEndGame = (action: EndGameActions) => (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
-    const { table, player, modal } = game;
+    const { table, player } = game;
     socket.emit(SocketEmit.end_game, table?.id, player?.id, action);
-    modal.hide = true;
+    game.modalUpdate(true);
   };
 
   const handleFormSubmit = (event: React.FormEvent<HTMLFormElement>) => {
