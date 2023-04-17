@@ -64,7 +64,9 @@ export class Game {
       ) {
         this.table.dealer = null;
       }
-      this.modal.hide = true;
+      if (this.player?.handIsEmpty) {
+        this.modal.hide = true;
+      }
     });
   }
 
