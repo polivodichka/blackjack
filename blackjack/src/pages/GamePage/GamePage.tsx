@@ -63,11 +63,14 @@ export const GamePage: React.FC = observer(() => {
     </SpotsZone>
   );
 
-  const playButtonOrGameStatus = game.table?.ableToStartGame ? (
-    <StyledBtn onClick={handlePlayBtn}>PLAY</StyledBtn>
-  ) : (
-    <div>{game.table?.gameStatus}</div>
-  );
+  const playButtonOrGameStatus =
+    game.table?.ableToStartGame && game.player?.betChipsTotalWithChildren ? (
+      <StyledBtn onClick={handlePlayBtn}>PLAY</StyledBtn>
+    ) : game.table?.ableToStartGame ? (
+      <div>No empty spots left :(</div>
+    ) : (
+      <div>{game.table?.gameStatus}</div>
+    );
 
   const gameActionsComponent = game.table?.roundIsStarted && (
     <GameActionsComponent />

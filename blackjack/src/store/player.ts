@@ -13,15 +13,15 @@ import { Card } from './card';
 import { game } from './game';
 
 export class Player extends Dealer {
-  @observable public name: string;
   @observable public betChips: TBet[];
   @observable public insuranceBet: number | null;
   @observable public parentAfterSplitPlayer: Player | null;
   @observable public parentPlayer: Player | null;
   @observable private _balance: number;
+  @observable private _name: string;
 
   public constructor(
-    name: string,
+    _name: string,
     spotId: string,
     hand: Card[],
     roundIsEnded: boolean,
@@ -33,7 +33,7 @@ export class Player extends Dealer {
     id: string
   ) {
     super(spotId, hand, roundIsEnded, id);
-    this.name = name;
+    this._name = _name;
     this.betChips = betChips;
     this.insuranceBet = insuranceBet;
     this.parentAfterSplitPlayer = parentAfterSplitPlayer;
@@ -46,6 +46,24 @@ export class Player extends Dealer {
     return this.betChips.length
       ? (this.betChips as number[]).reduce((bet1, bet2) => bet1 + bet2)
       : 0;
+  }
+
+  @computed public get betChipsTotalWithChildren(): number {
+    if (game.table) {
+      const players = game.table.allPlayers.filter(
+        (player) =>
+          player.id === this.id ||
+          player.parentAfterSplitPlayer?.id === this.id ||
+          player.parentPlayer?.id === this.id
+      );
+      const chips = players
+        .map((player) => player.betChips)
+        .reduce((a, b) => a.concat(b));
+      return chips.length
+        ? (chips as number[]).reduce((bet1, bet2) => bet1 + bet2)
+        : 0;
+    }
+    return 0;
   }
 
   @computed public get balance(): number {
@@ -162,6 +180,16 @@ export class Player extends Dealer {
     }
   }
 
+  @computed public set name(value: string) {
+    this._name = value;
+  }
+
+  public get name(): string {
+    return (
+      this._name.charAt(0).toUpperCase() + this._name.slice(1).toLowerCase()
+    );
+  }
+
   @override public update(player: IPlayer): Player {
     const hand = player.hand
       ? player.hand.map((card) => new Card(card.suit, card.rank, card.value))
@@ -194,8 +222,8 @@ export class Player extends Dealer {
     if (this.insuranceBet !== player.insuranceBet) {
       this.insuranceBet = player.insuranceBet;
     }
-    if (this.name !== player.name) {
-      this.name = player.name;
+    if (this._name !== player._name) {
+      this._name = player._name;
     }
 
     this.hand = hand;

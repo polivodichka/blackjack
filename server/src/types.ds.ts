@@ -55,6 +55,7 @@ export interface IPlayer {
   parentAfterSplitPlayer: IPlayer | null;
   parentPlayer: IPlayer | null;
   _balance: number;
+  _name: string;
 }
 export interface ITable {
   id: string;
@@ -80,7 +81,7 @@ export enum EndGameActions {
   newBet,
 }
 
-export enum SocketOn {
+export enum SocketEmit {
   tableCreated = 'tableCreated',
   tableJoined = 'tableJoined',
   actionMade = 'actionMade',
@@ -90,8 +91,11 @@ export enum SocketOn {
   dealerMadeAction = 'dealerMadeAction',
   winnersCounted = 'winnersCounted',
   gameEnded = 'gameEnded',
+  error = 'error',
+  message = 'message',
+  balanceToppedUp = 'balanceToppedUp',
 }
-export enum SocketEmit {
+export enum SocketOn {
   join_table = 'join_table',
   create_table = 'create_table',
   action = 'action',
@@ -99,5 +103,15 @@ export enum SocketEmit {
   end_game = 'end_game',
   remove_bet = 'remove_bet',
   set_bet = 'set_bet',
+  topup_balance = 'topup_balance',
+  connect = 'connect',
+  disconnect = 'disconnect',
 }
 export type TBet = 2 | 5 | 10 | 20 | 40 | 60 | 100;
+
+export enum BaseMessages {
+  SmthWentWrong = 'Something went wrong.',
+  NoTable = 'No such table!',
+  NoMoney = 'Insufficient funds!',
+  PlayerLost = 'The player is lost, please re login.',
+}

@@ -55,7 +55,7 @@ export interface IPlayer {
   parentAfterSplitPlayer: IPlayer | null;
   parentPlayer: IPlayer | null;
   _balance: number;
-  name: string;
+  _name: string;
 }
 export interface ITable {
   id: string;

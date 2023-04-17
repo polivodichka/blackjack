@@ -10,7 +10,7 @@ import { TBet } from '../types.ds';
 const socketWithoutTypes: Socket = io('http://localhost:5000');
 
 interface SocketEventsOn {
-  [SocketOn.tableCreated]: (player: string, table: string) => void;
+  [SocketOn.tableCreated]: (table: string, player: string) => void;
   [SocketOn.tableJoined]: (table: string) => void;
   [SocketOn.disconnectPlayer]: (table: string) => void;
   [SocketOn.betUpdate]: (players: string) => void;

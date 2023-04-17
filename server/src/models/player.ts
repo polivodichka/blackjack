@@ -8,25 +8,24 @@ import { socket } from '../server';
 import { v4 } from 'uuid';
 
 export class Player extends Dealer {
-  public name: string;
   public betChips: TBet[] = [];
   public insuranceBet: number | null = null;
   public parentAfterSplitPlayer: Player | null = null;
   public parentPlayer: Player | null = null;
   public roundIsEnded = false;
-
   public readonly id: string;
   private _balance: number;
+  private _name: string;
 
   public constructor(
-    name: string,
+    _name: string,
     tableId: string,
     id: string = v4(),
     spotId: string | null = null,
     _balance?: number
   ) {
     super(tableId);
-    this.name = name;
+    this._name = _name;
     this.spotId = spotId;
     this.id = id;
     this._balance = _balance ?? 100;
@@ -80,13 +79,23 @@ export class Player extends Dealer {
   }
 
   public get balance(): number {
-    if (this.playerType !== PlayerType.parent && this.parentPlayer)
-    {return this.parentPlayer._balance;}
-    else {return this._balance;}
+    if (this.playerType !== PlayerType.parent && this.parentPlayer) {
+      return this.parentPlayer._balance;
+    } else {
+      return this._balance;
+    }
   }
 
   public set balance(amount: number) {
     this._balance = amount;
+  }
+
+  public get name(): string {
+    return this._name.charAt(0).toUpperCase() + this._name.slice(1).toLowerCase();
+  }
+
+  public set name(value: string) {
+    this._name = value;
   }
 
   public increaseBalance(amount: number): void {

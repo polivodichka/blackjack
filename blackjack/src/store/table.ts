@@ -137,7 +137,7 @@ export class Table {
     }
 
     const newPlayer = new Player(
-      player.name,
+      player._name,
       player.spotId,
       hand,
       player.roundIsEnded,
