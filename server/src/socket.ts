@@ -259,6 +259,10 @@ export class ServerSocket {
           }
         } catch (error) {
           handleError(error);
+          const table = this.tables[tableId];
+          this.io
+            .to(table.id)
+            .emit(SocketEmit.ActionMade, JSON.stringify(table));
         }
       }
     );
