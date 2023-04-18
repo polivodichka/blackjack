@@ -126,7 +126,7 @@ export class Player extends Dealer {
     );
   }
 
-  @computed private get state(): PlayerGameState {
+  @computed public get state(): PlayerGameState {
     if (this.handTotal > 21) {
       return PlayerGameState.Bust;
     } else if (this.handTotal === 21 && !this.roundIsStarted) {

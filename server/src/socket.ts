@@ -161,6 +161,11 @@ export class ServerSocket {
 
         table.deal();
 
+        const player = table.currentPlayer;
+        if (player?.isBJ || player?.isBust || player?.isNaturalBJ) {
+          table.stand();
+        }
+
         console.info(`${SocketEmit.Dealt} ${table.id}`);
         //send
         this.io.to(table.id).emit(SocketEmit.Dealt, JSON.stringify(table));
@@ -216,6 +221,10 @@ export class ServerSocket {
             case ActionType.SkipInsurance:
               player.insurance(0);
               break;
+          }
+
+          if (player.isBJ || player.isBust || player.isNaturalBJ) {
+            table.stand();
           }
 
           console.info(`${SocketEmit.ActionMade} ${player.parentPlayer?.id}`);
@@ -275,10 +284,7 @@ export class ServerSocket {
           );
           //send
           socket.emit(SocketEmit.BalanceToppedUp, JSON.stringify(player));
-          socket.emit(
-            SocketEmit.Message,
-            'Balance successfully topped up!'
-          );
+          socket.emit(SocketEmit.Message, 'Balance successfully topped up!');
         } catch (error) {
           handleError(error);
         }

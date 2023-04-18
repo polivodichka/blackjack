@@ -2,8 +2,8 @@ import { observer } from 'mobx-react-lite';
 import React, { useMemo } from 'react';
 
 import { PlayersWrapper, SpotStyled, OnePlayerWrapper } from './Spot.styled';
+import { PlayerGameState, SocketEmit } from '../../../types.ds';
 import { PlayerComponent } from './PlayerComponent';
-import { SocketEmit } from '../../../types.ds';
 import { game } from '../../../store/game';
 
 type PlayerProps = {
@@ -43,11 +43,15 @@ export const PlayerSpotComponent: React.FC<PlayerProps> = observer(({ id }) => {
         <PlayersWrapper>
           {gameTable?.spots[id] &&
             gameTable.spots[id].map((player) => (
-              <PlayerComponent
-                key={`${player.id}-player`}
-                player={player}
-                spotId={id}
-              />
+              <OnePlayerWrapper key={`${player.id}-player`}>
+                <div>
+                  {(player.state === PlayerGameState.Blackjack ||
+                    player.state === PlayerGameState.NaturalBlackjack ||
+                    player.state === PlayerGameState.Bust) &&
+                    player.state}
+                </div>
+                <PlayerComponent player={player} spotId={id} />
+              </OnePlayerWrapper>
             ))}
         </PlayersWrapper>
       </SpotStyled>

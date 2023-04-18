@@ -26,7 +26,7 @@ export enum Rank {
 export enum PlayerGameState {
   Bust = 'Bust',
   Blackjack = 'Blackjack',
-  NaturalBlackjack = 'NaturalBlackjack',
+  NaturalBlackjack = 'Natural blackjack',
   Active = 'Active',
   Error = 'Error',
 }
