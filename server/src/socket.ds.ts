@@ -7,7 +7,11 @@ import { SocketOn } from './types.ds';
 import { TBet } from './types.ds';
 
 interface SocketEventsEmit {
-  [SocketEmit.tableCreated]: (table: string, player: string) => void;
+  [SocketEmit.tableCreated]: (
+    table: string,
+    player: string,
+    chat: string
+  ) => void;
   [SocketEmit.tableJoined]: (table: string) => void;
   [SocketEmit.disconnectPlayer]: (table: string) => void;
   [SocketEmit.betUpdate]: (players: string) => void;
@@ -19,6 +23,7 @@ interface SocketEventsEmit {
   [SocketEmit.error]: (message: string) => void;
   [SocketEmit.message]: (message: string) => void;
   [SocketEmit.balanceToppedUp]: (player: string) => void;
+  [SocketEmit.chatServerMessage]: (message: string) => void;
 }
 
 type SocketEventNamesEmit = keyof SocketEventsEmit;
@@ -60,6 +65,7 @@ interface SocketEventsOn {
   ) => void;
   [SocketOn.connect]: () => void;
   [SocketOn.disconnect]: () => void;
+  [SocketOn.chat_send_message]: (tableId: string, message: string) => void;
 }
 
 type SocketEventNamesOn = keyof SocketEventsOn;

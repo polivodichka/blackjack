@@ -17,6 +17,7 @@ import { ModalTypes, SocketEmit } from '../../types.ds';
 import { SpotsZone } from './PlayerSpot/Spot.styled';
 import moneyIcon from '../../assets/money.svg';
 import { BetPanel } from './BetPanel/BetPanel';
+import chatIcon from '../../assets/chat.svg';
 import { socket } from '../../server/socket';
 import copyIcon from '../../assets/copy.svg';
 import { game } from '../../store/game';
@@ -51,8 +52,8 @@ export const GamePage: React.FC = observer(() => {
         toast.error('Failed to copy!', toastSettings);
       });
   };
-  const handleTopUpClick = () => {
-    game.modalUpdate(false, ModalTypes.Balance);
+  const handleModalOpen = (type: ModalTypes) => () => {
+    game.modalUpdate(false, type);
   };
 
   const spotsZone = (
@@ -84,16 +85,23 @@ export const GamePage: React.FC = observer(() => {
 
   const topUpBalanceBtn = (
     <ButtonWithSvg
-      onClick={handleTopUpClick}
+      onClick={handleModalOpen(ModalTypes.Balance)}
       disabled={game.table?.roundIsStarted}
     >
       <HandySvg src={moneyIcon} width="17" height="17" />
     </ButtonWithSvg>
   );
+  const chatBtn = (
+    <ButtonWithSvg onClick={handleModalOpen(ModalTypes.Chat)}>
+      <HandySvg src={chatIcon} width="17" height="17" />
+    </ButtonWithSvg>
+  );
 
   return (
     <Wrapper>
-      <OptionsPanel> {copyTableIdBtn}</OptionsPanel>
+      <OptionsPanel>
+        {copyTableIdBtn} {chatBtn}
+      </OptionsPanel>
       <BalanceStyled>
         <div>{game.player?.balance}</div>
         {topUpBalanceBtn}

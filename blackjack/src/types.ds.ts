@@ -101,6 +101,7 @@ export enum SocketOn {
   error = 'error',
   message = 'message',
   balanceToppedUp = 'balanceToppedUp',
+  chatServerMessage = 'chatServerMessage',
 }
 export enum SocketEmit {
   join_table = 'join_table',
@@ -111,6 +112,7 @@ export enum SocketEmit {
   remove_bet = 'remove_bet',
   set_bet = 'set_bet',
   topup_balance = 'topup_balance',
+  chat_send_message = 'chat_send_message',
 }
 export type TBet = 2 | 5 | 10 | 20 | 40 | 60 | 100;
 
@@ -118,9 +120,22 @@ export enum ModalTypes {
   CreateOrJoin = 'CreateOrJoin',
   Balance = 'Balance',
   GameEnd = 'GameEnd',
+  Chat = 'Chat',
 }
 
 export interface IModal {
   type: ModalTypes;
   hide: boolean;
+}
+
+export interface IMessage {
+  id: string;
+  text: string[];
+  playerId: string;
+  playerName: string;
+  time: string;
+}
+
+export interface IChat {
+  messages: IMessage[];
 }

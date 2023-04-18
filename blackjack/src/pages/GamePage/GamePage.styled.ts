@@ -44,4 +44,5 @@ export const OptionsPanel = styled.div`
   top: 20px;
   display: flex;
   align-items: center;
+  gap: 5px;
 `;

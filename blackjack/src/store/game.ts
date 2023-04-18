@@ -10,14 +10,17 @@ import { SocketOn } from '../types.ds';
 import { IPlayer } from '../types.ds';
 import { IModal } from '../types.ds';
 import { ITable } from '../types.ds';
+import { IChat } from '../types.ds';
 import { Dealer } from './dealer';
 import { Player } from './player';
 import { Table } from './table';
 import { Card } from './card';
+import { Chat } from './chat';
 
 export class Game {
   @observable public player: Player | null = null;
   @observable public table: Table | null = null;
+  @observable public chat: Chat | null = null;
   @observable public modal: IModal = {
     type: ModalTypes.CreateOrJoin,
     hide: false,
@@ -74,10 +77,19 @@ export class Game {
     return !!(this.player && this.table);
   }
 
-  @action.bound public onTableCreated(table: ITable, player: IPlayer): void {
+  @action.bound public onTableCreated(
+    table: ITable,
+    player: IPlayer,
+    chat: IChat
+  ): void {
     this.table = new Table(table.id);
+    this.chat = new Chat();
     this.updateTableInfo(table);
     this.player = this.findPlayerById(player.id) ?? null;
+
+    chat.messages.forEach((message) => {
+      this.chat?.addMessage(message);
+    });
   }
 
   @action.bound public onTableJoined(table: ITable): void {

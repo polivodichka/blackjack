@@ -54,8 +54,12 @@ export const EnterForm: React.FC = () => {
   );
 
   useEffect(() => {
-    socket.on(SocketOn.tableCreated, (table, player) => {
-      game.onTableCreated(JSON.parse(table), JSON.parse(player));
+    socket.on(SocketOn.tableCreated, (table, player, chat) => {
+      game.onTableCreated(
+        JSON.parse(table),
+        JSON.parse(player),
+        JSON.parse(chat)
+      );
       if (game.table && game.player) {
         navigate(`/table?id=${game.table.id}`);
       }

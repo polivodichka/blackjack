@@ -10,7 +10,11 @@ import { TBet } from '../types.ds';
 const socketWithoutTypes: Socket = io('http://localhost:5000');
 
 interface SocketEventsOn {
-  [SocketOn.tableCreated]: (table: string, player: string) => void;
+  [SocketOn.tableCreated]: (
+    table: string,
+    player: string,
+    chat: string
+  ) => void;
   [SocketOn.tableJoined]: (table: string) => void;
   [SocketOn.disconnectPlayer]: (table: string) => void;
   [SocketOn.betUpdate]: (players: string) => void;
@@ -22,6 +26,7 @@ interface SocketEventsOn {
   [SocketOn.error]: (message: string) => void;
   [SocketOn.message]: (message: string) => void;
   [SocketOn.balanceToppedUp]: (player: string) => void;
+  [SocketOn.chatServerMessage]: (message: string) => void;
 }
 
 type SocketEventNamesOn = keyof SocketEventsOn;
@@ -59,8 +64,9 @@ interface SocketEventsEmit {
   [SocketEmit.topup_balance]: (
     balance: number,
     tableId: string,
-    playerId: string,
+    playerId: string
   ) => void;
+  [SocketEmit.chat_send_message]: (table: string, message: string) => void;
 }
 
 type SocketEventNamesEmit = keyof SocketEventsEmit;
@@ -71,6 +77,7 @@ interface SocketWithTypedEvents<T extends keyof SocketEventsEmit> {
     listener: SocketEventsOn[E]
   ): Socket;
   emit<E extends T>(event: E, ...args: Parameters<SocketEventsEmit[E]>): Socket;
+  off: Socket['off'];
 }
 
 export const socket: SocketWithTypedEvents<SocketEventNamesEmit> =

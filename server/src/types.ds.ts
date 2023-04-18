@@ -94,6 +94,7 @@ export enum SocketEmit {
   error = 'error',
   message = 'message',
   balanceToppedUp = 'balanceToppedUp',
+  chatServerMessage = 'chatServerMessage',
 }
 export enum SocketOn {
   join_table = 'join_table',
@@ -106,6 +107,7 @@ export enum SocketOn {
   topup_balance = 'topup_balance',
   connect = 'connect',
   disconnect = 'disconnect',
+  chat_send_message = 'chat_send_message',
 }
 export type TBet = 2 | 5 | 10 | 20 | 40 | 60 | 100;
 
@@ -114,4 +116,14 @@ export enum BaseMessages {
   NoTable = 'No such table!',
   NoMoney = 'Insufficient funds!',
   PlayerLost = 'The player is lost, please re login.',
+  ChatLost = 'The chat is lost, please re login.',
+}
+
+
+export interface IMessage {
+  id: string;
+  text: string;
+  playerId: string;
+  playerName: string;
+  time: string;
 }

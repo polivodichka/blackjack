@@ -1,6 +1,8 @@
 import { ActionType } from './types.ds';
 import { BaseMessages } from './types.ds';
+import { Chat } from './models/chat';
 import { EndGameActions } from './types.ds';
+import { IMessage } from './types.ds';
 import { MyServer } from './socket.ds';
 import { MySocket } from './socket.ds';
 import { Player } from './models/player';
@@ -15,10 +17,12 @@ export class ServerSocket {
   public io: MyServer;
 
   public tables: Record<string, Table>;
+  public chats: Record<string, Chat>;
 
   public constructor(server: HttpServer) {
     ServerSocket.instance = this;
     this.tables = {};
+    this.chats = {};
     this.io = new Server(server, {
       serveClient: false,
       pingInterval: 10000,
@@ -39,8 +43,10 @@ export class ServerSocket {
       try {
         const table = new Table();
         const player = table.addPlayer(name, '', balance, socket.id);
+        const chat = new Chat();
 
         this.tables[table.id] = table;
+        this.chats[table.id] = chat;
         await socket.join(table.id);
 
         console.info(`${SocketEmit.tableCreated}: ${table.id}`);
@@ -48,7 +54,8 @@ export class ServerSocket {
         socket.emit(
           SocketEmit.tableCreated,
           JSON.stringify(table),
-          JSON.stringify(player)
+          JSON.stringify(player),
+          JSON.stringify(chat)
         );
       } catch (error) {
         handleError(error);
@@ -60,6 +67,7 @@ export class ServerSocket {
         if (!table) {
           throw new Error(BaseMessages.NoTable);
         }
+        const chat = this.chats[tableId];
 
         const player = table.addPlayer(name, '', balance, socket.id);
 
@@ -76,7 +84,8 @@ export class ServerSocket {
         socket.emit(
           SocketEmit.tableCreated,
           JSON.stringify(table),
-          JSON.stringify(player)
+          JSON.stringify(player),
+          JSON.stringify(chat)
         );
       } catch (error) {
         handleError(error);
@@ -152,7 +161,7 @@ export class ServerSocket {
 
         table.deal();
 
-        console.info(`SocketEmit.dealt ${table.id}`);
+        console.info(`${SocketEmit.dealt} ${table.id}`);
         //send
         this.io.to(table.id).emit(SocketEmit.dealt, JSON.stringify(table));
       } catch (error) {
@@ -275,6 +284,32 @@ export class ServerSocket {
         }
       }
     );
+    socket.on(SocketOn.chat_send_message, (tableId, messageStr) => {
+      try {
+        const message = JSON.parse(messageStr) as IMessage;
+        const table = this.tables[tableId];
+
+        if (!table) {
+          throw new Error(BaseMessages.NoTable);
+        }
+        let chat = this.chats[tableId];
+
+        if (!chat) {
+          this.chats[tableId] = new Chat();
+          chat = this.chats[tableId];
+        }
+
+        const newMessage = chat.addMessage(message);
+
+        console.info(`Message ${table.id}`);
+        //send
+        this.io
+          .to(table.id)
+          .emit(SocketEmit.chatServerMessage, JSON.stringify(newMessage));
+      } catch (error) {
+        handleError(error);
+      }
+    });
     socket.on(
       SocketOn.end_game,
       (tableId: string, playerId: string, action: EndGameActions) => {
