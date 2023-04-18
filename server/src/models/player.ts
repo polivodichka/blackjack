@@ -13,32 +13,29 @@ export class Player extends Dealer {
   public parentAfterSplitPlayer: Player | null = null;
   public parentPlayer: Player | null = null;
   public roundIsEnded = false;
-  public readonly id: string;
-  private _balance: number;
-  private _name: string;
 
   public constructor(
-    _name: string,
+    private _name: string,
     tableId: string,
-    id: string = v4(),
+    public readonly id: string = v4(),
     spotId: string | null = null,
-    _balance?: number
+    private _balance: number = 100
   ) {
     super(tableId);
     this._name = _name;
     this.spotId = spotId;
     this.id = id;
-    this._balance = _balance ?? 100;
+    this._balance = _balance;
   }
 
   public get playerType(): PlayerType {
     if (this.parentPlayer) {
-      return PlayerType.player;
+      return PlayerType.Player;
     }
     if (this.parentAfterSplitPlayer) {
-      return PlayerType.subplayer;
+      return PlayerType.Subplayer;
     }
-    return PlayerType.parent;
+    return PlayerType.Parent;
   }
 
   private get table(): Table {
@@ -79,7 +76,7 @@ export class Player extends Dealer {
   }
 
   public get balance(): number {
-    if (this.playerType !== PlayerType.parent && this.parentPlayer) {
+    if (this.playerType !== PlayerType.Parent && this.parentPlayer) {
       return this.parentPlayer._balance;
     } else {
       return this._balance;
@@ -91,7 +88,9 @@ export class Player extends Dealer {
   }
 
   public get name(): string {
-    return this._name.charAt(0).toUpperCase() + this._name.slice(1).toLowerCase();
+    return (
+      this._name.charAt(0).toUpperCase() + this._name.slice(1).toLowerCase()
+    );
   }
 
   public set name(value: string) {
@@ -99,7 +98,7 @@ export class Player extends Dealer {
   }
 
   public increaseBalance(amount: number): void {
-    if (this.playerType !== PlayerType.parent && this.parentPlayer) {
+    if (this.playerType !== PlayerType.Parent && this.parentPlayer) {
       this.parentPlayer._balance += amount;
     } else {
       this._balance += amount;
@@ -107,7 +106,7 @@ export class Player extends Dealer {
   }
 
   public decreaseBalance(amount: number): void {
-    if (this.playerType !== PlayerType.parent && this.parentPlayer) {
+    if (this.playerType !== PlayerType.Parent && this.parentPlayer) {
       this.parentPlayer._balance -= amount;
     } else {
       this._balance -= amount;

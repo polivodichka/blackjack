@@ -1,16 +1,16 @@
-import { makeObservable } from 'mobx';
-import { observable } from 'mobx';
-import { computed } from 'mobx';
-import { override } from 'mobx';
-import { action } from 'mobx';
-
+import { Card } from './card';
+import { Dealer } from './dealer';
+import { IPlayer } from '../types.ds';
 import { PlayerGameState } from '../types.ds';
 import { PlayerType } from '../types.ds';
-import { IPlayer } from '../types.ds';
 import { TBet } from '../types.ds';
-import { Dealer } from './dealer';
-import { Card } from './card';
+
+import { action } from 'mobx';
+import { computed } from 'mobx';
 import { game } from './game';
+import { makeObservable } from 'mobx';
+import { observable } from 'mobx';
+import { override } from 'mobx';
 
 export class Player extends Dealer {
   @observable public betChips: TBet[];
@@ -67,17 +67,17 @@ export class Player extends Dealer {
   }
 
   @computed public get balance(): number {
-    return this.playerType !== PlayerType.parent && this.parentPlayer
+    return this.playerType !== PlayerType.Parent && this.parentPlayer
       ? this.parentPlayer._balance
       : this._balance;
   }
 
   @computed public get playerType(): PlayerType {
     return this.parentPlayer
-      ? PlayerType.player
+      ? PlayerType.Player
       : this.parentAfterSplitPlayer
-        ? PlayerType.subplayer
-        : PlayerType.parent;
+        ? PlayerType.Subplayer
+        : PlayerType.Parent;
   }
 
   @computed public get isTurn(): boolean {

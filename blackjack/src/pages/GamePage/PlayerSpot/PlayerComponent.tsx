@@ -10,7 +10,6 @@ import {
 import { getBetColor } from '../../../utils/getBetColor';
 import { CardComponent } from '../Card/CardComponent';
 import { Color } from '../../../constants/constants';
-import { socket } from '../../../server/socket';
 import { Player } from '../../../store/player';
 import { SocketEmit } from '../../../types.ds';
 import { game } from '../../../store/game';
@@ -29,18 +28,17 @@ export const PlayerComponent: React.FC<PlayerComponentProps> = observer(
           !game.table?.roundIsStarted &&
           game.player?.canBetAtThisSpot(spotId)
         ) {
-          socket.emit(SocketEmit.remove_bet, game.table?.id, player.id, index);
+          game.emit[SocketEmit.RemoveBet](player.id, index);
         }
       },
       [player.id, spotId]
     );
 
-    const activeClassName = player.id === game.table?.currentPlayer?.id ? 'active' : '';
+    const activeClassName =
+      player.id === game.table?.currentPlayer?.id ? 'active' : '';
 
     return (
-      <OnePlayerWrapper
-        className={activeClassName}
-      >
+      <OnePlayerWrapper className={activeClassName}>
         <ChipsWrapper>
           {!!player.insuranceBet && (
             <Bet

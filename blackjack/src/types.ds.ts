@@ -1,50 +1,56 @@
 export enum SuitCard {
-  hearts = '♥︎',
-  diamonds = '♦',
-  spades = '♠︎',
-  clubs = '♣',
+  Hearts = '♥︎',
+  Diamonds = '♦',
+  Spades = '♠︎',
+  Clubs = '♣',
 }
 
 export type Suit = keyof typeof SuitCard;
+
 export enum Rank {
-  ace = 'ace',
-  _2 = '2',
-  _3 = '3',
-  _4 = '4',
-  _5 = '5',
-  _6 = '6',
-  _7 = '7',
-  _8 = '8',
-  _9 = '9',
-  _10 = '10',
-  jack = 'jack',
-  queen = 'queen',
-  king = 'king',
+  Ace = 'ace',
+  Two = '2',
+  Three = '3',
+  Four = '4',
+  Five = '5',
+  Six = '6',
+  Seven = '7',
+  Eight = '8',
+  Nine = '9',
+  Ten = '10',
+  Jack = 'jack',
+  Queen = 'queen',
+  King = 'king',
 }
+
 export enum PlayerGameState {
-  Bust,
-  Blackjack,
-  NaturalBlackjack,
-  Active,
-  Error,
+  Bust = 'Bust',
+  Blackjack = 'Blackjack',
+  NaturalBlackjack = 'NaturalBlackjack',
+  Active = 'Active',
+  Error = 'Error',
 }
+
 export enum PlayerType {
-  parent,
-  player,
-  subplayer,
+  Parent = 'Parent',
+  Player = 'Player',
+  Subplayer = 'Subplayer',
 }
+
 export interface ICard {
   id: number;
   rank: Rank;
-  suit: keyof typeof SuitCard;
+  suit: Suit;
   value: number;
 }
+
 export interface IDealer {
   id: string;
   spotId: string;
   hand: ICard[];
   roundIsEnded: boolean;
 }
+
 export interface IPlayer {
   id: string;
   spotId: string;
@@ -57,6 +63,7 @@ export interface IPlayer {
   _balance: number;
   _name: string;
 }
+
 export interface ITable {
   id: string;
   allPlayers: IPlayer[];
@@ -68,52 +75,54 @@ export interface ITable {
 }
 
 export enum GameStatus {
-  waitBets = 'Waiting for the players to place their bets',
-  readyToStart = 'Ready to start',
-  playing = 'Playing process',
-  waitEndAndBets = 'Waiting for the players to finish the previous round and place their bets',
+  WaitBets = 'Waiting for the players to place their bets',
+  ReadyToStart = 'Ready to start',
+  Playing = 'Playing process',
+  WaitEndAndBets = 'Waiting for the players to finish the previous round and place their bets',
 }
 
 export enum ActionType {
-  hit,
-  stand,
-  double,
-  insurance,
-  skipInsurance,
-  split,
+  Hit = 'Hit',
+  Stand = 'Stand',
+  Double = 'Double',
+  Insurance = 'Insurance',
+  SkipInsurance = 'SkipInsurance',
+  Split = 'Split',
 }
 
 export enum EndGameActions {
-  rebet,
-  newBet,
+  Rebet = 'Rebet',
+  NewBet = 'NewBet',
 }
 
 export enum SocketOn {
-  tableCreated = 'tableCreated',
-  tableJoined = 'tableJoined',
-  actionMade = 'actionMade',
-  disconnectPlayer = 'disconnectPlayer',
-  betUpdate = 'betUpdate',
-  dealt = 'dealt',
-  dealerMadeAction = 'dealerMadeAction',
-  winnersCounted = 'winnersCounted',
-  gameEnded = 'gameEnded',
-  error = 'error',
-  message = 'message',
-  balanceToppedUp = 'balanceToppedUp',
-  chatServerMessage = 'chatServerMessage',
+  TableCreated = 'tableCreated',
+  TableJoined = 'tableJoined',
+  ActionMade = 'actionMade',
+  DisconnectPlayer = 'disconnectPlayer',
+  BetUpdate = 'betUpdate',
+  Dealt = 'dealt',
+  DealerMadeAction = 'dealerMadeAction',
+  WinnersCounted = 'winnersCounted',
+  GameEnded = 'gameEnded',
+  Error = 'error',
+  Message = 'message',
+  BalanceToppedUp = 'balanceToppedUp',
+  ChatServerMessage = 'chatServerMessage',
 }
+
 export enum SocketEmit {
-  join_table = 'join_table',
-  create_table = 'create_table',
-  action = 'action',
-  deal = 'deal',
-  end_game = 'end_game',
-  remove_bet = 'remove_bet',
-  set_bet = 'set_bet',
-  topup_balance = 'topup_balance',
-  chat_send_message = 'chat_send_message',
+  JoinTable = 'join_table',
+  CreateTable = 'create_table',
+  Action = 'action',
+  Deal = 'deal',
+  EndGame = 'end_game',
+  RemoveBet = 'remove_bet',
+  SetBet = 'set_bet',
+  TopupBalance = 'topup_balance',
+  ChatSendMessage = 'chat_send_message',
 }
+
 export type TBet = 2 | 5 | 10 | 20 | 40 | 60 | 100;
 
 export enum ModalTypes {

@@ -8,8 +8,8 @@ export class Dealer {
   public readonly id: string = v4();
   public spotId: string | null = v4();
   public hand: Card[] = [];
-  public tableId: string;
-  public constructor(tableId: string) {
+  
+  public constructor(public tableId: string) {
     this.tableId = tableId;
   }
 
@@ -19,7 +19,7 @@ export class Dealer {
 
   public get handTotal(): number {
     let total = this.hand.reduce((sum, card) => sum + card.value, 0);
-    const aces = this.hand.filter((card) => card.rank === Rank.ace);
+    const aces = this.hand.filter((card) => card.rank === Rank.Ace);
     while (aces.length > 0 && total > 21) {
       total -= 10;
       aces.pop();

@@ -18,7 +18,7 @@ export class Table {
 
   public get players(): Player[] {
     return this.allPlayers.filter(
-      (player) => player.playerType !== PlayerType.parent
+      (player) => player.playerType !== PlayerType.Parent
     );
   }
 
@@ -223,21 +223,21 @@ export class Table {
   }
 
   private createDeck(): void {
-    const suits: Suit[] = ['hearts', 'diamonds', 'clubs', 'spades'];
+    const suits: Suit[] = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
     const ranks = [
-      { rank: Rank.ace, value: 11 },
-      { rank: Rank._2, value: 2 },
-      { rank: Rank._3, value: 3 },
-      { rank: Rank._4, value: 4 },
-      { rank: Rank._5, value: 5 },
-      { rank: Rank._6, value: 6 },
-      { rank: Rank._7, value: 7 },
-      { rank: Rank._8, value: 8 },
-      { rank: Rank._9, value: 9 },
-      { rank: Rank._10, value: 10 },
-      { rank: Rank.jack, value: 10 },
-      { rank: Rank.queen, value: 10 },
-      { rank: Rank.king, value: 10 },
+      { rank: Rank.Ace, value: 11 },
+      { rank: Rank.Two, value: 2 },
+      { rank: Rank.Three, value: 3 },
+      { rank: Rank.Four, value: 4 },
+      { rank: Rank.Five, value: 5 },
+      { rank: Rank.Six, value: 6 },
+      { rank: Rank.Seven, value: 7 },
+      { rank: Rank.Eight, value: 8 },
+      { rank: Rank.Nine, value: 9 },
+      { rank: Rank.Ten, value: 10 },
+      { rank: Rank.Jack, value: 10 },
+      { rank: Rank.Queen, value: 10 },
+      { rank: Rank.King, value: 10 },
     ];
 
     for (const suit of suits) {

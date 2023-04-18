@@ -1,8 +1,9 @@
+import { IMessage } from '../types.ds';
+
+import { action } from 'mobx';
+import { formatDate } from '../utils/formatDate';
 import { makeObservable } from 'mobx';
 import { observable } from 'mobx';
-import { action } from 'mobx';
-
-import { IMessage } from '../types.ds';
 
 export class Chat {
   @observable public messages: IMessage[] = [];
@@ -12,6 +13,7 @@ export class Chat {
   }
 
   @action.bound public addMessage = (message: IMessage): void => {
+    message.time = formatDate(message.time);
     this.messages.push(message);
   };
 }

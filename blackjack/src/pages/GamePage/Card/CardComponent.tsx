@@ -24,10 +24,10 @@ export const CardComponent: React.FC<CardProps> = ({ suit, rank }) => {
 
 function convertRank(rank: Rank) {
   switch (rank) {
-    case Rank.king:
-    case Rank.queen:
-    case Rank.jack:
-    case Rank.ace:
+    case Rank.King:
+    case Rank.Queen:
+    case Rank.Jack:
+    case Rank.Ace:
       return rank.charAt(0).toUpperCase();
     default:
       return rank;

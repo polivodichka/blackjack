@@ -18,7 +18,6 @@ import { SpotsZone } from './PlayerSpot/Spot.styled';
 import moneyIcon from '../../assets/money.svg';
 import { BetPanel } from './BetPanel/BetPanel';
 import chatIcon from '../../assets/chat.svg';
-import { socket } from '../../server/socket';
 import copyIcon from '../../assets/copy.svg';
 import { game } from '../../store/game';
 
@@ -39,7 +38,7 @@ export const GamePage: React.FC = observer(() => {
   }, [game.player?.roundIsEnded]);
 
   const handlePlayBtn = () => {
-    socket.emit(SocketEmit.deal, game.table?.id);
+    game.emit[SocketEmit.Deal]();
   };
 
   const handleCopyClick = () => {

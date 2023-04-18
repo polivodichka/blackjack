@@ -15,36 +15,31 @@ export const GameActionsComponent: React.FC = observer(() => {
   const [buttonsDisabled, setButtonsDisabled] = useState<boolean>(false);
 
   const handleAction = (actionType: ActionType) => () => {
-    socket.emit(
-      SocketEmit.action,
-      actionType,
-      table?.id,
-      table?.currentPlayer?.id
-    );
+    game.emit[SocketEmit.Action](actionType);
     setButtonsDisabled(true);
   };
 
   useEffect(() => {
-    socket.on(SocketOn.actionMade, () => {
+    socket.on(SocketOn.ActionMade, () => {
       setButtonsDisabled(false);
     });
   }, [buttonsDisabled]);
 
   if (!player?.isTurn) {
-    return <></>;
+    return null;
   }
 
   const insuranceButtons = currentPlayer?.canInsurance && (
     <ButtonsWrapper>
       <StyledBtn
         disabled={buttonsDisabled}
-        onClick={handleAction(ActionType.insurance)}
+        onClick={handleAction(ActionType.Insurance)}
       >
         Insurance
       </StyledBtn>
       <StyledBtn
         disabled={buttonsDisabled}
-        onClick={handleAction(ActionType.skipInsurance)}
+        onClick={handleAction(ActionType.SkipInsurance)}
       >
         Skip insurance
       </StyledBtn>
@@ -55,21 +50,21 @@ export const GameActionsComponent: React.FC = observer(() => {
       {currentPlayer?.canHit && (
         <StyledBtn
           disabled={buttonsDisabled}
-          onClick={handleAction(ActionType.hit)}
+          onClick={handleAction(ActionType.Hit)}
         >
           Hit
         </StyledBtn>
       )}
       <StyledBtn
         disabled={buttonsDisabled}
-        onClick={handleAction(ActionType.stand)}
+        onClick={handleAction(ActionType.Stand)}
       >
         Stand
       </StyledBtn>
       {currentPlayer?.canSplit && (
         <StyledBtn
           disabled={buttonsDisabled}
-          onClick={handleAction(ActionType.split)}
+          onClick={handleAction(ActionType.Split)}
         >
           Split
         </StyledBtn>
@@ -77,7 +72,7 @@ export const GameActionsComponent: React.FC = observer(() => {
       {currentPlayer?.canDouble && (
         <StyledBtn
           disabled={buttonsDisabled}
-          onClick={handleAction(ActionType.double)}
+          onClick={handleAction(ActionType.Double)}
         >
           Double
         </StyledBtn>

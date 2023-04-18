@@ -35,11 +35,14 @@ export const EnterForm: React.FC = () => {
   const [disabled, setDisabled] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const onJoinTable = useCallback((id?: string, name = '', balance = 0) => {
-    id
-      ? socket.emit(SocketEmit.join_table, id, name, balance)
-      : socket.emit(SocketEmit.create_table, name, balance);
-  }, []);
+  const onJoinTable = useCallback(
+    (name: string, balance: number, id?: string) => {
+      id
+        ? game.emit[SocketEmit.JoinTable](id, name, balance)
+        : game.emit[SocketEmit.CreateTable](name, balance);
+    },
+    []
+  );
 
   const onSubmit = useCallback(
     (data: FormValues) => {
@@ -48,7 +51,7 @@ export const EnterForm: React.FC = () => {
       if (joinExistingTable && !tableId) {
         return;
       }
-      onJoinTable(joinExistingTable ? tableId : undefined, name, balance);
+      onJoinTable(name, balance, joinExistingTable ? tableId : undefined);
     },
     [onJoinTable]
   );
@@ -81,12 +84,12 @@ export const EnterForm: React.FC = () => {
       }
     };
 
-    socket.on(SocketOn.tableCreated, handleTableCreated);
-    socket.on(SocketOn.error, handleError);
+    socket.on(SocketOn.TableCreated, handleTableCreated);
+    socket.on(SocketOn.Error, handleError);
 
     return () => {
-      socket.off(SocketOn.tableCreated, handleTableCreated);
-      socket.off(SocketOn.error, handleError);
+      socket.off(SocketOn.TableCreated, handleTableCreated);
+      socket.off(SocketOn.Error, handleError);
     };
   }, [navigate, setError]);
 

@@ -3,7 +3,6 @@ import React, { useMemo } from 'react';
 
 import { PlayersWrapper, SpotStyled, OnePlayerWrapper } from './Spot.styled';
 import { PlayerComponent } from './PlayerComponent';
-import { socket } from '../../../server/socket';
 import { SocketEmit } from '../../../types.ds';
 import { game } from '../../../store/game';
 
@@ -33,13 +32,7 @@ export const PlayerSpotComponent: React.FC<PlayerProps> = observer(({ id }) => {
       game.player?.canBetAtThisSpot(id) &&
       !gameTable?.roundIsStarted
     ) {
-      socket.emit(
-        SocketEmit.set_bet,
-        gameTable.id,
-        id,
-        game.player?.id,
-        gameTable.currentBetBtnValue ?? 0
-      );
+      game.emit[SocketEmit.SetBet](id);
     }
   };
 

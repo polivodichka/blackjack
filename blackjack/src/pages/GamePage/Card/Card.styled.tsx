@@ -10,14 +10,15 @@ export const CardStyled = styled.div`
   transform-style: preserve-3d;
   backface-visibility: visible;
   perspective: 100px;
+  user-select: none;
 
-  &.spades,
-  &.clubs {
+  &.Spades,
+  &.Clubs {
     color: black;
   }
 
-  &.hearts,
-  &.diamonds {
+  &.Hearts,
+  &.Diamonds {
     color: red;
   }
 

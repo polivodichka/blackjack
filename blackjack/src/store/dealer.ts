@@ -1,12 +1,12 @@
-import { makeObservable } from 'mobx';
-import { observable } from 'mobx';
-import { computed } from 'mobx';
-import { action } from 'mobx';
-
+import { Card } from './card';
 import { IDealer } from '../types.ds';
 import { Rank } from '../types.ds';
-import { Card } from './card';
+
+import { action } from 'mobx';
+import { computed } from 'mobx';
 import { game } from './game';
+import { makeObservable } from 'mobx';
+import { observable } from 'mobx';
 
 export class Dealer {
   public readonly id: string;
@@ -33,7 +33,7 @@ export class Dealer {
 
   @computed public get handTotal(): number {
     let total = this.hand.reduce((sum, card) => sum + card.value, 0);
-    const aces = this.hand.filter((card) => card.rank === Rank.ace);
+    const aces = this.hand.filter((card) => card.rank === Rank.Ace);
     while (aces.length > 0 && total > 21) {
       total -= 10;
       aces.pop();

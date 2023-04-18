@@ -31,14 +31,8 @@ export const BalanceForm: React.FC = () => {
   const onSubmit = (data: FormValues) => {
     setDisabled(true);
     const { balance } = data;
-    if (game.table && game.player) {
-      socket.emit(
-        SocketEmit.topup_balance,
-        balance,
-        game.table?.id,
-        game.player.id
-      );
-    }
+
+    game.emit[SocketEmit.TopupBalance](balance);
   };
   const onCancel = () => {
     reset();
@@ -52,10 +46,10 @@ export const BalanceForm: React.FC = () => {
       game.modalUpdate(true);
     };
 
-    socket.on(SocketOn.balanceToppedUp, handleTopUp);
+    socket.on(SocketOn.BalanceToppedUp, handleTopUp);
 
     return () => {
-      socket.off(SocketOn.balanceToppedUp, handleTopUp);
+      socket.off(SocketOn.BalanceToppedUp, handleTopUp);
     };
   }, [reset]);
 

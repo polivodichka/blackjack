@@ -21,7 +21,7 @@ export const BetPanel: React.FC = observer(() => {
   );
 
   if (table?.roundIsStarted) {
-    return <></>;
+    return null;
   }
 
   return (

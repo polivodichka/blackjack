@@ -21,13 +21,14 @@ export const StyledBtn = styled.button`
   overflow: hidden;
   transition: 0.5s;
   letter-spacing: 4px;
-  &:hover:enabled {
+  &:hover {
     background: ${Color.MainAccent};
     color: #fff;
     box-shadow: 0 0 5px ${Color.MainAccent}, 0 0 25px ${Color.MainAccent},
       0 0 50px ${Color.MainAccent}, 0 0 100px ${Color.MainAccent};
   }
   &:disabled {
+    pointer-events: none;
     border: 2px solid ${makeColorDarker(Color.MainAccent, 50)};
     color: ${makeColorDarker(Color.MainAccent, 50)};
     border-radius: 5px;

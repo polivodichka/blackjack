@@ -33,13 +33,13 @@ export class ServerSocket {
       },
     });
 
-    this.io.on(SocketOn.connect, this.StartListeners);
+    this.io.on(SocketOn.Connect, this.StartListeners);
   }
 
   private StartListeners = (socket: MySocket) => {
     console.info(`Message received from ${socket.id}`);
 
-    socket.on(SocketOn.create_table, async (name, balance) => {
+    socket.on(SocketOn.CreateTable, async (name, balance) => {
       try {
         const table = new Table();
         const player = table.addPlayer(name, '', balance, socket.id);
@@ -49,10 +49,10 @@ export class ServerSocket {
         this.chats[table.id] = chat;
         await socket.join(table.id);
 
-        console.info(`${SocketEmit.tableCreated}: ${table.id}`);
+        console.info(`${SocketEmit.TableCreated}: ${table.id}`);
         //send
         socket.emit(
-          SocketEmit.tableCreated,
+          SocketEmit.TableCreated,
           JSON.stringify(table),
           JSON.stringify(player),
           JSON.stringify(chat)
@@ -61,7 +61,7 @@ export class ServerSocket {
         handleError(error);
       }
     });
-    socket.on(SocketOn.join_table, async (tableId, name, balance) => {
+    socket.on(SocketOn.JoinTable, async (tableId, name, balance) => {
       try {
         const table = this.tables[tableId];
         if (!table) {
@@ -73,16 +73,16 @@ export class ServerSocket {
 
         await socket.join(table.id);
 
-        console.info(`${SocketEmit.tableJoined}: ${table.id}`);
+        console.info(`${SocketEmit.TableJoined}: ${table.id}`);
         //send
         socket.broadcast
           .to(tableId)
-          .emit(SocketEmit.message, `${player.name} has joined`);
+          .emit(SocketEmit.Message, `${player.name} has joined`);
         socket.broadcast
           .to(table.id)
-          .emit(SocketEmit.tableJoined, JSON.stringify(table));
+          .emit(SocketEmit.TableJoined, JSON.stringify(table));
         socket.emit(
-          SocketEmit.tableCreated,
+          SocketEmit.TableCreated,
           JSON.stringify(table),
           JSON.stringify(player),
           JSON.stringify(chat)
@@ -92,7 +92,7 @@ export class ServerSocket {
       }
     });
 
-    socket.on(SocketOn.set_bet, (tableId, spotId, parentId, amount) => {
+    socket.on(SocketOn.SetBet, (tableId, spotId, parentId, amount) => {
       try {
         const table = this.tables[tableId];
         if (!table) {
@@ -119,14 +119,14 @@ export class ServerSocket {
           //send
           this.io
             .to(table.id)
-            .emit(SocketEmit.betUpdate, JSON.stringify(table.allPlayers));
+            .emit(SocketEmit.BetUpdate, JSON.stringify(table.allPlayers));
         }
       } catch (error) {
         handleError(error);
       }
     });
     socket.on(
-      SocketOn.remove_bet,
+      SocketOn.RemoveBet,
       (tableId: string, playerId: string, betIndex: number) => {
         try {
           const table = this.tables[tableId];
@@ -145,13 +145,13 @@ export class ServerSocket {
           //send
           this.io
             .to(table.id)
-            .emit(SocketEmit.betUpdate, JSON.stringify(table.allPlayers));
+            .emit(SocketEmit.BetUpdate, JSON.stringify(table.allPlayers));
         } catch (error) {
           handleError(error);
         }
       }
     );
-    socket.on(SocketOn.deal, (tableId: string) => {
+    socket.on(SocketOn.Deal, (tableId: string) => {
       try {
         const table = this.tables[tableId];
 
@@ -161,15 +161,15 @@ export class ServerSocket {
 
         table.deal();
 
-        console.info(`${SocketEmit.dealt} ${table.id}`);
+        console.info(`${SocketEmit.Dealt} ${table.id}`);
         //send
-        this.io.to(table.id).emit(SocketEmit.dealt, JSON.stringify(table));
+        this.io.to(table.id).emit(SocketEmit.Dealt, JSON.stringify(table));
       } catch (error) {
         handleError(error);
       }
     });
     socket.on(
-      SocketOn.action,
+      SocketOn.Action,
       (actionType: ActionType, tableId: string, playerId: string) => {
         try {
           const table = this.tables[tableId];
@@ -184,45 +184,45 @@ export class ServerSocket {
           }
 
           switch (actionType) {
-            case ActionType.hit:
+            case ActionType.Hit:
               table.hit();
               break;
 
-            case ActionType.double:
+            case ActionType.Double:
               if (player.betChipsTotal > player.balance) {
                 throw new Error(BaseMessages.NoMoney);
               }
               table.double();
               break;
 
-            case ActionType.split:
+            case ActionType.Split:
               if (player.betChipsTotal > player.balance) {
                 throw new Error(BaseMessages.NoMoney);
               }
               table.split();
               break;
 
-            case ActionType.stand:
+            case ActionType.Stand:
               table.stand();
               break;
 
-            case ActionType.insurance:
+            case ActionType.Insurance:
               if (player.betChipsTotal / 2 > player.balance) {
                 throw new Error(BaseMessages.NoMoney);
               }
               player.insurance();
               break;
 
-            case ActionType.skipInsurance:
+            case ActionType.SkipInsurance:
               player.insurance(0);
               break;
           }
 
-          console.info(`${SocketEmit.actionMade} ${player.parentPlayer?.id}`);
+          console.info(`${SocketEmit.ActionMade} ${player.parentPlayer?.id}`);
           //send
           this.io
             .to(table.id)
-            .emit(SocketEmit.actionMade, JSON.stringify(table));
+            .emit(SocketEmit.ActionMade, JSON.stringify(table));
 
           if (
             table.dealer &&
@@ -232,20 +232,20 @@ export class ServerSocket {
             while (table.dealer.canHit) {
               table.dealer.hand.push(table.draw());
 
-              console.info(`${SocketEmit.actionMade} by dealer ${table.id}`);
+              console.info(`${SocketEmit.ActionMade} by dealer ${table.id}`);
               //send
               this.io
                 .to(table.id)
-                .emit(SocketEmit.dealerMadeAction, JSON.stringify(table));
+                .emit(SocketEmit.DealerMadeAction, JSON.stringify(table));
             }
 
             table.countWinnings();
 
-            console.info(SocketEmit.winnersCounted);
+            console.info(SocketEmit.WinnersCounted);
             //send
             this.io
               .to(table.id)
-              .emit(SocketEmit.winnersCounted, JSON.stringify(table));
+              .emit(SocketEmit.WinnersCounted, JSON.stringify(table));
             table.currentPlayerIndex = null;
           }
         } catch (error) {
@@ -255,7 +255,7 @@ export class ServerSocket {
     );
 
     socket.on(
-      SocketOn.topup_balance,
+      SocketOn.TopupBalance,
       (balance: number, tableId: string, playerId: string) => {
         try {
           const table = this.tables[tableId];
@@ -271,12 +271,12 @@ export class ServerSocket {
           player.balance = +balance + +player.balance;
 
           console.info(
-            `${SocketEmit.balanceToppedUp} to ${player.balance} for ${player.parentPlayer?.id}`
+            `${SocketEmit.BalanceToppedUp} to ${player.balance} for ${player.parentPlayer?.id}`
           );
           //send
-          socket.emit(SocketEmit.balanceToppedUp, JSON.stringify(player));
+          socket.emit(SocketEmit.BalanceToppedUp, JSON.stringify(player));
           socket.emit(
-            SocketEmit[SocketEmit.message],
+            SocketEmit.Message,
             'Balance successfully topped up!'
           );
         } catch (error) {
@@ -284,7 +284,7 @@ export class ServerSocket {
         }
       }
     );
-    socket.on(SocketOn.chat_send_message, (tableId, messageStr) => {
+    socket.on(SocketOn.ChatSendMessage, (tableId, messageStr) => {
       try {
         const message = JSON.parse(messageStr) as IMessage;
         const table = this.tables[tableId];
@@ -304,13 +304,13 @@ export class ServerSocket {
         //send
         this.io
           .to(table.id)
-          .emit(SocketEmit.chatServerMessage, JSON.stringify(newMessage));
+          .emit(SocketEmit.ChatServerMessage, JSON.stringify(newMessage));
       } catch (error) {
         handleError(error);
       }
     });
     socket.on(
-      SocketOn.end_game,
+      SocketOn.EndGame,
       (tableId: string, playerId: string, action: EndGameActions) => {
         try {
           const table = this.tables[tableId];
@@ -324,29 +324,29 @@ export class ServerSocket {
           }
 
           switch (action) {
-            case EndGameActions.newBet:
+            case EndGameActions.NewBet:
               table.removeFakePlayers(player);
               break;
-            case EndGameActions.rebet:
+            case EndGameActions.Rebet:
               if (player.betChipsTotalWithChildren <= player.balance) {
                 table.rebet(player);
               } else {
                 table.removeFakePlayers(player);
-                socket.emit(SocketEmit.error, BaseMessages.NoMoney);
+                socket.emit(SocketEmit.Error, BaseMessages.NoMoney);
               }
               break;
           }
           table.roundIsStarted = false;
           this.io
             .to(table.id)
-            .emit(SocketEmit.gameEnded, JSON.stringify(table));
+            .emit(SocketEmit.GameEnded, JSON.stringify(table));
         } catch (error) {
           handleError(error);
         }
       }
     );
 
-    socket.on(SocketOn.disconnect, () => {
+    socket.on(SocketOn.Disconnect, () => {
       console.info(`Disconnect received from: ${socket.id}`);
       try {
         let player: Player | undefined;
@@ -375,14 +375,14 @@ export class ServerSocket {
             table.roundIsStarted = false;
           }
 
-          console.info(`${SocketEmit.disconnectPlayer}  ${socket.id}`);
+          console.info(`${SocketEmit.DisconnectPlayer}  ${socket.id}`);
           //sent
           socket.broadcast
             .to(table.id)
-            .emit(SocketEmit.message, `${player.name} left`);
+            .emit(SocketEmit.Message, `${player.name} left`);
           socket.broadcast
             .to(table.id)
-            .emit(SocketEmit.disconnectPlayer, JSON.stringify(table));
+            .emit(SocketEmit.DisconnectPlayer, JSON.stringify(table));
         }
       } catch (error) {}
     });
@@ -390,10 +390,10 @@ export class ServerSocket {
     const handleError = (error: unknown) => {
       if (error instanceof Error) {
         console.info(error);
-        socket.emit(SocketEmit.error, error.message);
+        socket.emit(SocketEmit.Error, error.message);
       } else {
         console.info('An unknown error occurred');
-        socket.emit(SocketEmit.error, BaseMessages.SmthWentWrong);
+        socket.emit(SocketEmit.Error, BaseMessages.SmthWentWrong);
       }
     };
   };

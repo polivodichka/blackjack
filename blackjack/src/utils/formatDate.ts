@@ -1,9 +1,13 @@
-export const formattedDate = (): string => {
-  const currentDate = new Date();
-  const day = currentDate.getDate().toString().padStart(2, '0');
-  const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-  const hours = currentDate.getHours().toString().padStart(2, '0');
-  const minutes = currentDate.getMinutes().toString().padStart(2, '0');
+export const formatDate = (dateString: string): string => {
+  const date = new Date(dateString);
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const hours = date.getHours();
+  const minutes = date.getMinutes();
 
-  return `${day}.${month} ${hours}:${minutes}`;
+  return `${month.toString().padStart(2, '0')}.${day
+    .toString()
+    .padStart(2, '0')} ${hours.toString().padStart(2, '0')}:${minutes
+    .toString()
+    .padStart(2, '0')}`;
 };

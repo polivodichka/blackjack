@@ -1,36 +1,34 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
-import { makeObservable } from 'mobx';
-import { observable } from 'mobx';
-import { computed } from 'mobx';
-import { nanoid } from 'nanoid';
-import { action } from 'mobx';
-
+import { Card } from './card';
+import { Dealer } from './dealer';
 import { GameStatus } from '../types.ds';
-import { PlayerType } from '../types.ds';
 import { IPlayer } from '../types.ds';
+import { Player } from './player';
+import { PlayerType } from '../types.ds';
 import { Rank } from '../types.ds';
 import { TBet } from '../types.ds';
-import { Dealer } from './dealer';
-import { Player } from './player';
-import { Card } from './card';
+
+import { action } from 'mobx';
+import { computed } from 'mobx';
 import { game } from './game';
+import { makeObservable } from 'mobx';
+import { observable } from 'mobx';
 
 export class Table {
-  public readonly id: string;
   @observable public allPlayers: Player[] = [];
   @observable public currentBetBtnValue: TBet = 2;
   @observable private _dealer: Dealer | null = null;
   @observable private _currentPlayerIndex: number | null = null;
   @observable private _roundIsStarted = false;
 
-  public constructor(id: string = nanoid()) {
+  public constructor(public readonly id: string) {
     this.id = id;
     makeObservable(this);
   }
 
   @computed public get players(): Player[] {
     return this.allPlayers.filter(
-      (player) => player.playerType !== PlayerType.parent
+      (player) => player.playerType !== PlayerType.Parent
     );
   }
 
@@ -40,7 +38,7 @@ export class Table {
 
   @computed public get parentPlayers(): Player[] {
     return this.allPlayers.filter(
-      (player) => player.playerType === PlayerType.parent
+      (player) => player.playerType === PlayerType.Parent
     );
   }
 
@@ -71,15 +69,15 @@ export class Table {
       Object.keys(this.spots).length < 5 &&
       !this._dealer
     ) {
-      return GameStatus.waitBets;
+      return GameStatus.WaitBets;
     }
     if (this._dealer?.hand.length) {
-      return GameStatus.playing;
+      return GameStatus.Playing;
     }
     if (!!this.playingPlayers.length) {
-      return GameStatus.waitEndAndBets;
+      return GameStatus.WaitEndAndBets;
     }
-    return GameStatus.readyToStart;
+    return GameStatus.ReadyToStart;
   }
 
   @computed public get ableToStartGame(): boolean {
@@ -87,13 +85,13 @@ export class Table {
       this.players.length > 0 &&
       !this._dealer &&
       this.players.every((player) => player.betChipsTotal) &&
-      this.gameStatus === GameStatus.readyToStart &&
+      this.gameStatus === GameStatus.ReadyToStart &&
       this.playingPlayers.length === 0
     );
   }
 
   @computed public get needInsurance(): boolean {
-    return Boolean(this._dealer?.hand.find((card) => card.rank === Rank.ace));
+    return Boolean(this._dealer?.hand.find((card) => card.rank === Rank.Ace));
   }
 
   @computed public set dealer(value: Dealer | null) {

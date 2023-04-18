@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
-import { nanoid } from 'nanoid';
 
 import { Blob, ChatWrapper, MessageForm, MessagesWrapper } from './Chat.styled';
 import { IMessage, SocketEmit, SocketOn } from '../../../types.ds';
@@ -16,20 +15,18 @@ export const Chat: React.FC = observer(() => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const newMessage: IMessage = {
-      id: nanoid(),
-      text: inputValue.split('\n'),
-      playerId: game.player?.id ?? '',
-      playerName: game.player?.name ?? '',
-      time: '',
-    };
+    if (inputValue.length) {
+      const newMessage: IMessage = {
+        id: '',
+        text: inputValue.split('\n'),
+        playerId: game.player?.id ?? '',
+        playerName: game.player?.name ?? '',
+        time: '',
+      };
 
-    socket.emit(
-      SocketEmit.chat_send_message,
-      game.table?.id ?? '',
-      JSON.stringify(newMessage)
-    );
-    setInputValue('');
+      game.emit[SocketEmit.ChatSendMessage](JSON.stringify(newMessage));
+      setInputValue('');
+    }
   };
 
   useEffect(() => {
@@ -43,10 +40,10 @@ export const Chat: React.FC = observer(() => {
       game.chat?.addMessage(message);
     };
 
-    socket.on(SocketOn.chatServerMessage, handleChatMessage);
+    socket.on(SocketOn.ChatServerMessage, handleChatMessage);
 
     return () => {
-      socket.off(SocketOn.chatServerMessage, handleChatMessage);
+      socket.off(SocketOn.ChatServerMessage, handleChatMessage);
     };
   }, [messages.length]);
 
@@ -99,7 +96,9 @@ export const Chat: React.FC = observer(() => {
           onKeyDown={handleKeyPressed}
           placeholder="Shift+Enter for new line&#10;Enter for send"
         />
-        <StyledBtn type="submit">Send</StyledBtn>
+        <StyledBtn type="submit" disabled={!inputValue.length}>
+          Send
+        </StyledBtn>
       </MessageForm>
     </ChatWrapper>
   );

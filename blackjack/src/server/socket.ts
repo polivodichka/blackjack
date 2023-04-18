@@ -1,72 +1,72 @@
-import { Socket } from 'socket.io-client';
-import { io } from 'socket.io-client';
-
-import { EndGameActions } from '../types.ds';
 import { ActionType } from '../types.ds';
+import { EndGameActions } from '../types.ds';
+import { Socket } from 'socket.io-client';
 import { SocketEmit } from '../types.ds';
 import { SocketOn } from '../types.ds';
 import { TBet } from '../types.ds';
 
+import { io } from 'socket.io-client';
+
 const socketWithoutTypes: Socket = io('http://localhost:5000');
 
 interface SocketEventsOn {
-  [SocketOn.tableCreated]: (
+  [SocketOn.TableCreated]: (
     table: string,
     player: string,
     chat: string
   ) => void;
-  [SocketOn.tableJoined]: (table: string) => void;
-  [SocketOn.disconnectPlayer]: (table: string) => void;
-  [SocketOn.betUpdate]: (players: string) => void;
-  [SocketOn.dealt]: (table: string) => void;
-  [SocketOn.actionMade]: (table: string) => void;
-  [SocketOn.dealerMadeAction]: (table: string) => void;
-  [SocketOn.winnersCounted]: (table: string) => void;
-  [SocketOn.gameEnded]: (table: string) => void;
-  [SocketOn.error]: (message: string) => void;
-  [SocketOn.message]: (message: string) => void;
-  [SocketOn.balanceToppedUp]: (player: string) => void;
-  [SocketOn.chatServerMessage]: (message: string) => void;
+  [SocketOn.TableJoined]: (table: string) => void;
+  [SocketOn.DisconnectPlayer]: (table: string) => void;
+  [SocketOn.BetUpdate]: (players: string) => void;
+  [SocketOn.Dealt]: (table: string) => void;
+  [SocketOn.ActionMade]: (table: string) => void;
+  [SocketOn.DealerMadeAction]: (table: string) => void;
+  [SocketOn.WinnersCounted]: (table: string) => void;
+  [SocketOn.GameEnded]: (table: string) => void;
+  [SocketOn.Error]: (message: string) => void;
+  [SocketOn.Message]: (message: string) => void;
+  [SocketOn.BalanceToppedUp]: (player: string) => void;
+  [SocketOn.ChatServerMessage]: (message: string) => void;
 }
 
 type SocketEventNamesOn = keyof SocketEventsOn;
 
 interface SocketEventsEmit {
-  [SocketEmit.join_table]: (
+  [SocketEmit.JoinTable]: (
     table: string,
     name: string,
     balance: number,
     id?: string | undefined
   ) => void;
-  [SocketEmit.create_table]: (name: string, balance: number) => void;
-  [SocketEmit.action]: (
+  [SocketEmit.CreateTable]: (name: string, balance: number) => void;
+  [SocketEmit.Action]: (
     actionType: ActionType,
     tableId: string | undefined,
     playerId: string | undefined
   ) => void;
-  [SocketEmit.deal]: (tableId: string | undefined) => void;
-  [SocketEmit.end_game]: (
+  [SocketEmit.Deal]: (tableId: string | undefined) => void;
+  [SocketEmit.EndGame]: (
     tableId: string | undefined,
     playerId: string | undefined,
     endGameActionType: EndGameActions
   ) => void;
-  [SocketEmit.remove_bet]: (
+  [SocketEmit.RemoveBet]: (
     tableId: string | undefined,
     playerId: string | undefined,
     betIndex: number
   ) => void;
-  [SocketEmit.set_bet]: (
+  [SocketEmit.SetBet]: (
     tableId: string | undefined,
     spotId: string,
     playerId: string | undefined,
-    bet: TBet
+    bet: number
   ) => void;
-  [SocketEmit.topup_balance]: (
+  [SocketEmit.TopupBalance]: (
     balance: number,
     tableId: string,
     playerId: string
   ) => void;
-  [SocketEmit.chat_send_message]: (table: string, message: string) => void;
+  [SocketEmit.ChatSendMessage]: (table: string, message: string) => void;
 }
 
 type SocketEventNamesEmit = keyof SocketEventsEmit;

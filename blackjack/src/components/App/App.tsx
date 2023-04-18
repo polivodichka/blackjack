@@ -11,10 +11,6 @@ import { toastSettings } from './App.styled';
 import { SocketOn } from '../../types.ds';
 
 export const App: React.FC = () => {
-  useEffect(() => {
-    socket.on(SocketOn.error, (message) => toast.error(message, toastSettings));
-    socket.on(SocketOn.message, (message) => toast(message, toastSettings));
-  });
   return (
     <>
       <Routes>

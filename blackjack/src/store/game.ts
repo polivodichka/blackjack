@@ -1,21 +1,27 @@
-import { makeObservable } from 'mobx';
-import { observable } from 'mobx';
-import { computed } from 'mobx';
-import { action } from 'mobx';
-
-import { isObjectsEqual } from '../utils/isObjectsEqual';
-import { socket } from '../server/socket';
-import { ModalTypes } from '../types.ds';
-import { SocketOn } from '../types.ds';
-import { IPlayer } from '../types.ds';
-import { IModal } from '../types.ds';
-import { ITable } from '../types.ds';
-import { IChat } from '../types.ds';
-import { Dealer } from './dealer';
-import { Player } from './player';
-import { Table } from './table';
+import { ActionType } from '../types.ds';
 import { Card } from './card';
 import { Chat } from './chat';
+import { Dealer } from './dealer';
+import { EndGameActions } from '../types.ds';
+import { IChat } from '../types.ds';
+import { IModal } from '../types.ds';
+import { IPlayer } from '../types.ds';
+import { ITable } from '../types.ds';
+import { ModalTypes } from '../types.ds';
+import { Player } from './player';
+import { SocketEmit } from '../types.ds';
+import { SocketOn } from '../types.ds';
+import { Table } from './table';
+
+import { action } from 'mobx';
+import { computed } from 'mobx';
+import { makeObservable } from 'mobx';
+import { observable } from 'mobx';
+import { socket } from '../server/socket';
+import { toast } from 'react-toastify';
+import { toastSettings } from '../components/App/App.styled';
+
+import equal from 'fast-deep-equal';
 
 export class Game {
   @observable public player: Player | null = null;
@@ -26,22 +32,85 @@ export class Game {
     hide: false,
   };
 
+  public emit = {
+    [SocketEmit.ChatSendMessage]: (message: string): void => {
+      if (this.table) {
+        socket.emit(SocketEmit.ChatSendMessage, this.table?.id ?? '', message);
+      }
+    },
+    [SocketEmit.TopupBalance]: (balance: number): void => {
+      if (this.table && this.player) {
+        socket.emit(
+          SocketEmit.TopupBalance,
+          balance,
+          this.table.id,
+          this.player.id
+        );
+      }
+    },
+    [SocketEmit.JoinTable]: (
+      tableId: string,
+      name: string,
+      balance: number
+    ): void => {
+      socket.emit(SocketEmit.JoinTable, tableId, name, balance);
+    },
+    [SocketEmit.CreateTable]: (name: string, balance: number): void => {
+      socket.emit(SocketEmit.CreateTable, name, balance);
+    },
+    [SocketEmit.EndGame]: (endGameAction: EndGameActions): void => {
+      socket.emit(
+        SocketEmit.EndGame,
+        this.table?.id,
+        this.player?.id,
+        endGameAction
+      );
+    },
+    [SocketEmit.Deal]: (): void => {
+      socket.emit(SocketEmit.Deal, this.table?.id);
+    },
+    [SocketEmit.Action]: (actionType: ActionType): void => {
+      socket.emit(
+        SocketEmit.Action,
+        actionType,
+        this.table?.id,
+        this.table?.currentPlayer?.id
+      );
+    },
+    [SocketEmit.SetBet]: (spotId: string): void => {
+      socket.emit(
+        SocketEmit.SetBet,
+        this.table?.id,
+        spotId,
+        this.player?.id,
+        this.table?.currentBetBtnValue ?? 0
+      );
+    },
+    [SocketEmit.RemoveBet]: (playerId: string, betIndex: number): void => {
+      socket.emit(SocketEmit.RemoveBet, this.table?.id, playerId, betIndex);
+    },
+  };
+
   public constructor() {
     makeObservable(this);
+    
+    socket.on(SocketOn.Error, (message) => toast.error(message, toastSettings));
 
-    socket.on(SocketOn.tableJoined, (table) => {
+    socket.on(SocketOn.Message, (message) => toast(message, toastSettings));
+
+    socket.on(SocketOn.TableJoined, (table) => {
       this.onTableJoined(JSON.parse(table));
       this.modalUpdate(true);
     });
 
-    socket.on(SocketOn.disconnectPlayer, (tableStr) =>
+    socket.on(SocketOn.DisconnectPlayer, (tableStr) =>
       this.handleTableUpdate(tableStr)
     );
 
-    socket.on(SocketOn.betUpdate, (playersStr) =>
+    socket.on(SocketOn.BetUpdate, (playersStr) =>
       this.updateAllPlayersArray(JSON.parse(playersStr))
     );
-    socket.on(SocketOn.balanceToppedUp, (playerStr) => {
+    socket.on(SocketOn.BalanceToppedUp, (playerStr) => {
       const playerObj = JSON.parse(playerStr) as IPlayer;
       const player = this.findPlayerById(playerObj.id);
       if (player) {
@@ -49,21 +118,21 @@ export class Game {
       }
     });
 
-    socket.on(SocketOn.dealt, (tableStr) => this.handleTableUpdate(tableStr));
+    socket.on(SocketOn.Dealt, (tableStr) => this.handleTableUpdate(tableStr));
 
-    socket.on(SocketOn.actionMade, (tableStr) =>
+    socket.on(SocketOn.ActionMade, (tableStr) =>
       this.handleTableUpdate(tableStr)
     );
 
-    socket.on(SocketOn.dealerMadeAction, (tableStr) =>
+    socket.on(SocketOn.DealerMadeAction, (tableStr) =>
       this.handleTableUpdate(tableStr)
     );
 
-    socket.on(SocketOn.winnersCounted, (tableStr) =>
+    socket.on(SocketOn.WinnersCounted, (tableStr) =>
       this.handleTableUpdate(tableStr)
     );
 
-    socket.on(SocketOn.gameEnded, (tableStr) => {
+    socket.on(SocketOn.GameEnded, (tableStr) => {
       this.handleTableUpdate(tableStr);
       if (
         this.table?.dealer &&
@@ -141,7 +210,7 @@ export class Game {
       const findedObjPlayer = target.find(
         (findedPlayer) => findedPlayer.id === player.id
       );
-      if (findedObjPlayer && !isObjectsEqual(player, findedObjPlayer)) {
+      if (findedObjPlayer && !equal(player, findedObjPlayer)) {
         const realPlayer = this.findPlayerById(findedObjPlayer.id);
         realPlayer?.update(player);
       } else if (!findedObjPlayer) {
