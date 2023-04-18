@@ -29,6 +29,11 @@ export class Game {
   public constructor() {
     makeObservable(this);
 
+    socket.on(SocketOn.tableJoined, (table) => {
+      this.onTableJoined(JSON.parse(table));
+      this.modalUpdate(true);
+    });
+
     socket.on(SocketOn.disconnectPlayer, (tableStr) =>
       this.handleTableUpdate(tableStr)
     );

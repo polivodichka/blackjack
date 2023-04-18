@@ -12,7 +12,7 @@ export const Chat: React.FC = observer(() => {
   const messages = game.chat?.messages ?? [];
   const [inputValue, setInputValue] = useState('');
 
-  const messagesEndRef = useRef<HTMLDivElement>(null); // создаем ссылку на последнее сообщение в списке
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +33,7 @@ export const Chat: React.FC = observer(() => {
   };
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); // прокручиваем вниз при изменении messages
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages.length]);
 
   useEffect(() => {

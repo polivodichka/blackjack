@@ -295,8 +295,7 @@ export class ServerSocket {
         let chat = this.chats[tableId];
 
         if (!chat) {
-          this.chats[tableId] = new Chat();
-          chat = this.chats[tableId];
+          throw new Error(BaseMessages.SmthWentWrong);
         }
 
         const newMessage = chat.addMessage(message);

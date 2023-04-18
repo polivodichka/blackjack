@@ -46,11 +46,17 @@ export const BalanceForm: React.FC = () => {
   };
 
   useEffect(() => {
-    socket.on(SocketOn.balanceToppedUp, () => {
+    const handleTopUp = () => {
       reset();
       setDisabled(false);
-      game.modalUpdate(true)
-    });
+      game.modalUpdate(true);
+    };
+
+    socket.on(SocketOn.balanceToppedUp, handleTopUp);
+
+    return () => {
+      socket.off(SocketOn.balanceToppedUp, handleTopUp);
+    };
   }, [reset]);
 
   return (

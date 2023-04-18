@@ -54,7 +54,11 @@ export const EnterForm: React.FC = () => {
   );
 
   useEffect(() => {
-    socket.on(SocketOn.tableCreated, (table, player, chat) => {
+    const handleTableCreated = (
+      table: string,
+      player: string,
+      chat: string
+    ) => {
       game.onTableCreated(
         JSON.parse(table),
         JSON.parse(player),
@@ -64,14 +68,9 @@ export const EnterForm: React.FC = () => {
         navigate(`/table?id=${game.table.id}`);
       }
       game.modalUpdate(true);
-    });
+    };
 
-    socket.on(SocketOn.tableJoined, (table) => {
-      game.onTableJoined(JSON.parse(table));
-      game.modalUpdate(true);
-    });
-
-    socket.on(SocketOn.error, () => {
+    const handleError = () => {
       setDisabled(false);
       setError('tableId', { message: 'Invalid table ID' });
       const tableIdInput = document.querySelector<HTMLInputElement>(
@@ -80,7 +79,15 @@ export const EnterForm: React.FC = () => {
       if (tableIdInput) {
         tableIdInput.value = '';
       }
-    });
+    };
+
+    socket.on(SocketOn.tableCreated, handleTableCreated);
+    socket.on(SocketOn.error, handleError);
+
+    return () => {
+      socket.off(SocketOn.tableCreated, handleTableCreated);
+      socket.off(SocketOn.error, handleError);
+    };
   }, [navigate, setError]);
 
   return (
