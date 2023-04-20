@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/unbound-method */
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
@@ -14,6 +15,7 @@ describe('ServerSocket', () => {
   let serverSocket: ServerSocket;
   let httpServer: http.Server;
   let mockSocket1: any;
+  let mockSocket2: any;
 
   beforeAll(() => {
     httpServer = http.createServer();
@@ -21,6 +23,17 @@ describe('ServerSocket', () => {
     httpServer.listen(8080);
     mockSocket1 = {
       id: 'testSocketId1',
+      join: jest.fn(),
+      emit: jest.fn(),
+      on: jest.fn(),
+      broadcast: {
+        to: jest.fn().mockReturnValue({
+          emit: jest.fn(),
+        }),
+      },
+    };
+    mockSocket2 = {
+      id: 'testSocketId2',
       join: jest.fn(),
       emit: jest.fn(),
       on: jest.fn(),
@@ -93,24 +106,12 @@ describe('ServerSocket', () => {
   });
 
   describe('JoinTable', () => {
-    let mockSocket2: any;
     let mockSocket3: any;
     let table: Table;
     let player: Player;
     let chat: Chat;
 
     beforeAll(() => {
-      mockSocket2 = {
-        id: 'testSocketId2',
-        join: jest.fn(),
-        emit: jest.fn(),
-        on: jest.fn(),
-        broadcast: {
-          to: jest.fn().mockReturnValue({
-            emit: jest.fn(),
-          }),
-        },
-      };
       mockSocket3 = {
         id: 'testSocketId3',
         join: jest.fn(),
@@ -182,6 +183,109 @@ describe('ServerSocket', () => {
       expect(table.allPlayers).toHaveLength(initialPlayerCount);
       expect(serverSocket.findPlayerById(mockSocket3.id, table)).not
         .toBeDefined;
+    });
+  });
+
+  describe('SetBet', () => {
+    let table: Table;
+    let player1: Player;
+    let player2: Player;
+
+    beforeAll(() => {
+      table = Object.values(serverSocket.tables)[0];
+      player1 = serverSocket.findPlayerById(mockSocket1.id, table)!;
+      player2 = serverSocket.findPlayerById(mockSocket2.id, table)!;
+    });
+
+    it('should add a player with bet and with correct parent to the specified table', async () => {
+      const amount = 100;
+      const spotId = 'spot-1';
+      const initialPlayerCount = table.allPlayers.length;
+      const initialPlayerBalance = player1.balance;
+
+      await mockSocket1.on.mock.calls[2][1](
+        table.id,
+        spotId,
+        player1?.id,
+        amount
+      );
+
+      const newPlayer = table.allPlayers[initialPlayerCount];
+
+      expect(newPlayer).toBeDefined();
+      expect(newPlayer.parentPlayer).toBe(player1);
+
+      expect(table.allPlayers).toHaveLength(initialPlayerCount + 1);
+      expect(player1).toBeDefined();
+      expect(player1.balance).toBe(initialPlayerBalance - amount);
+      expect(newPlayer.betChips).toHaveLength(1);
+      expect(newPlayer.betChipsTotal).toBe(amount);
+    });
+
+    it('should throw an error if table is not found', async () => {
+      const amount = 100;
+      const spotId = 'spot-1';
+      const handleErrorSpy = jest.spyOn(serverSocket, 'handleError');
+      const initialPlayerCount = table.allPlayers.length;
+      const initialPlayerBalance = player1.balance;
+
+      await mockSocket1.on.mock.calls[2][1](
+        'fakeTableId',
+        spotId,
+        player1?.id,
+        amount
+      );
+
+      expect(handleErrorSpy).toHaveBeenCalledWith(
+        new Error(BaseMessages.NoTable),
+        mockSocket1
+      );
+      expect(table.allPlayers).toHaveLength(initialPlayerCount);
+      expect(player1.balance).toBe(initialPlayerBalance);
+    });
+
+    it('should throw an error if player is not found', async () => {
+      const amount = 100;
+      const spotId = 'spot-1';
+      const handleErrorSpy = jest.spyOn(serverSocket, 'handleError');
+      const initialPlayerCount = table.allPlayers.length;
+      const initialPlayerBalance = player1.balance;
+
+      await mockSocket1.on.mock.calls[2][1](
+        table.id,
+        spotId,
+        'fakePlayerId',
+        amount
+      );
+
+      expect(handleErrorSpy).toHaveBeenCalledWith(
+        new Error(BaseMessages.PlayerLost),
+        mockSocket1
+      );
+      expect(table.allPlayers).toHaveLength(initialPlayerCount);
+      expect(player1.balance).toBe(initialPlayerBalance);
+    });
+
+    it('should throw an error if bet amount is bigger than balance', async () => {
+      const amount = player1.balance + 100;
+      const spotId = 'spot-1';
+      const handleErrorSpy = jest.spyOn(serverSocket, 'handleError');
+      const initialPlayerCount = table.allPlayers.length;
+      const initialPlayerBalance = player1.balance;
+
+      await mockSocket1.on.mock.calls[2][1](
+        table.id,
+        spotId,
+        player1.id,
+        amount
+      );
+
+      expect(handleErrorSpy).toHaveBeenCalledWith(
+        new Error(BaseMessages.NoMoney),
+        mockSocket1
+      );
+      expect(table.allPlayers).toHaveLength(initialPlayerCount);
+      expect(player1.balance).toBe(initialPlayerBalance);
     });
   });
 });
