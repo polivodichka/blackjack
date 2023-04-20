@@ -1,0 +1,19 @@
+name: CI
+on:
+    push:
+        branches: []
+    pull_request:
+        branches: ['main', 'develop']
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+            - name: install modules
+              run: yarn install
+            - name: eslint check
+              run: yarn run eslint:test
+            - name: prettier check
+              run: yarn run prettier:check
+            - name: application build
+              run: yarn run build
