@@ -198,6 +198,10 @@ export class ServerSocket {
             throw new Error(BaseMessages.PlayerLost);
           }
 
+          if (table.currentPlayer && player.id !== table.currentPlayer.id) {
+            throw new Error(BaseMessages.ProhibitedAction);
+          }
+
           switch (actionType) {
             case ActionType.Hit:
               table.hit();
@@ -229,7 +233,7 @@ export class ServerSocket {
                 throw new Error(BaseMessages.NoMoney);
               }
               if (table.dealer?.hand[0].rank !== Rank.Ace) {
-                throw new Error("Can't insurance");
+                throw new Error(BaseMessages.ProhibitedAction);
               }
               player.insurance();
               break;
@@ -239,7 +243,10 @@ export class ServerSocket {
               break;
           }
 
-          if (player.isBJ || player.isBust || player.isNaturalBJ) {
+          if (
+            (player.isBJ || player.isBust || player.isNaturalBJ) &&
+            actionType !== ActionType.Stand
+          ) {
             table.stand();
           }
 
@@ -275,10 +282,14 @@ export class ServerSocket {
           }
         } catch (error) {
           this.handleError(error, socket);
+
+          //чтобы на клиенте разблокировались кнопки
           const table = this.tables[tableId];
-          this.io
-            .to(table.id)
-            .emit(SocketEmit.ActionMade, JSON.stringify(table));
+          if (table) {
+            this.io
+              .to(table.id)
+              .emit(SocketEmit.ActionMade, JSON.stringify(table));
+          }
         }
       }
     );
