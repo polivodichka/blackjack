@@ -4,7 +4,7 @@
   "description": "Server part for Blackjack",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest --config jest.config.js",
     "start": "nodemon --watch . --ext ts --exec ts-node src/server.ts",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint . --fix --ext .ts"
