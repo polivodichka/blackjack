@@ -131,6 +131,7 @@ export enum BaseMessages {
   NoMoney = 'Insufficient funds!',
   PlayerLost = 'The player is lost, please re login.',
   ChatLost = 'The chat is lost, please re login.',
+  ProhibitedAction = 'This action is prohibited ',
 }
 
 export type TBet = 2 | 5 | 10 | 20 | 40 | 60 | 100;

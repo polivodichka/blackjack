@@ -10,12 +10,14 @@ import { Chat } from '../models/chat';
 import { Player } from '../models/player';
 import { ServerSocket } from '../serverSocket';
 import { BaseMessages, SocketEmit } from '../types.ds';
+import { Dealer } from '../models/dealer';
 
 describe('ServerSocket', () => {
   let serverSocket: ServerSocket;
   let httpServer: http.Server;
   let mockSocket1: any;
   let mockSocket2: any;
+  let mockSocket3: any;
 
   beforeAll(() => {
     httpServer = http.createServer();
@@ -34,6 +36,17 @@ describe('ServerSocket', () => {
     };
     mockSocket2 = {
       id: 'testSocketId2',
+      join: jest.fn(),
+      emit: jest.fn(),
+      on: jest.fn(),
+      broadcast: {
+        to: jest.fn().mockReturnValue({
+          emit: jest.fn(),
+        }),
+      },
+    };
+    mockSocket3 = {
+      id: 'testSocketId3',
       join: jest.fn(),
       emit: jest.fn(),
       on: jest.fn(),
@@ -106,24 +119,9 @@ describe('ServerSocket', () => {
   });
 
   describe('JoinTable', () => {
-    let mockSocket3: any;
     let table: Table;
     let player: Player;
     let chat: Chat;
-
-    beforeAll(() => {
-      mockSocket3 = {
-        id: 'testSocketId3',
-        join: jest.fn(),
-        emit: jest.fn(),
-        on: jest.fn(),
-        broadcast: {
-          to: jest.fn().mockReturnValue({
-            emit: jest.fn(),
-          }),
-        },
-      };
-    });
 
     it('should add a player to the specified table', async () => {
       const name = 'testPlayer2';
@@ -382,13 +380,11 @@ describe('ServerSocket', () => {
     });
 
     it('should throw an error if player is not found', async () => {
-      const amount = 100;
-      const spotId = 'spot-1';
       const handleErrorSpy = jest.spyOn(serverSocket, 'handleError');
       const initialPlayerCount = table.allPlayers.length;
       const initialPlayerBalance = fakePlayer1.parentPlayer!.balance;
 
-      await mockSocket2.on.mock.calls[3][1](table.id, 'fakePlayerId', 0);
+      await mockSocket1.on.mock.calls[3][1](table.id, 'fakePlayerId', 0);
 
       expect(handleErrorSpy).toHaveBeenCalledWith(
         new Error(BaseMessages.PlayerLost),
@@ -396,6 +392,78 @@ describe('ServerSocket', () => {
       );
       expect(table.allPlayers).toHaveLength(initialPlayerCount);
       expect(fakePlayer1.parentPlayer!.balance).toBe(initialPlayerBalance);
+    });
+  });
+
+  describe('Deal', () => {
+    let table: Table;
+    let player1: Player;
+    let player2: Player;
+    let fakePlayer1: Player;
+    let fakePlayer2: Player;
+    let dealer: Dealer | null;
+
+    beforeAll(() => {
+      table = Object.values(serverSocket.tables)[0];
+
+      player1 = serverSocket.findPlayerById(mockSocket1.id, table)!;
+      player2 = serverSocket.findPlayerById(mockSocket2.id, table)!;
+
+      fakePlayer1 = table.allPlayers.find(
+        (player) => player.parentPlayer?.id === mockSocket1.id
+      )!;
+      fakePlayer2 = table.allPlayers.find(
+        (player) => player.parentPlayer?.id === mockSocket2.id
+      )!;
+      dealer = table.dealer;
+    });
+
+    it('should throw an error if there are no bets at all', async () => {
+      const handleErrorSpy = jest.spyOn(serverSocket, 'handleError');
+      jest.spyOn(table, 'spots', 'get').mockReturnValueOnce({});
+
+      await mockSocket2.on.mock.calls[4][1](table.id);
+
+      expect(handleErrorSpy).toHaveBeenCalledWith(
+        new Error(BaseMessages.ProhibitedAction),
+        mockSocket2
+      );
+    });
+
+    it('should not deal if table is not found', async () => {
+      await mockSocket2.on.mock.calls[4][1]('fakeTableId');
+
+      expect(dealer).toBeNull();
+      expect(fakePlayer1.hand).toHaveLength(0);
+      expect(fakePlayer2.hand).toHaveLength(0);
+    });
+
+    it('should throw an error if table is not found', async () => {
+      const handleErrorSpy = jest.spyOn(serverSocket, 'handleError');
+
+      await mockSocket2.on.mock.calls[4][1]('fakeTableId');
+
+      expect(handleErrorSpy).toHaveBeenCalledWith(
+        new Error(BaseMessages.NoTable),
+        mockSocket2
+      );
+    });
+
+    it('should deal cards to players with bets and dealer', async () => {
+      const initialPlayerCount = table.allPlayers.length;
+
+      await mockSocket1.on.mock.calls[4][1](table.id);
+      dealer = table.dealer;
+
+      expect(dealer).not.toBeNull();
+      expect(fakePlayer1.hand).toHaveLength(2);
+      expect(fakePlayer2.hand).toHaveLength(2);
+      dealer && expect(dealer.hand).toHaveLength(1);
+    });
+
+    it('should not deal cards to players without bets', () => {
+      expect(player1.hand).toHaveLength(0);
+      expect(player2.hand).toHaveLength(0);
     });
   });
 });

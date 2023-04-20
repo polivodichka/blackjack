@@ -128,7 +128,7 @@ export class ServerSocket {
         this.handleError(error, socket);
       }
     });
-    
+
     socket.on(
       SocketOn.RemoveBet,
       (tableId: string, playerId: string, betIndex: number) => {
@@ -155,12 +155,17 @@ export class ServerSocket {
         }
       }
     );
+
     socket.on(SocketOn.Deal, (tableId: string) => {
       try {
         const table = this.tables[tableId];
 
         if (!table) {
           throw new Error(BaseMessages.NoTable);
+        }
+
+        if (!Object.keys(table.spots).length) {
+          throw new Error(BaseMessages.ProhibitedAction);
         }
 
         table.deal();
@@ -177,6 +182,7 @@ export class ServerSocket {
         this.handleError(error, socket);
       }
     });
+
     socket.on(
       SocketOn.Action,
       (actionType: ActionType, tableId: string, playerId: string) => {
