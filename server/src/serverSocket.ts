@@ -1,4 +1,4 @@
-import { ActionType } from './types.ds';
+import { ActionType, Rank } from './types.ds';
 import { BaseMessages } from './types.ds';
 import { Chat } from './models/chat';
 import { EndGameActions } from './types.ds';
@@ -32,11 +32,13 @@ export class ServerSocket {
         origin: '*',
       },
     });
+    this.findPlayerById = this.findPlayerById.bind(this);
+    this.handleError = this.handleError.bind(this);
 
     this.io.on(SocketOn.Connect, this.StartListeners);
   }
 
-  private StartListeners = (socket: MySocket) => {
+  public StartListeners = (socket: MySocket): void => {
     console.info(`Message received from ${socket.id}`);
 
     socket.on(SocketOn.CreateTable, async (name, balance) => {
@@ -58,7 +60,7 @@ export class ServerSocket {
           JSON.stringify(chat)
         );
       } catch (error) {
-        handleError(error);
+        this.handleError(error, socket);
       }
     });
     socket.on(SocketOn.JoinTable, async (tableId, name, balance) => {
@@ -88,7 +90,7 @@ export class ServerSocket {
           JSON.stringify(chat)
         );
       } catch (error) {
-        handleError(error);
+        this.handleError(error, socket);
       }
     });
 
@@ -122,7 +124,7 @@ export class ServerSocket {
             .emit(SocketEmit.BetUpdate, JSON.stringify(table.allPlayers));
         }
       } catch (error) {
-        handleError(error);
+        this.handleError(error, socket);
       }
     });
     socket.on(
@@ -139,7 +141,7 @@ export class ServerSocket {
             throw new Error(BaseMessages.PlayerLost);
           }
 
-          player.betDeleteByIndex(betIndex);
+          table.betDeleteByIndex(betIndex, player);
 
           console.info(`betRemoved player ${player.parentPlayer?.id}`);
           //send
@@ -147,7 +149,7 @@ export class ServerSocket {
             .to(table.id)
             .emit(SocketEmit.BetUpdate, JSON.stringify(table.allPlayers));
         } catch (error) {
-          handleError(error);
+          this.handleError(error, socket);
         }
       }
     );
@@ -170,7 +172,7 @@ export class ServerSocket {
         //send
         this.io.to(table.id).emit(SocketEmit.Dealt, JSON.stringify(table));
       } catch (error) {
-        handleError(error);
+        this.handleError(error, socket);
       }
     });
     socket.on(
@@ -204,6 +206,9 @@ export class ServerSocket {
               if (player.betChipsTotal > player.balance) {
                 throw new Error(BaseMessages.NoMoney);
               }
+              if (player.hand[0].rank !== player.hand[1].rank) {
+                throw new Error('Cant split!');
+              }
               table.split();
               break;
 
@@ -214,6 +219,9 @@ export class ServerSocket {
             case ActionType.Insurance:
               if (player.betChipsTotal / 2 > player.balance) {
                 throw new Error(BaseMessages.NoMoney);
+              }
+              if (table.dealer?.hand[0].rank !== Rank.Ace) {
+                throw new Error("Can't insurance");
               }
               player.insurance();
               break;
@@ -258,7 +266,7 @@ export class ServerSocket {
             table.currentPlayerIndex = null;
           }
         } catch (error) {
-          handleError(error);
+          this.handleError(error, socket);
           const table = this.tables[tableId];
           this.io
             .to(table.id)
@@ -290,7 +298,7 @@ export class ServerSocket {
           socket.emit(SocketEmit.BalanceToppedUp, JSON.stringify(player));
           socket.emit(SocketEmit.Message, 'Balance successfully topped up!');
         } catch (error) {
-          handleError(error);
+          this.handleError(error, socket);
         }
       }
     );
@@ -316,7 +324,7 @@ export class ServerSocket {
           .to(table.id)
           .emit(SocketEmit.ChatServerMessage, JSON.stringify(newMessage));
       } catch (error) {
-        handleError(error);
+        this.handleError(error, socket);
       }
     });
     socket.on(
@@ -338,7 +346,10 @@ export class ServerSocket {
               table.removeFakePlayers(player);
               break;
             case EndGameActions.Rebet:
-              if (player.betChipsTotalWithChildren <= player.balance) {
+              if (
+                table.getPlayerBetChipsTotalWithChildren(player) <=
+                player.balance
+              ) {
                 table.rebet(player);
               } else {
                 table.removeFakePlayers(player);
@@ -351,7 +362,7 @@ export class ServerSocket {
             .to(table.id)
             .emit(SocketEmit.GameEnded, JSON.stringify(table));
         } catch (error) {
-          handleError(error);
+          this.handleError(error, socket);
         }
       }
     );
@@ -396,19 +407,19 @@ export class ServerSocket {
         }
       } catch (error) {}
     });
-
-    const handleError = (error: unknown) => {
-      if (error instanceof Error) {
-        console.info(error);
-        socket.emit(SocketEmit.Error, error.message);
-      } else {
-        console.info('An unknown error occurred');
-        socket.emit(SocketEmit.Error, BaseMessages.SmthWentWrong);
-      }
-    };
   };
 
-  private findPlayerById(playerId: string, table: Table): Player | undefined {
+  public handleError(error: unknown, socket: MySocket): void {
+    if (error instanceof Error) {
+      console.info(error);
+      socket.emit(SocketEmit.Error, error.message);
+    } else {
+      console.info('An unknown error occurred');
+      socket.emit(SocketEmit.Error, BaseMessages.SmthWentWrong);
+    }
+  }
+
+  public findPlayerById(playerId: string, table: Table): Player | undefined {
     return table.allPlayers.find((player) => player.id === playerId);
   }
 }

@@ -13,7 +13,7 @@ export class Dealer {
     this.tableId = tableId;
   }
 
-  protected get roundIsStarted(): boolean {
+  public get roundIsStarted(): boolean {
     return this.hand.length !== 2;
   }
 

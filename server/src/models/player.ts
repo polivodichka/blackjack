@@ -1,10 +1,7 @@
 import { Dealer } from './dealer';
-import { PlayerGameState } from '../types.ds';
 import { PlayerType } from '../types.ds';
-import { Table } from './table';
 import { TBet } from '../types.ds';
 
-import { socket } from '../server';
 import { v4 } from 'uuid';
 
 export class Player extends Dealer {
@@ -38,40 +35,13 @@ export class Player extends Dealer {
     return PlayerType.Parent;
   }
 
-  private get table(): Table {
-    return socket.tables[this.tableId];
-  }
-
-  private get spot(): Player[] | null {
-    return this.spotId ? this.table.spots[this.spotId] : null;
-  }
-
-  private get isSplitted(): boolean {
-    return this.isSubplayer || (this.spot?.length ?? 1) > 1;
-  }
-
-  private get isSubplayer(): boolean {
+  public get isSubplayer(): boolean {
     return !!this.parentAfterSplitPlayer;
   }
 
   public get betChipsTotal(): number {
     return this.betChips.length
       ? (this.betChips as number[]).reduce((bet1, bet2) => bet1 + bet2)
-      : 0;
-  }
-
-  public get betChipsTotalWithChildren(): number {
-    const players = this.table.allPlayers.filter(
-      (player) =>
-        player.id === this.id ||
-        player.parentAfterSplitPlayer?.id === this.id ||
-        player.parentPlayer?.id === this.id
-    );
-    const chips = players
-      .map((player) => player.betChips)
-      .reduce((a, b) => a.concat(b));
-    return chips.length
-      ? (chips as number[]).reduce((bet1, bet2) => bet1 + bet2)
       : 0;
   }
 
@@ -125,29 +95,5 @@ export class Player extends Dealer {
       this.insuranceBet = amount;
       this.decreaseBalance(amount);
     }
-  }
-
-  public betDeleteByIndex(index: number): void {
-    this.increaseBalance(this.betChips[index]);
-    this.betChips.splice(index, 1);
-    if (this.betChips.length < 1) {
-      this.table.playerRemove(this);
-    }
-  }
-
-  public get state(): PlayerGameState {
-    if (this.handTotal > 21) {
-      return PlayerGameState.Bust;
-    }
-    if (this.handTotal === 21 && !this.roundIsStarted && !this.isSplitted) {
-      return PlayerGameState.NaturalBlackjack;
-    }
-    if (this.handTotal === 21) {
-      return PlayerGameState.Blackjack;
-    }
-    if (this.handTotal < 21 && this.handTotal > 0) {
-      return PlayerGameState.Active;
-    }
-    return PlayerGameState.Error;
   }
 }

@@ -16,6 +16,8 @@ export class Table {
   public deck: Card[] = [];
   public roundIsStarted = false;
 
+  public constructor() {}
+
   public get players(): Player[] {
     return this.allPlayers.filter(
       (player) => player.playerType !== PlayerType.Parent
@@ -111,7 +113,7 @@ export class Table {
       player.hand = [];
       player.insuranceBet = null;
     });
-    parent.balance -= parent.betChipsTotalWithChildren;
+    parent.balance -= this.getPlayerBetChipsTotalWithChildren(parent);
     parent.roundIsEnded = false;
     if (this.handsEmpty) {
       this.dealer = null;
@@ -220,6 +222,57 @@ export class Table {
         player.parentPlayer.roundIsEnded = true;
       }
     });
+  }
+
+  public getPlayerBetChipsTotalWithChildren(findingPlayer: Player): number {
+    const players = this.allPlayers.filter(
+      (player) =>
+        player.id === findingPlayer.id ||
+        player.parentAfterSplitPlayer?.id === findingPlayer.id ||
+        player.parentPlayer?.id === findingPlayer.id
+    );
+    const chips = players
+      .map((player) => player.betChips)
+      .reduce((a, b) => a.concat(b));
+    return chips.length
+      ? (chips as number[]).reduce((bet1, bet2) => bet1 + bet2)
+      : 0;
+  }
+
+  public betDeleteByIndex(index: number, player: Player): void {
+    player.increaseBalance(player.betChips[index]);
+    player.betChips.splice(index, 1);
+    if (player.betChips.length < 1) {
+      this.playerRemove(player);
+    }
+  }
+
+  public getPlayerState(player: Player): PlayerGameState {
+    if (player.handTotal > 21) {
+      return PlayerGameState.Bust;
+    }
+    if (
+      player.handTotal === 21 &&
+      !player.roundIsStarted &&
+      !this.getPlayrIsSplitted(player)
+    ) {
+      return PlayerGameState.NaturalBlackjack;
+    }
+    if (player.handTotal === 21) {
+      return PlayerGameState.Blackjack;
+    }
+    if (player.handTotal < 21 && player.handTotal > 0) {
+      return PlayerGameState.Active;
+    }
+    return PlayerGameState.Error;
+  }
+
+  private getPlayerSpot(player: Player): Player[] | null {
+    return player.spotId ? this.spots[player.spotId] : null;
+  }
+
+  private getPlayrIsSplitted(player: Player): boolean {
+    return player.isSubplayer || (this.getPlayerSpot(player)?.length ?? 1) > 1;
   }
 
   private createDeck(): void {

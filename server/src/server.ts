@@ -1,4 +1,4 @@
-import { ServerSocket } from './socket';
+import { ServerSocket } from './serverSocket';
 
 import express from 'express';
 import http from 'http';
@@ -9,7 +9,7 @@ const app = express();
 const httpServer = http.createServer(app);
 
 //Start socket
-export const socket = new ServerSocket(httpServer);
+new ServerSocket(httpServer);
 
 //Rules of API
 app.use((_, res) => {
