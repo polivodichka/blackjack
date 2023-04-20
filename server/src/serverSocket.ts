@@ -63,6 +63,7 @@ export class ServerSocket {
         this.handleError(error, socket);
       }
     });
+
     socket.on(SocketOn.JoinTable, async (tableId, name, balance) => {
       try {
         const table = this.tables[tableId];
@@ -127,6 +128,7 @@ export class ServerSocket {
         this.handleError(error, socket);
       }
     });
+    
     socket.on(
       SocketOn.RemoveBet,
       (tableId: string, playerId: string, betIndex: number) => {

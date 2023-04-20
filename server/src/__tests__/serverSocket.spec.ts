@@ -199,27 +199,58 @@ describe('ServerSocket', () => {
 
     it('should add a player with bet and with correct parent to the specified table', async () => {
       const amount = 100;
-      const spotId = 'spot-1';
+      const amount2 = 50;
       const initialPlayerCount = table.allPlayers.length;
-      const initialPlayerBalance = player1.balance;
+      const initialPlayerBalance1 = player1.balance;
+      const initialPlayerBalance2 = player2.balance;
 
       await mockSocket1.on.mock.calls[2][1](
         table.id,
-        spotId,
-        player1?.id,
+        'spot-1',
+        player1.id,
         amount
       );
+      await mockSocket1.on.mock.calls[2][1](
+        table.id,
+        'spot-1',
+        player1.id,
+        amount
+      );
+      await mockSocket1.on.mock.calls[2][1](
+        table.id,
+        'spot-2',
+        player2.id,
+        amount2
+      );
+      await mockSocket1.on.mock.calls[2][1](
+        table.id,
+        'spot-3',
+        player2.id,
+        player2.balance
+      );
 
-      const newPlayer = table.allPlayers[initialPlayerCount];
+      const newPlayer1_1 = table.allPlayers[initialPlayerCount];
 
-      expect(newPlayer).toBeDefined();
-      expect(newPlayer.parentPlayer).toBe(player1);
+      const newPlayer2_1 = table.allPlayers[initialPlayerCount + 1];
+      const newPlayer2_2 = table.allPlayers[initialPlayerCount + 2];
 
-      expect(table.allPlayers).toHaveLength(initialPlayerCount + 1);
-      expect(player1).toBeDefined();
-      expect(player1.balance).toBe(initialPlayerBalance - amount);
-      expect(newPlayer.betChips).toHaveLength(1);
-      expect(newPlayer.betChipsTotal).toBe(amount);
+      expect(newPlayer1_1).toBeDefined();
+      expect(newPlayer1_1.parentPlayer).toBe(player1);
+
+      expect(newPlayer2_1).toBeDefined();
+      expect(newPlayer2_1.parentPlayer).toBe(player2);
+
+      expect(newPlayer2_2).toBeDefined();
+      expect(newPlayer2_2.parentPlayer).toBe(player2);
+
+      expect(table.allPlayers).toHaveLength(initialPlayerCount + 3);
+      expect(player1.balance).toBe(initialPlayerBalance1 - amount * 2);
+      expect(player2.balance).toBe(0);
+      expect(table.getPlayerBetChipsTotalWithChildren(player2)).toBe(
+        initialPlayerBalance2
+      );
+      expect(newPlayer1_1.betChips).toHaveLength(2);
+      expect(newPlayer1_1.betChipsTotal).toBe(amount * 2);
     });
 
     it('should throw an error if table is not found', async () => {
@@ -286,6 +317,85 @@ describe('ServerSocket', () => {
       );
       expect(table.allPlayers).toHaveLength(initialPlayerCount);
       expect(player1.balance).toBe(initialPlayerBalance);
+    });
+  });
+
+  describe('RemoveBet', () => {
+    let table: Table;
+    let fakePlayer1: Player;
+    let fakePlayer2: Player;
+
+    beforeAll(() => {
+      table = Object.values(serverSocket.tables)[0];
+      fakePlayer1 = table.allPlayers.find(
+        (player) => player.parentPlayer?.id === mockSocket1.id
+      )!;
+      fakePlayer2 = table.allPlayers.find(
+        (player) => player.parentPlayer?.id === mockSocket2.id
+      )!;
+    });
+
+    it('should correctly remove bet', async () => {
+      const parent = fakePlayer1.parentPlayer!;
+      const amount = 100;
+      const initialPlayerCount = table.allPlayers.length;
+      const initialPlayerBalance = parent.balance;
+
+      await mockSocket1.on.mock.calls[3][1](table.id, fakePlayer1.id, 1);
+
+      expect(parent.balance).toBe(initialPlayerBalance + amount);
+      expect(table.allPlayers).toHaveLength(initialPlayerCount);
+      expect(fakePlayer1.betChips).toHaveLength(1);
+      expect(fakePlayer1.betChipsTotal).toBe(amount);
+    });
+
+    it('should remove fake player if they have no bets', async () => {
+      const parent = fakePlayer2.parentPlayer!;
+      const amount = 50;
+      const initialPlayerCount = table.allPlayers.length;
+      const initialPlayerBalance = parent.balance;
+
+      await mockSocket2.on.mock.calls[3][1](table.id, fakePlayer2.id, 0);
+
+      expect(parent.balance).toBe(initialPlayerBalance + amount);
+      expect(table.allPlayers).toHaveLength(initialPlayerCount - 1);
+      expect(
+        table.allPlayers.find((player) => player.id === fakePlayer2.id)
+      ).toBeUndefined();
+    });
+
+    it('should throw an error if table is not found', async () => {
+      const amount = 100;
+      const spotId = 'spot-1';
+      const handleErrorSpy = jest.spyOn(serverSocket, 'handleError');
+      const initialPlayerCount = table.allPlayers.length;
+      const initialPlayerBalance = fakePlayer1.parentPlayer!.balance;
+
+      await mockSocket2.on.mock.calls[3][1]('fakeTableId', fakePlayer1.id, 0);
+
+      expect(handleErrorSpy).toHaveBeenCalledWith(
+        new Error(BaseMessages.NoTable),
+        mockSocket1
+      );
+      expect(table.allPlayers).toHaveLength(initialPlayerCount);
+      expect(fakePlayer1.parentPlayer!.balance).toBe(initialPlayerBalance);
+    });
+
+    it('should throw an error if player is not found', async () => {
+      const amount = 100;
+      const spotId = 'spot-1';
+      const handleErrorSpy = jest.spyOn(serverSocket, 'handleError');
+      const initialPlayerCount = table.allPlayers.length;
+      const initialPlayerBalance = fakePlayer1.parentPlayer!.balance;
+
+      await mockSocket2.on.mock.calls[3][1](table.id, 'fakePlayerId', 0);
+
+      expect(handleErrorSpy).toHaveBeenCalledWith(
+        new Error(BaseMessages.PlayerLost),
+        mockSocket1
+      );
+      expect(table.allPlayers).toHaveLength(initialPlayerCount);
+      expect(fakePlayer1.parentPlayer!.balance).toBe(initialPlayerBalance);
     });
   });
 });
