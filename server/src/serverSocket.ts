@@ -332,7 +332,7 @@ export class ServerSocket {
         let chat = this.chats[tableId];
 
         if (!chat) {
-          throw new Error(BaseMessages.SmthWentWrong);
+          throw new Error(BaseMessages.ChatLost);
         }
 
         const newMessage = chat.addMessage(message);

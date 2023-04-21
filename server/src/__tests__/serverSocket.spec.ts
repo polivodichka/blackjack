@@ -17,6 +17,7 @@ import {
   SocketEmit,
   SuitCard,
   Rank,
+  IMessage,
 } from '../types.ds';
 import { Dealer } from '../models/dealer';
 import { Card } from '../models/card';
@@ -29,6 +30,8 @@ describe('ServerSocket', () => {
   let mockSocket3: any;
 
   beforeAll(() => {
+    jest.spyOn(console, 'info').mockImplementation(() => {});
+
     httpServer = http.createServer();
     serverSocket = new ServerSocket(httpServer);
     serverSocket.io.to = jest.fn().mockReturnValue({
@@ -875,6 +878,77 @@ describe('ServerSocket', () => {
         JSON.stringify(player)
       );
       expect(player.balance).toBe(initialBalance + amount);
+    });
+  });
+
+  describe('ChatSendMessage', () => {
+    let table: Table;
+    let chat: Chat;
+    let message: IMessage;
+    let spyChat: jest.SpyInstance<IMessage, [message: IMessage], any>;
+
+    beforeAll(() => {
+      table = Object.values(serverSocket.tables)[0];
+      chat = serverSocket.chats[table.id];
+      message = {
+        id: 'messageId',
+        text: ['HELLO world'],
+        playerId: 'playerId',
+        playerName: '1',
+        time: '',
+      };
+      (mockSocket1.emit as jest.Mock).mockReset();
+      (serverSocket.io.to(table.id).emit as jest.Mock).mockRestore();
+      spyChat = jest.spyOn(chat, 'addMessage');
+    });
+
+    it('should throw an error if table is not found', async () => {
+      const spyHandleError = jest.spyOn(serverSocket, 'handleError');
+      await mockSocket1.on.mock.calls[7][1](
+        'fakeTableId',
+        JSON.stringify(message)
+      );
+
+      expect(spyHandleError).toHaveBeenCalledWith(
+        new Error(BaseMessages.NoTable),
+        mockSocket1
+      );
+      spyHandleError.mockRestore();
+    });
+
+    it('should throw an error if chat is not found', async () => {
+      const spyHandleError = jest.spyOn(serverSocket, 'handleError');
+      const newTable = new Table();
+      serverSocket.tables[newTable.id] = newTable;
+
+      await mockSocket1.on.mock.calls[7][1](
+        newTable.id,
+        JSON.stringify(message)
+      );
+
+      expect(spyHandleError).toHaveBeenCalledWith(
+        new Error(BaseMessages.ChatLost),
+        mockSocket1
+      );
+      spyHandleError.mockRestore();
+    });
+
+    it('should recieve message and add it to the chat', async () => {
+      await mockSocket1.on.mock.calls[7][1](table.id, JSON.stringify(message));
+
+      expect(chat.messages).toHaveLength(1);
+      expect(chat.messages[0].text).toStrictEqual(message.text);
+    });
+
+    it('should add time to message', () => {
+      expect(spyChat.mock.results[0].value.time).toMatch(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d.\d{3}Z$/);
+    });
+
+    it('should send message to the client', () => {
+      expect(serverSocket.io.to(table.id).emit).toHaveBeenCalledWith(
+        SocketEmit.ChatServerMessage,
+        JSON.stringify(spyChat.mock.results[0].value)
+      );
     });
   });
 });
