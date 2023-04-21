@@ -195,7 +195,11 @@ export class Table {
 
         switch (player.state) {
           case PlayerGameState.NaturalBlackjack:
-            player.increaseBalance(betSum * 2.5);
+            if (this.dealer.isNaturalBJ) {
+              player.increaseBalance(betSum);
+            } else {
+              player.increaseBalance(betSum * 2.5);
+            }
             break;
 
           case PlayerGameState.Blackjack:

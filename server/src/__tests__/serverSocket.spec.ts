@@ -15,13 +15,11 @@ import {
   ActionType,
   BaseMessages,
   SocketEmit,
-  SuitCard,
-  Rank,
   IMessage,
-  EndGameActions,
+  EndGameActions
 } from '../types.ds';
 import { Dealer } from '../models/dealer';
-import { Card } from '../models/card';
+import { mockedDeck } from './mockedDeck';
 
 describe('ServerSocket', () => {
   let serverSocket: ServerSocket;
@@ -495,7 +493,7 @@ describe('ServerSocket', () => {
 
     it('should deal cards to players with bets and dealer', async () => {
       table['shuffleDeck'] = jest.fn(() => {
-        table['deck'] = mockDeck;
+        table['deck'] = mockedDeck;
       });
 
       await mockSocket1.on.mock.calls[4][1](table.id);
@@ -1137,19 +1135,3 @@ describe('ServerSocket', () => {
     });
   });
 });
-
-const mockDeck: Card[] = [
-  { suit: 'Hearts', rank: Rank.Two, value: 2 },
-  { suit: 'Diamonds', rank: Rank.Two, value: 2 },
-  { suit: 'Clubs', rank: Rank.Two, value: 2 },
-  { suit: 'Spades', rank: Rank.Two, value: 2 },
-  { suit: 'Hearts', rank: Rank.Ace, value: 11 },
-  { suit: 'Diamonds', rank: Rank.Three, value: 3 },
-  { suit: 'Clubs', rank: Rank.Three, value: 3 },
-  { suit: 'Spades', rank: Rank.Three, value: 3 },
-  { suit: 'Diamonds', rank: Rank.Queen, value: 10 },
-  { suit: 'Hearts', rank: Rank.Four, value: 4 },
-  { suit: 'Diamonds', rank: Rank.Four, value: 4 },
-  { suit: 'Clubs', rank: Rank.Four, value: 4 },
-  { suit: 'Spades', rank: Rank.Four, value: 4 },
-];
