@@ -2,6 +2,8 @@ import { Card } from '../models/card';
 import { Dealer } from '../models/dealer';
 import { PlayerGameState, Rank, SuitCard } from '../types.ds';
 
+jest.mock('uuid', () => ({ v4: () => '123456789' }));
+
 describe('Dealer', () => {
   let dealer: Dealer;
 
@@ -10,11 +12,12 @@ describe('Dealer', () => {
   });
 
   it('should create a Dealer with an ID', () => {
-    expect(dealer.id).toBeTruthy();
+    // expect(dealer.id).toBe(uuidSpy.mock.results[0].value);
+    expect(dealer.id).toBe('123456789');
   });
 
   it('should create a Dealer with a table ID', () => {
-    expect(dealer.tableId).toEqual('table1');
+    expect(dealer.tableId).toBe('table1');
   });
 
   it('should have an empty hand when created', () => {
@@ -33,6 +36,7 @@ describe('Dealer', () => {
     });
 
     it('should return true when the dealer has at least 3 cards', () => {
+      expect(dealer.roundIsStarted).toBe(false);
       dealer.hand.push(new Card('Hearts', Rank.Two, 2));
       dealer.hand.push(new Card('Hearts', Rank.Three, 3));
       dealer.hand.push(new Card('Hearts', Rank.Three, 3));
@@ -42,6 +46,7 @@ describe('Dealer', () => {
 
   describe('handTotal', () => {
     it('should return the correct total for a hand with no Aces', () => {
+      expect(dealer.handTotal).toBe(0);
       dealer.hand.push(new Card('Hearts', Rank.Two, 2));
       dealer.hand.push(new Card('Spades', Rank.Three, 3));
       dealer.hand.push(new Card('Clubs', Rank.Five, 5));
@@ -49,6 +54,7 @@ describe('Dealer', () => {
     });
 
     it('should return the correct total for a hand with Aces', () => {
+      expect(dealer.handTotal).toBe(0);
       dealer.hand.push(new Card('Hearts', Rank.Ace, 11));
       dealer.hand.push(new Card('Spades', Rank.Two, 2));
       dealer.hand.push(new Card('Clubs', Rank.Ace, 11));
@@ -56,6 +62,7 @@ describe('Dealer', () => {
     });
 
     it('should handle multiple Aces correctly', () => {
+      expect(dealer.handTotal).toBe(0);
       dealer.hand.push(new Card('Hearts', Rank.Ace, 11));
       dealer.hand.push(new Card('Spades', Rank.Ace, 11));
       dealer.hand.push(new Card('Clubs', Rank.Ace, 11));
@@ -63,6 +70,7 @@ describe('Dealer', () => {
     });
 
     it('should adjust the total when necessary for Aces', () => {
+      expect(dealer.handTotal).toBe(0);
       dealer.hand.push(new Card('Hearts', Rank.Ace, 11));
       dealer.hand.push(new Card('Spades', Rank.Ten, 10));
       expect(dealer.handTotal).toBe(21);
@@ -113,7 +121,7 @@ describe('Dealer', () => {
         { suit: 'Diamonds', rank: Rank.Ten, value: 10 },
         { suit: 'Clubs', rank: Rank.Ten, value: 10 },
       ];
-      expect(dealer.state).toEqual(PlayerGameState.Bust);
+      expect(dealer.state).toBe(PlayerGameState.Bust);
     });
     it('should return PlayerGameState.Blackjack when hand total is 21 and round is started', () => {
       dealer.hand = [
@@ -121,7 +129,7 @@ describe('Dealer', () => {
         { suit: 'Hearts', rank: Rank.Ten, value: 5 },
         { suit: 'Clubs', rank: Rank.Ace, value: 11 },
       ];
-      expect(dealer.state).toEqual(PlayerGameState.Blackjack);
+      expect(dealer.state).toBe(PlayerGameState.Blackjack);
     });
 
     it('should return PlayerGameState.NaturalBlackjack when hand total is 21 and round is not started', () => {
@@ -129,7 +137,7 @@ describe('Dealer', () => {
         { suit: 'Clubs', rank: Rank.Ace, value: 11 },
         { suit: 'Clubs', rank: Rank.Ten, value: 10 },
       ];
-      expect(dealer.state).toEqual(PlayerGameState.NaturalBlackjack);
+      expect(dealer.state).toBe(PlayerGameState.NaturalBlackjack);
     });
 
     it('should return PlayerGameState.Active when hand total is less than 21 and greater than 0', () => {
@@ -137,12 +145,12 @@ describe('Dealer', () => {
         { suit: 'Hearts', rank: Rank.Ten, value: 10 },
         { suit: 'Clubs', rank: Rank.Nine, value: 9 },
       ];
-      expect(dealer.state).toEqual(PlayerGameState.Active);
+      expect(dealer.state).toBe(PlayerGameState.Active);
     });
 
     it('should return PlayerGameState.Error when hand total is less than or equal to 0', () => {
       dealer.hand = [];
-      expect(dealer.state).toEqual(PlayerGameState.Error);
+      expect(dealer.state).toBe(PlayerGameState.Error);
     });
   });
 });

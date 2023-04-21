@@ -155,7 +155,7 @@ describe('Table', () => {
         undefined,
         player1.id
       );
-      expect(player).toEqual(player1);
+      expect(player).toBe(player1);
     });
   });
 
@@ -249,7 +249,7 @@ describe('Table', () => {
 
       table.countWinnings();
 
-      expect(player2.balance).toEqual(90);
+      expect(player2.balance).toBe(90);
     });
 
     it('should correctly calculate winnings for a player natural blackjack', () => {
@@ -266,7 +266,7 @@ describe('Table', () => {
 
       table.countWinnings();
 
-      expect(player2.balance).toEqual(130);
+      expect(player2.balance).toBe(130);
     });
     it('should correctly calculate winnings if player and dealer have natural blackjack', () => {
       player2.balance = 80; // including deductions
@@ -282,7 +282,7 @@ describe('Table', () => {
 
       table.countWinnings();
 
-      expect(player2.balance).toEqual(100);
+      expect(player2.balance).toBe(100);
     });
     it('should correctly calculate winnings for a player blackjack', () => {
       player2.balance = 80; // including deductions
@@ -302,7 +302,7 @@ describe('Table', () => {
 
       table.countWinnings();
 
-      expect(player2.balance).toEqual(120);
+      expect(player2.balance).toBe(120);
     });
     it('should correctly calculate winnings for a player bust', () => {
       player2.balance = 80; // including deductions
@@ -318,7 +318,7 @@ describe('Table', () => {
 
       table.countWinnings();
 
-      expect(player2.balance).toEqual(80);
+      expect(player2.balance).toBe(80);
     });
     it('should correctly calculate winnings for a dealer bust', () => {
       player2.balance = 80; // including deductions
@@ -334,7 +334,7 @@ describe('Table', () => {
 
       table.countWinnings();
 
-      expect(player2.balance).toEqual(120);
+      expect(player2.balance).toBe(120);
     });
 
     it('should correctly calculate winnings if dealer and player hands are equal', () => {
@@ -351,7 +351,7 @@ describe('Table', () => {
 
       table.countWinnings();
 
-      expect(player2.balance).toEqual(100);
+      expect(player2.balance).toBe(100);
     });
   });
 
@@ -366,7 +366,7 @@ describe('Table', () => {
         { suit: 'Clubs', rank: Rank.Ten, value: 10 },
         { suit: 'Hearts', rank: Rank.Ten, value: 10 },
       ];
-      expect(table.getPlayerState(player1)).toEqual(PlayerGameState.Bust);
+      expect(table.getPlayerState(player1)).toBe(PlayerGameState.Bust);
     });
 
     it('should return PlayerGameState.NaturalBlackjack when hand total is 21 and round is not started and not splitted', () => {
@@ -375,7 +375,7 @@ describe('Table', () => {
         { suit: 'Clubs', rank: Rank.Ten, value: 10 },
       ];
       player1.parentAfterSplitPlayer = null;
-      expect(table.getPlayerState(player1)).toEqual(
+      expect(table.getPlayerState(player1)).toBe(
         PlayerGameState.NaturalBlackjack
       );
     });
@@ -386,7 +386,7 @@ describe('Table', () => {
         { suit: 'Clubs', rank: Rank.Ace, value: 11 },
         { suit: 'Clubs', rank: Rank.Three, value: 3 },
       ];
-      expect(table.getPlayerState(player1)).toEqual(PlayerGameState.Blackjack);
+      expect(table.getPlayerState(player1)).toBe(PlayerGameState.Blackjack);
     });
 
     it('should return PlayerGameState.Active when hand total is less than 21 and greater than 0', () => {
@@ -394,12 +394,12 @@ describe('Table', () => {
         { suit: 'Clubs', rank: Rank.Ten, value: 10 },
         { suit: 'Diamonds', rank: Rank.Seven, value: 7 },
       ];
-      expect(table.getPlayerState(player1)).toEqual(PlayerGameState.Active);
+      expect(table.getPlayerState(player1)).toBe(PlayerGameState.Active);
     });
 
     it('should return PlayerGameState.Error when hand total is less than or equal to 0', () => {
       player1.hand = [];
-      expect(table.getPlayerState(player1)).toEqual(PlayerGameState.Error);
+      expect(table.getPlayerState(player1)).toBe(PlayerGameState.Error);
     });
   });
 });

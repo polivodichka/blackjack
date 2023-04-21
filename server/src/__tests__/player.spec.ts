@@ -69,12 +69,12 @@ describe('Player', () => {
     const tableId = 'tableId';
 
     it('should get balance', () => {
-      expect(player.balance).toEqual(100); // default balance is 100
+      expect(player.balance).toBe(100); // default balance is 100
     });
 
     it('should set balance', () => {
       player.balance = 50;
-      expect(player.balance).toEqual(50);
+      expect(player.balance).toBe(50);
     });
 
     it('should get balance for subplayer', () => {
@@ -82,8 +82,8 @@ describe('Player', () => {
       parentPlayer.balance = 100;
       player.parentAfterSplitPlayer = parentPlayer;
 
-      expect(player.playerType).toEqual(PlayerType.Subplayer);
-      expect(player.balance).toEqual(parentPlayer.balance);
+      expect(player.playerType).toBe(PlayerType.Subplayer);
+      expect(player.balance).toBe(parentPlayer.balance);
     });
   });
 
@@ -146,13 +146,13 @@ describe('Player', () => {
     it('should add bet amount to betChips and decrease balance', () => {
       player.bet(10);
       expect(player.betChips).toEqual([10]);
-      expect(player.balance).toEqual(90);
+      expect(player.balance).toBe(90);
     });
 
     it('should not add bet if amount exceeds balance', () => {
       player.bet(200 as TBet);
       expect(player.betChips).toEqual([]);
-      expect(player.balance).toEqual(100);
+      expect(player.balance).toBe(100);
     });
   });
   describe('Player insurance', () => {
