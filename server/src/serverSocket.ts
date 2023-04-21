@@ -396,6 +396,7 @@ export class ServerSocket {
             table = this.tables[key_id];
             if (table) {
               player = this.findPlayerById(socket.id, table);
+              if (player) {break;}
             }
           }
         }
@@ -424,7 +425,9 @@ export class ServerSocket {
             .to(table.id)
             .emit(SocketEmit.DisconnectPlayer, JSON.stringify(table));
         }
-      } catch (error) {}
+      } catch (error) {
+        this.handleError(error, socket);
+      }
     });
   };
 

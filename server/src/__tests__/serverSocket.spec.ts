@@ -1077,6 +1077,56 @@ describe('ServerSocket', () => {
       expect(table.allPlayers).toHaveLength(initialPlayerCount);
       spyRebet.mockRestore();
       expect(table.roundIsStarted).toBeFalsy();
+
+      expect(serverSocket.io.to(table.id).emit).toHaveBeenCalledWith(
+        SocketEmit.GameEnded,
+        JSON.stringify(table)
+      );
+    });
+  });
+
+  describe('Disconnect', () => {
+    let table: Table;
+    let player1: Player;
+    let player2: Player;
+
+    beforeAll(() => {
+      table = Object.values(serverSocket.tables)[0];
+      player1 = serverSocket.findPlayerById(mockSocket1.id, table)!;
+      player2 = serverSocket.findPlayerById(mockSocket2.id, table)!;
+    });
+
+    it('should remove the player on disconnection', async () => {
+      const spyPlayerRemove = jest.spyOn(table, 'playerRemove');
+      const initialPlayerCount = table.allPlayers.length;
+      const playerWithChildrenCount =
+        1 +
+        table.allPlayers.filter(
+          (p) =>
+            player1.id === p.parentPlayer?.id ||
+            player1.id === p.parentAfterSplitPlayer?.id
+        ).length;
+
+      await mockSocket1.on.mock.calls[9][1]();
+
+      expect(table.allPlayers.length).toBe(
+        initialPlayerCount - playerWithChildrenCount
+      );
+      expect(spyPlayerRemove).toBeCalledWith(player1);
+    });
+
+    it('should throw an error if table or player is not found', async () => {
+      const spyHandleError = jest.spyOn(serverSocket, 'handleError');
+      await mockSocket1.on.mock.calls[9][1]();
+      await mockSocket1.on.mock.calls[9][1]();
+
+      expect(spyHandleError).toHaveBeenCalledWith(
+        new Error('Problem on disconnection'),
+        mockSocket1
+      );
+      expect(spyHandleError).toHaveBeenCalledTimes(2);
+
+      spyHandleError.mockRestore();
     });
   });
 });
