@@ -14,7 +14,7 @@ export class Dealer {
   }
 
   public get roundIsStarted(): boolean {
-    return this.hand.length !== 2;
+    return this.hand.length > 2;
   }
 
   public get handTotal(): number {

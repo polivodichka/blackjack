@@ -5,7 +5,7 @@ import http from 'http';
 
 export const app = express();
 //Server handling
-const httpServer = http.createServer(app);
+export const httpServer = http.createServer(app);
 
 //Start socket
 const socket = new ServerSocket(httpServer);

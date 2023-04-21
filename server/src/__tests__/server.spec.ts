@@ -2,21 +2,19 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import request from 'supertest';
-import { Server } from 'http';
 import { ServerSocket } from '../serverSocket';
 import { app } from '../server';
+import { httpServer } from '../server';
 
 describe('Server tests', () => {
-  let server: Server;
   let socket: ServerSocket;
 
   beforeAll(() => {
-    server = new Server(app);
-    socket = new ServerSocket(server);
+    socket = new ServerSocket(httpServer);
   });
 
   afterAll(() => {
-    server.close();
+    httpServer.close();
   });
 
   describe('GET /ping', () => {
