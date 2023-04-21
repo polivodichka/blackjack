@@ -18,6 +18,7 @@ import {
   SuitCard,
   Rank,
   IMessage,
+  EndGameActions,
 } from '../types.ds';
 import { Dealer } from '../models/dealer';
 import { Card } from '../models/card';
@@ -941,7 +942,9 @@ describe('ServerSocket', () => {
     });
 
     it('should add time to message', () => {
-      expect(spyChat.mock.results[0].value.time).toMatch(/^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d.\d{3}Z$/);
+      expect(spyChat.mock.results[0].value.time).toMatch(
+        /^\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d.\d{3}Z$/
+      );
     });
 
     it('should send message to the client', () => {
@@ -949,6 +952,131 @@ describe('ServerSocket', () => {
         SocketEmit.ChatServerMessage,
         JSON.stringify(spyChat.mock.results[0].value)
       );
+    });
+  });
+
+  describe('EndGame', () => {
+    let table: Table;
+    let player1: Player;
+    let player2: Player;
+
+    beforeAll(() => {
+      table = Object.values(serverSocket.tables)[0];
+      player1 = serverSocket.findPlayerById(mockSocket1.id, table)!;
+      player2 = serverSocket.findPlayerById(mockSocket2.id, table)!;
+    });
+
+    it('should throw an error if table is not found', async () => {
+      const spyHandleError = jest.spyOn(serverSocket, 'handleError');
+      await mockSocket1.on.mock.calls[8][1](
+        'fakeTableId',
+        player1.id,
+        EndGameActions.NewBet
+      );
+
+      expect(spyHandleError).toHaveBeenCalledWith(
+        new Error(BaseMessages.NoTable),
+        mockSocket1
+      );
+
+      spyHandleError.mockRestore();
+    });
+
+    it('should throw an error if player is not found', async () => {
+      const spyHandleError = jest.spyOn(serverSocket, 'handleError');
+      await mockSocket1.on.mock.calls[8][1](
+        table.id,
+        'fakePlayerId',
+        EndGameActions.NewBet
+      );
+
+      expect(spyHandleError).toHaveBeenCalledWith(
+        new Error(BaseMessages.PlayerLost),
+        mockSocket1
+      );
+
+      spyHandleError.mockRestore();
+    });
+
+    it('should correctly reset on NewBet', async () => {
+      const spyRemove = jest.spyOn(table, 'removeFakePlayers');
+      await mockSocket1.on.mock.calls[8][1](
+        table.id,
+        player1.id,
+        EndGameActions.NewBet
+      );
+
+      expect(spyRemove).toBeCalledWith(player1);
+      expect(table.getPlayerBetChipsTotalWithChildren(player1)).toBe(0);
+      expect(
+        table.playingPlayers.filter(
+          (p) =>
+            p.parentPlayer?.id === player1.id ||
+            p.parentAfterSplitPlayer?.id === player1.id
+        )
+      ).toHaveLength(0);
+      spyRemove.mockRestore();
+      expect(player1.roundIsEnded).toBeFalsy();
+      expect(player2.roundIsEnded).toBeTruthy();
+      expect(table.roundIsStarted).toBeFalsy();
+    });
+
+    it('should throw an error and reset if Rebet with small balance', async () => {
+      const spyRemove = jest.spyOn(table, 'removeFakePlayers');
+      await mockSocket2.on.mock.calls[8][1](
+        table.id,
+        player2.id,
+        EndGameActions.NewBet
+      );
+
+      expect(spyRemove).toBeCalledWith(player2);
+      expect(table.getPlayerBetChipsTotalWithChildren(player2)).toBe(0);
+      expect(
+        table.playingPlayers.filter(
+          (p) =>
+            p.parentPlayer?.id === player1.id ||
+            p.parentAfterSplitPlayer?.id === player1.id
+        )
+      ).toHaveLength(0);
+
+      expect(mockSocket2.emit).toHaveBeenCalledWith(
+        SocketEmit.Error,
+        BaseMessages.NoMoney
+      );
+      expect(player2.roundIsEnded).toBeFalsy();
+    });
+
+    it('should correctly rebet', async () => {
+      player2.balance = 100;
+      player1.balance = 100;
+
+      await mockSocket1.on.mock.calls[2][1](table.id, 'spot-1', player1.id, 2);
+      await mockSocket1.on.mock.calls[2][1](table.id, 'spot-1', player1.id, 2);
+      await mockSocket1.on.mock.calls[2][1](table.id, 'spot-2', player2.id, 2);
+
+      table.deal();
+
+      table.playingPlayers.forEach(() => table.stand());
+
+      (serverSocket.io.to(table.id).emit as jest.Mock).mockReset();
+      const spyRebet = jest.spyOn(table, 'rebet');
+      const initialPlayerBet =
+        table.getPlayerBetChipsTotalWithChildren(player1);
+      const initialPlayerCount = table.allPlayers.length;
+
+      await mockSocket1.on.mock.calls[8][1](
+        table.id,
+        player1.id,
+        EndGameActions.Rebet
+      );
+
+      expect(spyRebet).toBeCalledWith(player1);
+      expect(table.getPlayerBetChipsTotalWithChildren(player1)).toBe(
+        initialPlayerBet
+      );
+      expect(table.allPlayers).toHaveLength(initialPlayerCount);
+      spyRebet.mockRestore();
+      expect(table.roundIsStarted).toBeFalsy();
     });
   });
 });
