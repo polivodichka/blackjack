@@ -3,21 +3,25 @@ import { ServerSocket } from './serverSocket';
 import express from 'express';
 import http from 'http';
 
-const app = express();
-
+export const app = express();
 //Server handling
 const httpServer = http.createServer(app);
 
 //Start socket
-new ServerSocket(httpServer);
+const socket = new ServerSocket(httpServer);
 
-//Rules of API
+app.get('/ping', (req, res, next) => {
+  return res.status(200).json({ message: 'Server is running' });
+});
+
+app.get('/', (_, res) => {
+  res.status(200).json(socket.tables);
+});
+
 app.use((_, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept, Authorization'
-  );
+  const error = new Error('Not found!');
+
+  res.status(404).json({ message: error.message });
 });
 
 //Listen

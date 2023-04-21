@@ -1128,6 +1128,13 @@ describe('ServerSocket', () => {
 
       spyHandleError.mockRestore();
     });
+
+    it('should delete a table if all players disconnected', async () => {
+      await mockSocket2.on.mock.calls[9][1]();
+      await mockSocket3.on.mock.calls[9][1]();
+
+      expect(serverSocket.tables[table.id]).toBeUndefined();
+    });
   });
 });
 
