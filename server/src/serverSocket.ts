@@ -1,10 +1,10 @@
-import { ActionType } from './types.ds';
+import { ActionType, Rank } from './types.ds';
 import { BaseMessages } from './types.ds';
 import { Chat } from './models/chat';
 import { EndGameActions } from './types.ds';
 import { IMessage } from './types.ds';
-import { MyServer } from './socket.ds';
-import { MySocket } from './socket.ds';
+import { MyServer } from './serverSocket.ds';
+import { MySocket } from './serverSocket.ds';
 import { Player } from './models/player';
 import { Server } from 'socket.io';
 import { Server as HttpServer } from 'http';
@@ -32,11 +32,13 @@ export class ServerSocket {
         origin: '*',
       },
     });
+    this.findPlayerById = this.findPlayerById.bind(this);
+    this.handleError = this.handleError.bind(this);
 
     this.io.on(SocketOn.Connect, this.StartListeners);
   }
 
-  private StartListeners = (socket: MySocket) => {
+  public StartListeners = (socket: MySocket): void => {
     console.info(`Message received from ${socket.id}`);
 
     socket.on(SocketOn.CreateTable, async (name, balance) => {
@@ -58,9 +60,10 @@ export class ServerSocket {
           JSON.stringify(chat)
         );
       } catch (error) {
-        handleError(error);
+        this.handleError(error, socket);
       }
     });
+
     socket.on(SocketOn.JoinTable, async (tableId, name, balance) => {
       try {
         const table = this.tables[tableId];
@@ -88,7 +91,7 @@ export class ServerSocket {
           JSON.stringify(chat)
         );
       } catch (error) {
-        handleError(error);
+        this.handleError(error, socket);
       }
     });
 
@@ -122,9 +125,10 @@ export class ServerSocket {
             .emit(SocketEmit.BetUpdate, JSON.stringify(table.allPlayers));
         }
       } catch (error) {
-        handleError(error);
+        this.handleError(error, socket);
       }
     });
+
     socket.on(
       SocketOn.RemoveBet,
       (tableId: string, playerId: string, betIndex: number) => {
@@ -139,7 +143,7 @@ export class ServerSocket {
             throw new Error(BaseMessages.PlayerLost);
           }
 
-          player.betDeleteByIndex(betIndex);
+          table.betDeleteByIndex(betIndex, player);
 
           console.info(`betRemoved player ${player.parentPlayer?.id}`);
           //send
@@ -147,16 +151,21 @@ export class ServerSocket {
             .to(table.id)
             .emit(SocketEmit.BetUpdate, JSON.stringify(table.allPlayers));
         } catch (error) {
-          handleError(error);
+          this.handleError(error, socket);
         }
       }
     );
+
     socket.on(SocketOn.Deal, (tableId: string) => {
       try {
         const table = this.tables[tableId];
 
         if (!table) {
           throw new Error(BaseMessages.NoTable);
+        }
+
+        if (!Object.keys(table.spots).length) {
+          throw new Error(BaseMessages.ProhibitedAction);
         }
 
         table.deal();
@@ -170,9 +179,10 @@ export class ServerSocket {
         //send
         this.io.to(table.id).emit(SocketEmit.Dealt, JSON.stringify(table));
       } catch (error) {
-        handleError(error);
+        this.handleError(error, socket);
       }
     });
+
     socket.on(
       SocketOn.Action,
       (actionType: ActionType, tableId: string, playerId: string) => {
@@ -186,6 +196,10 @@ export class ServerSocket {
           const player = this.findPlayerById(playerId, table);
           if (!player) {
             throw new Error(BaseMessages.PlayerLost);
+          }
+
+          if (table.currentPlayer && player.id !== table.currentPlayer.id) {
+            throw new Error(BaseMessages.ProhibitedAction);
           }
 
           switch (actionType) {
@@ -204,6 +218,9 @@ export class ServerSocket {
               if (player.betChipsTotal > player.balance) {
                 throw new Error(BaseMessages.NoMoney);
               }
+              if (player.hand[0].rank !== player.hand[1].rank) {
+                throw new Error('Cant split!');
+              }
               table.split();
               break;
 
@@ -215,6 +232,9 @@ export class ServerSocket {
               if (player.betChipsTotal / 2 > player.balance) {
                 throw new Error(BaseMessages.NoMoney);
               }
+              if (table.dealer?.hand[0].rank !== Rank.Ace) {
+                throw new Error(BaseMessages.ProhibitedAction);
+              }
               player.insurance();
               break;
 
@@ -223,7 +243,10 @@ export class ServerSocket {
               break;
           }
 
-          if (player.isBJ || player.isBust || player.isNaturalBJ) {
+          if (
+            (player.isBJ || player.isBust || player.isNaturalBJ) &&
+            actionType !== ActionType.Stand
+          ) {
             table.stand();
           }
 
@@ -258,11 +281,15 @@ export class ServerSocket {
             table.currentPlayerIndex = null;
           }
         } catch (error) {
-          handleError(error);
+          this.handleError(error, socket);
+
+          //чтобы на клиенте разблокировались кнопки
           const table = this.tables[tableId];
-          this.io
-            .to(table.id)
-            .emit(SocketEmit.ActionMade, JSON.stringify(table));
+          if (table) {
+            this.io
+              .to(table.id)
+              .emit(SocketEmit.ActionMade, JSON.stringify(table));
+          }
         }
       }
     );
@@ -290,7 +317,7 @@ export class ServerSocket {
           socket.emit(SocketEmit.BalanceToppedUp, JSON.stringify(player));
           socket.emit(SocketEmit.Message, 'Balance successfully topped up!');
         } catch (error) {
-          handleError(error);
+          this.handleError(error, socket);
         }
       }
     );
@@ -305,7 +332,7 @@ export class ServerSocket {
         let chat = this.chats[tableId];
 
         if (!chat) {
-          throw new Error(BaseMessages.SmthWentWrong);
+          throw new Error(BaseMessages.ChatLost);
         }
 
         const newMessage = chat.addMessage(message);
@@ -316,7 +343,7 @@ export class ServerSocket {
           .to(table.id)
           .emit(SocketEmit.ChatServerMessage, JSON.stringify(newMessage));
       } catch (error) {
-        handleError(error);
+        this.handleError(error, socket);
       }
     });
     socket.on(
@@ -338,7 +365,10 @@ export class ServerSocket {
               table.removeFakePlayers(player);
               break;
             case EndGameActions.Rebet:
-              if (player.betChipsTotalWithChildren <= player.balance) {
+              if (
+                table.getPlayerBetChipsTotalWithChildren(player) <=
+                player.balance
+              ) {
                 table.rebet(player);
               } else {
                 table.removeFakePlayers(player);
@@ -351,7 +381,7 @@ export class ServerSocket {
             .to(table.id)
             .emit(SocketEmit.GameEnded, JSON.stringify(table));
         } catch (error) {
-          handleError(error);
+          this.handleError(error, socket);
         }
       }
     );
@@ -366,6 +396,7 @@ export class ServerSocket {
             table = this.tables[key_id];
             if (table) {
               player = this.findPlayerById(socket.id, table);
+              if (player) {break;}
             }
           }
         }
@@ -394,21 +425,23 @@ export class ServerSocket {
             .to(table.id)
             .emit(SocketEmit.DisconnectPlayer, JSON.stringify(table));
         }
-      } catch (error) {}
-    });
-
-    const handleError = (error: unknown) => {
-      if (error instanceof Error) {
-        console.info(error);
-        socket.emit(SocketEmit.Error, error.message);
-      } else {
-        console.info('An unknown error occurred');
-        socket.emit(SocketEmit.Error, BaseMessages.SmthWentWrong);
+      } catch (error) {
+        this.handleError(error, socket);
       }
-    };
+    });
   };
 
-  private findPlayerById(playerId: string, table: Table): Player | undefined {
+  public handleError(error: unknown, socket: MySocket): void {
+    if (error instanceof Error) {
+      console.info(error);
+      socket.emit(SocketEmit.Error, error.message);
+    } else {
+      console.info('An unknown error occurred');
+      socket.emit(SocketEmit.Error, BaseMessages.SmthWentWrong);
+    }
+  }
+
+  public findPlayerById(playerId: string, table: Table): Player | undefined {
     return table.allPlayers.find((player) => player.id === playerId);
   }
 }

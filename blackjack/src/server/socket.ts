@@ -3,7 +3,6 @@ import { EndGameActions } from '../types.ds';
 import { Socket } from 'socket.io-client';
 import { SocketEmit } from '../types.ds';
 import { SocketOn } from '../types.ds';
-import { TBet } from '../types.ds';
 
 import { io } from 'socket.io-client';
 

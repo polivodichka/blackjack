@@ -6,7 +6,7 @@ import { SocketEmit } from './types.ds';
 import { SocketOn } from './types.ds';
 import { TBet } from './types.ds';
 
-interface SocketEventsEmit {
+export interface SocketEventsEmit {
   [SocketEmit.TableCreated]: (
     table: string,
     player: string,
@@ -26,9 +26,9 @@ interface SocketEventsEmit {
   [SocketEmit.ChatServerMessage]: (message: string) => void;
 }
 
-type SocketEventNamesEmit = keyof SocketEventsEmit;
+export type SocketEventNamesEmit = keyof SocketEventsEmit;
 
-interface SocketEventsOn {
+export interface SocketEventsOn {
   [SocketOn.JoinTable]: (
     table: string,
     name: string,
@@ -68,9 +68,9 @@ interface SocketEventsOn {
   [SocketOn.ChatSendMessage]: (tableId: string, message: string) => void;
 }
 
-type SocketEventNamesOn = keyof SocketEventsOn;
+export type SocketEventNamesOn = keyof SocketEventsOn;
 
-interface ServerWithTypedEvents<T extends keyof SocketEventsEmit> {
+export interface ServerWithTypedEvents<T extends keyof SocketEventsEmit> {
   on<E extends SocketEventNamesOn>(
     event: E,
     listener: SocketEventsOn[E]
@@ -81,7 +81,7 @@ interface ServerWithTypedEvents<T extends keyof SocketEventsEmit> {
   };
 }
 
-interface SocketWithTypedEvents<T extends keyof SocketEventsEmit> {
+export interface SocketWithTypedEvents<T extends keyof SocketEventsEmit> {
   emit<E extends T>(
     event: E,
     ...args: Parameters<SocketEventsEmit[E]>

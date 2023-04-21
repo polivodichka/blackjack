@@ -1,0 +1,20 @@
+name: Web CI
+
+on: push
+
+jobs:
+  unit:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: |
+        cd server && npm ci
+
+    - name: Run Jest tests
+      run: |
+        cd server && npm test
+      env:
+        CI: false
