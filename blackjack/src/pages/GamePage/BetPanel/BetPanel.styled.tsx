@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/indent */
 import styled from 'styled-components';
+import React from 'react';
 
 import { makeColorDarker } from '../../../utils/makeColorDarker';
 
@@ -12,9 +14,15 @@ export const BetPanelStyled = styled.div.attrs(
   gap: ${(props) => props.size * 0.35}px;
   width: 100%;
 `;
-
+type ChipStyledProps = {
+  color: string;
+  bet: number;
+  size: number;
+} & React.HTMLProps<HTMLButtonElement>;
 export const ChipStyled = styled.button.attrs(
-  (props: { color: string; bet: number; size: number; }) => props
+  (
+    props: ChipStyledProps
+  ) => props
 )`
   cursor: pointer;
   position: relative;
@@ -70,7 +78,7 @@ export const ChipStyled = styled.button.attrs(
     transform: translate(-50%, -50%);
     background-position: center center;
 
-    border: ${(props) => props.size * 0.05}px solid ${(props) => props.color};
+    border: ${(props) => props.size! * 0.05}px solid ${(props) => props.color};
     background-image: linear-gradient(
         0deg,
         transparent 0,
@@ -118,12 +126,12 @@ export const ChipStyled = styled.button.attrs(
       ),
       linear-gradient(
         150deg,
-        ${(props) => makeColorDarker(props.color, 20)} 0,
-        ${(props) => makeColorDarker(props.color, 20)} 46%,
+        ${(props) => makeColorDarker(props.color!, 20)} 0,
+        ${(props) => makeColorDarker(props.color!, 20)} 46%,
         #ebebeb 46%,
         #ebebeb 54%,
-        ${(props) => makeColorDarker(props.color, 20)} 54%,
-        ${(props) => makeColorDarker(props.color, 20)} 100%
+        ${(props) => makeColorDarker(props.color!, 20)} 54%,
+        ${(props) => makeColorDarker(props.color!, 20)} 100%
       );
   }
 
@@ -133,8 +141,8 @@ export const ChipStyled = styled.button.attrs(
     position: absolute;
     content: '${(props) => props.bet}';
     text-align: center;
-    font: bold ${(props) => props.size * 0.35}px /
-      ${(props) => props.size * 0.75}px Arial;
+    font: bold ${(props) => props.size! * 0.35}px /
+      ${(props) => props.size! * 0.75}px Arial;
     white-space: pre;
     width: 75%;
     height: 75%;
@@ -143,23 +151,23 @@ export const ChipStyled = styled.button.attrs(
     left: 50%;
     transform: translate(-50%, -50%);
     text-shadow: ${(props) => {
-          const size = props.size * 0.015;
+          const size = props.size! * 0.015;
           return `${-size}px ${-size}px`;
         }}
         0px rgba(0, 0, 0, 0.3),
       ${(props) => {
-          const size = props.size * 0.015;
+          const size = props.size! * 0.015;
           return `${size}px ${size}px`;
         }}
         0px rgba(255, 255, 255, 0.2),
       ${(props) => {
-          const size = props.size * 0.007;
+          const size = props.size! * 0.007;
           return `${size}px ${size}px`;
         }}
         0px rgba(0, 0, 0, 0.3);
 
     background: ${(props) => props.color};
-    color: ${(props) => makeColorDarker(props.color, 5)};
+    color: ${(props) => makeColorDarker(props.color!, 5)};
   }
   &:hover,
   &.active {
@@ -167,17 +175,17 @@ export const ChipStyled = styled.button.attrs(
       color: #fff;
       text-shadow: none;
       text-shadow: ${(props) => {
-            const size = props.size * 0.015;
+            const size = props.size! * 0.015;
             return `${-size}px ${-size}px`;
           }}
           0px rgba(255, 255, 255, 0.3),
         ${(props) => {
-            const size = props.size * 0.015;
+            const size = props.size! * 0.015;
             return `${size}px ${size}px`;
           }}
           0px rgba(0, 0, 0, 0.2),
         ${(props) => {
-            const size = props.size * 0.007;
+            const size = props.size! * 0.007;
             return `${size}px ${size}px`;
           }}
           0px rgba(255, 255, 255, 0.3);

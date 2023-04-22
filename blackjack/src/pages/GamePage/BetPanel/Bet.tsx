@@ -1,4 +1,6 @@
 import React from 'react';
+import { ButtonWithSoundProps, withSound } from '../../../sounds/WithSound';
+import { SoundType } from '../../../types.ds';
 
 import { ChipStyled } from './BetPanel.styled';
 
@@ -16,13 +18,33 @@ export const Bet: React.FC<BetProps> = ({
   size,
   active,
 }) => {
+  const ref = React.useRef<HTMLButtonElement>(null);
+
+  const ButtonWithSound: React.FC<ButtonWithSoundProps> = withSound(
+    ({ children, ...props }) => {
+      return (
+        <ChipStyled
+          ref={ref as React.LegacyRef<HTMLButtonElement>}
+          className={active ? 'active' : ''}
+          color={color}
+          bet={value}
+          size={size}
+          {...props}
+        >
+          {children}
+        </ChipStyled>
+      );
+    }
+  );
   return (
-    <ChipStyled
-      className={active ? 'active' : ''}
-      color={color}
-      bet={value}
-      onClick={onBetSet}
-      size={size}
-    />
+    <>
+      <ButtonWithSound
+        type="submit"
+        soundType={SoundType.Chip}
+        onClick={onBetSet}
+      >
+        {value}
+      </ButtonWithSound>
+    </>
   );
 };

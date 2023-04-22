@@ -148,3 +148,8 @@ export interface IMessage {
 export interface IChat {
   messages: IMessage[];
 }
+
+export enum SoundType {
+  Click = 'click',
+  Chip = 'chip',
+}

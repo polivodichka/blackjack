@@ -6,6 +6,7 @@ import React from 'react';
 import { ModalsManager } from '../ModalsManager/ModalsManager';
 import { EnterPage } from '../../pages/EnterPage/EnterPage';
 import { GamePage } from '../../pages/GamePage/GamePage';
+import { SoundsContainer } from '../../sounds/SoundsContainer';
 
 export const App: React.FC = () => {
   return (
@@ -27,6 +28,7 @@ export const App: React.FC = () => {
         theme="colored"
       />
       <ModalsManager />
+      <SoundsContainer />
     </>
   );
 };
