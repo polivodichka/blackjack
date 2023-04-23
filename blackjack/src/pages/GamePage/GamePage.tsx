@@ -115,10 +115,10 @@ export const GamePage: React.FC = observer(() => {
 
       <GameWrapper>
         <DealerSpotComponent />
-        <Deck />
         <GameText />
 
         {spotsZone}
+        <Deck />
       </GameWrapper>
 
       <BetPanel />

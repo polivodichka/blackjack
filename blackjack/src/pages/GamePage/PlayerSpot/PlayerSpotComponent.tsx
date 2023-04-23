@@ -6,6 +6,7 @@ import {
   SpotStyled,
   OnePlayerWrapper,
   SpotWrapper,
+  Name
 } from './Spot.styled';
 import { PlayerGameState, SocketEmit, SoundType } from '../../../types.ds';
 import { PlayerComponent } from './PlayerComponent';
@@ -79,7 +80,7 @@ export const PlayerSpotComponent: React.FC<PlayerProps> = observer(({ id }) => {
 
   return (
     <SpotWrapper className="spot">
-      <div>{game.getNameBySpotId(id)}</div>
+      <Name>{game.getNameBySpotId(id)}</Name>
       <SpotStyledWithSound onClick={handleSetNewBet} soundType={SoundType.Chip}>
         <PlayersWrapper>
           {gameTable?.spots[id] &&

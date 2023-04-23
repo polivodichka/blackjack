@@ -2,9 +2,8 @@ import styled from 'styled-components';
 
 export const DeckStyled = styled.div`
   position: absolute;
-  transform: perspective(-40px);
-  top: 0;
-  right: 0;
+  top: 7vw;
+  right: 26vw;
   animation: float 3s ease-in-out infinite;
 
   @keyframes float {

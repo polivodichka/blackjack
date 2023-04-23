@@ -60,7 +60,7 @@ export const SpotStyled = styled.div.attrs((props: SpotStyledProps) => props)`
     border-color: transparent;
   }
   &.disabled {
-    pointer-events: none;
+    /* pointer-events: none; */
   }
 
   @keyframes pulseColor {
@@ -73,6 +73,11 @@ export const SpotStyled = styled.div.attrs((props: SpotStyledProps) => props)`
       box-shadow: 0 0 20px #fff inset;
     }
   }
+`;
+export const Name = styled.div`
+  position: absolute;
+  top: 0;
+
 `;
 
 export const SpotsZone = styled.div`

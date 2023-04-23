@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { Rank, Suit, SuitCard } from '../../../types.ds';
-import { CardStyled } from './Card.styled';
+import { CardStyled, CardWrap } from './Card.styled';
 
 type CardProps = {
   suit: Suit;
@@ -11,15 +11,19 @@ type CardProps = {
 export const CardComponent: React.FC<CardProps> = ({ suit, rank, id }) => {
   const shortRank = convertRank(rank);
   return (
-    <CardStyled className={`face ${suit}`} id={id}>
-      <div className="rank" data-suit={SuitCard[suit]}>
-        {shortRank}
-      </div>
-      <div className="suit">{SuitCard[suit]}</div>
-      <div className="rank" data-suit={SuitCard[suit]}>
-        {shortRank}
-      </div>
-    </CardStyled>
+    <CardWrap>
+      <CardStyled className={`face ${suit}`} id={`face-${id}`}>
+        <div className="rank" data-suit={SuitCard[suit]}>
+          {shortRank}
+        </div>
+        <div className="suit">{SuitCard[suit]}</div>
+        <div className="rank" data-suit={SuitCard[suit]}>
+          {shortRank}
+        </div>
+      </CardStyled>
+
+      <CardStyled className="back" id={`back-${id}`}/>
+    </CardWrap>
   );
 };
 

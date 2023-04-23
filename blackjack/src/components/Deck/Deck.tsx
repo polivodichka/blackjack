@@ -12,8 +12,8 @@ export const Deck: React.FC = () => {
             zIndex: index + 1,
             transform: `translateX(${(index + 1) * .25}px) translateY(${
               (index + 1) * -1
-            }px) rotateX(-40deg) rotateY(20deg) rotateZ(-40deg) scale(${
-              1 + index * 0.0009
+            }px) rotateX(-40deg) rotateY(0deg) rotateZ(-60deg) scale(${
+              1.3 + index * 0.0009
             }`,
           }}
           key={`Deck=${index}`}
