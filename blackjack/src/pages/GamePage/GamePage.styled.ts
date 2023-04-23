@@ -20,7 +20,7 @@ export const GameWrapper = styled.div`
   align-items: center;
   gap: 50px 0;
   width: 100%;
-  transform: perspective(1000px) translateZ(-100px) rotateX(30deg);
+  transform: perspective(1000px) translateZ(-300px) rotateX(30deg);
 `;
 
 export const BalanceStyled = styled.div`

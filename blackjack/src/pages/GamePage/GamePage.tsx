@@ -26,6 +26,7 @@ import chatIcon from '../../assets/chat.svg';
 import copyIcon from '../../assets/copy.svg';
 import { game } from '../../store/game';
 import { GameText } from './GameText/GameText';
+import { Deck } from '../../components/Deck/Deck';
 
 export const GamePage: React.FC = observer(() => {
   const navigate = useNavigate();
@@ -73,7 +74,7 @@ export const GamePage: React.FC = observer(() => {
     game.table?.ableToStartGame && game.player?.betChipsTotalWithChildren ? (
       <StyledBtn onClick={handlePlayBtn}>PLAY</StyledBtn>
     ) : game.table?.ableToStartGame ? (
-      <div>No empty spots left :(</div>
+      <div>No empty spots left</div>
     ) : (
       <div>{game.table?.gameStatus}</div>
     );
@@ -114,6 +115,7 @@ export const GamePage: React.FC = observer(() => {
 
       <GameWrapper>
         <DealerSpotComponent />
+        <Deck />
         <GameText />
 
         {spotsZone}
