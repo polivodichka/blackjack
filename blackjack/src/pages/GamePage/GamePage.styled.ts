@@ -12,6 +12,17 @@ export const Wrapper = styled.div`
   align-items: center;
 `;
 
+export const GameWrapper = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  gap: 50px 0;
+  width: 100%;
+  transform: perspective(1000px) translateZ(-100px) rotateX(30deg);
+`;
+
 export const BalanceStyled = styled.div`
   position: absolute;
   display: flex;

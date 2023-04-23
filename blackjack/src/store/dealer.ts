@@ -44,7 +44,7 @@ export class Dealer {
   @action.bound public update(dealer: IDealer | null): Dealer {
     if (dealer) {
       const hand = dealer.hand
-        ? dealer.hand.map((card) => new Card(card.suit, card.rank, card.value))
+        ? dealer.hand.map((card) => new Card(card.suit, card.rank, card.value, card.id))
         : [];
 
       this.hand = hand;

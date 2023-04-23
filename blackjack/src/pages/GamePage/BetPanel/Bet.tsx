@@ -1,5 +1,6 @@
 import React from 'react';
 import { ButtonWithSoundProps, withSound } from '../../../sounds/WithSound';
+import { game } from '../../../store/game';
 import { SoundType } from '../../../types.ds';
 
 import { ChipStyled } from './BetPanel.styled';
@@ -42,6 +43,7 @@ export const Bet: React.FC<BetProps> = ({
         type="submit"
         soundType={SoundType.Chip}
         onClick={onBetSet}
+        disabled={game.table?.roundIsStarted}
       >
         {value}
       </ButtonWithSound>

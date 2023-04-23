@@ -10,6 +10,7 @@ export class Player extends Dealer {
   public parentAfterSplitPlayer: Player | null = null;
   public parentPlayer: Player | null = null;
   public roundIsEnded = false;
+  public doubled = false;
 
   public constructor(
     private _name: string,

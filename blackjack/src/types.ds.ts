@@ -38,7 +38,7 @@ export enum PlayerType {
 }
 
 export interface ICard {
-  id: number;
+  id: string;
   rank: Rank;
   suit: Suit;
   value: number;

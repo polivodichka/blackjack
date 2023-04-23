@@ -8,13 +8,14 @@ import { game } from '../../../store/game';
 export const DealerSpotComponent: React.FC = observer(() => {
   const dealer = game.table?.dealer;
   return (
-    <SpotStyled>
+    <SpotStyled className='dealer'>
       <CardsWrapper>
-        {dealer?.hand.map((card, i) => (
+        {dealer?.hand.map((card) => (
           <CardComponent
-            key={`dealerCard${card.suit}${card.rank}${i}`}
+            key={`dealerCard-${card.id}`}
             suit={card.suit}
             rank={card.rank}
+            id={card.id}
           />
         ))}
         {dealer && dealer.handTotal > 0 && (

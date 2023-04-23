@@ -11,9 +11,9 @@ body,
   --toastify-color-progress-error: var(--toastify-color-progress-dark);
   --toastify-icon-color-error: var(--toastify-color-progress-dark);
 
-  letter-spacing: 2px;
   font-weight: 700;
-  font-family: "Yanone Kaffeesatz";
+  font-family: "Prompt";
+  overflow-x: hidden;
 
 }
 
@@ -34,6 +34,6 @@ svg:not(:root) {
   }
 
   50% {
-    transform: scale(1.05);
+    transform: scale(1.1);
   }
 }

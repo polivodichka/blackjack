@@ -20,7 +20,8 @@ export const StyledBtn = styled.button`
   text-transform: uppercase;
   overflow: hidden;
   transition: 0.5s;
-  letter-spacing: 4px;
+  font-family: 'Prompt';
+  /* letter-spacing: 4px; */
   &:hover {
     background: ${Color.MainAccent};
     color: #fff;

@@ -2,10 +2,10 @@ import React, { useCallback, MouseEvent } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import {
-  OnePlayerWrapper,
   CardsWrapper,
   ChipsWrapper,
   CardsTotal,
+  PlayerComponentWrapper,
 } from './Spot.styled';
 import { getBetColor } from '../../../utils/getBetColor';
 import { CardComponent } from '../Card/CardComponent';
@@ -38,40 +38,45 @@ export const PlayerComponent: React.FC<PlayerComponentProps> = observer(
       player.id === game.table?.currentPlayer?.id ? 'active' : '';
 
     return (
-      <OnePlayerWrapper className={activeClassName}>
+      <PlayerComponentWrapper className={activeClassName}>
         <ChipsWrapper>
-          {!!player.insuranceBet && (
-            <Bet
-              value={player.insuranceBet}
-              color={Color.MainAccent}
-              size={40}
-              active={false}
-            />
-          )}
-        </ChipsWrapper>
-        <ChipsWrapper>
-          {player.betChips.map((bet, index) => (
-            <Bet
-              key={`${player}-bet${index}-${bet}`}
-              value={bet}
-              onBetSet={handleRemoveBet(index)}
-              color={getBetColor(bet)}
-              size={40}
-              active={false}
-            />
-          ))}
+          {
+            /**InsuranceBet */
+            !!player.insuranceBet && (
+              <Bet
+                value={player.insuranceBet}
+                color={Color.MainAccent}
+                size={40}
+                active={false}
+              />
+            )
+          }
+          {
+            /**Bet */
+            player.betChips.map((bet, index) => (
+              <Bet
+                key={`${player}-bet${index}-${bet}`}
+                value={bet}
+                onBetSet={handleRemoveBet(index)}
+                color={getBetColor(bet)}
+                size={40}
+                active={false}
+              />
+            ))
+          }
         </ChipsWrapper>
         <CardsWrapper>
           {player?.hand.map((card, index) => (
             <CardComponent
-              key={`${index + card.suit}Card`}
+              key={`${card.id}-Card`}
               suit={card.suit}
               rank={card.rank}
+              id={card.id}
             />
           ))}
           {player.handTotal > 0 && <CardsTotal>{player.handTotal}</CardsTotal>}
         </CardsWrapper>
-      </OnePlayerWrapper>
+      </PlayerComponentWrapper>
     );
   }
 );

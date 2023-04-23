@@ -10,16 +10,22 @@ import {
   StyledBtn,
 } from '../../components/App/App.styled';
 import { GameActionsComponent } from './GameActions/GameActionsComponent';
-import { BalanceStyled, OptionsPanel, Wrapper } from './GamePage.styled';
+import {
+  BalanceStyled,
+  GameWrapper,
+  OptionsPanel,
+  Wrapper,
+} from './GamePage.styled';
 import { DealerSpotComponent } from './PlayerSpot/DealerSpotComponent';
 import { PlayerSpotComponent } from './PlayerSpot/PlayerSpotComponent';
 import { ModalTypes, SocketEmit } from '../../types.ds';
-import { SpotsZone } from './PlayerSpot/Spot.styled';
+import { SpotStyled, SpotsZone, SpotWrapper } from './PlayerSpot/Spot.styled';
 import moneyIcon from '../../assets/money.svg';
 import { BetPanel } from './BetPanel/BetPanel';
 import chatIcon from '../../assets/chat.svg';
 import copyIcon from '../../assets/copy.svg';
 import { game } from '../../store/game';
+import { GameText } from './GameText/GameText';
 
 export const GamePage: React.FC = observer(() => {
   const navigate = useNavigate();
@@ -106,9 +112,12 @@ export const GamePage: React.FC = observer(() => {
         {topUpBalanceBtn}
       </BalanceStyled>
 
-      <DealerSpotComponent />
+      <GameWrapper>
+        <DealerSpotComponent />
+        <GameText />
 
-      {spotsZone}
+        {spotsZone}
+      </GameWrapper>
 
       <BetPanel />
 

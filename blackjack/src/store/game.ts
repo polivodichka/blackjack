@@ -93,7 +93,7 @@ export class Game {
 
   public constructor() {
     makeObservable(this);
-    
+
     socket.on(SocketOn.Error, (message) => toast.error(message, toastSettings));
 
     socket.on(SocketOn.Message, (message) => toast(message, toastSettings));
@@ -118,11 +118,27 @@ export class Game {
       }
     });
 
-    socket.on(SocketOn.Dealt, (tableStr) => this.handleTableUpdate(tableStr));
+    socket.on(SocketOn.Dealt, (tableStr) => {
+      this.handleTableUpdate(tableStr);
+      if (
+        this.table?.currentPlayer?.isBJ ||
+        this.table?.currentPlayer?.isBust ||
+        this.table?.currentPlayer?.isNaturalBJ
+      ) {
+        this.emit[SocketEmit.Action](ActionType.Stand);
+      }
+    });
 
-    socket.on(SocketOn.ActionMade, (tableStr) =>
-      this.handleTableUpdate(tableStr)
-    );
+    socket.on(SocketOn.ActionMade, (tableStr) => {
+      this.handleTableUpdate(tableStr);
+      if (
+        this.table?.currentPlayer?.isBJ ||
+        this.table?.currentPlayer?.isBust ||
+        this.table?.currentPlayer?.isNaturalBJ
+      ) {
+        this.emit[SocketEmit.Action](ActionType.Stand);
+      }
+    });
 
     socket.on(SocketOn.DealerMadeAction, (tableStr) =>
       this.handleTableUpdate(tableStr)
@@ -241,7 +257,7 @@ export class Game {
 
   private updateTableInfo(table: ITable) {
     const dealerHand = table.dealer?.hand.map(
-      (card) => new Card(card.suit, card.rank, card.value)
+      (card) => new Card(card.suit, card.rank, card.value, card.id)
     );
 
     let dealer: Dealer | null;

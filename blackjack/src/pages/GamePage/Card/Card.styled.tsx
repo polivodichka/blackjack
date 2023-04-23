@@ -3,14 +3,22 @@ import styled from 'styled-components';
 export const CardStyled = styled.div`
   font-size: 16px;
   position: relative;
+  margin-left:0 ;
+  z-index: 1;
   cursor: pointer;
   display: block;
-  width: 3vw;
-  height: 4.8vw;
+  width: 4vw;
+  height: 6.4vw;
   transform-style: preserve-3d;
   backface-visibility: visible;
   perspective: 100px;
   user-select: none;
+
+  &:not(:first-child) {
+    position: relative ;
+    margin-left: -2.9vw;
+    z-index: 2;
+  }
 
   &.Spades,
   &.Clubs {

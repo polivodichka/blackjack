@@ -6,11 +6,12 @@ import { CardStyled } from './Card.styled';
 type CardProps = {
   suit: Suit;
   rank: Rank;
+  id: string;
 };
-export const CardComponent: React.FC<CardProps> = ({ suit, rank }) => {
+export const CardComponent: React.FC<CardProps> = ({ suit, rank, id }) => {
   const shortRank = convertRank(rank);
   return (
-    <CardStyled className={`face ${suit}`}>
+    <CardStyled className={`face ${suit}`} id={id}>
       <div className="rank" data-suit={SuitCard[suit]}>
         {shortRank}
       </div>

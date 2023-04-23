@@ -112,6 +112,9 @@ export class Table {
     playersWithBet.map((player) => {
       player.hand = [];
       player.insuranceBet = null;
+      if(player.doubled){
+        player.betChips.splice(player.betChips.length / 2)
+      }
     });
     parent.balance -= this.getPlayerBetChipsTotalWithChildren(parent);
     parent.roundIsEnded = false;
@@ -176,6 +179,7 @@ export class Table {
       player.betChips = player.betChips.concat(player.betChips);
       this.hit();
       this.stand();
+      player.doubled = true;
     }
   }
 

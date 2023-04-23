@@ -13,7 +13,7 @@ export const Overflow = styled.div`
   align-items: center;
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: 'Prompt';
   background-color: rgba(0, 0, 0, 0.4);
   transform: translateY(-100%);
   opacity: 0;
@@ -48,6 +48,7 @@ export const Input = styled.input`
   border: none;
   border-radius: 0;
   border-bottom: 1px solid #fff;
+  font-family: 'Prompt';
   &:focus ~ .highlight {
     animation: inputHighlighter 0.3s ease;
   }
@@ -135,7 +136,7 @@ export const ChecboxInput = styled.input`
     &:checked + label:after {
       opacity: 1;
     }
-    &~.fake-check {
+    & ~ .fake-check {
       background-color: #fff;
       border: 1px solid #ccc;
       border-radius: 50%;
@@ -147,7 +148,7 @@ export const ChecboxInput = styled.input`
       width: 28px;
     }
 
-    &~.fake-check:after {
+    & ~ .fake-check:after {
       border: 2px solid #fff;
       border-top: none;
       border-right: none;

@@ -129,30 +129,32 @@ export class Player extends Dealer {
   @computed public get state(): PlayerGameState {
     if (this.handTotal > 21) {
       return PlayerGameState.Bust;
-    } else if (this.handTotal === 21 && !this.roundIsStarted) {
-      return PlayerGameState.NaturalBlackjack;
-    } else if (this.handTotal === 21) {
-      return PlayerGameState.Blackjack;
-    } else if (this.handTotal > 0) {
-      return PlayerGameState.Active;
-    } else {
-      return PlayerGameState.Error;
     }
+    if (this.handTotal === 21 && !this.roundIsStarted) {
+      return PlayerGameState.NaturalBlackjack;
+    }
+    if (this.handTotal === 21) {
+      return PlayerGameState.Blackjack;
+    }
+    if (this.handTotal < 21 && this.handTotal > 0) {
+      return PlayerGameState.Active;
+    }
+    return PlayerGameState.Error;
   }
 
-  @computed private get isNaturalBJ(): boolean {
+  @computed public get isNaturalBJ(): boolean {
     return this.state === PlayerGameState.NaturalBlackjack;
   }
 
-  @computed private get isBJ(): boolean {
+  @computed public get isBJ(): boolean {
     return this.state === PlayerGameState.Blackjack;
   }
 
-  @computed private get isBust(): boolean {
+  @computed public get isBust(): boolean {
     return this.state === PlayerGameState.Bust;
   }
 
-  @computed private get isActive(): boolean {
+  @computed public get isActive(): boolean {
     return this.state === PlayerGameState.Active;
   }
 
@@ -192,7 +194,7 @@ export class Player extends Dealer {
 
   @override public update(player: IPlayer): Player {
     const hand = player.hand
-      ? player.hand.map((card) => new Card(card.suit, card.rank, card.value))
+      ? player.hand.map((card) => new Card(card.suit, card.rank, card.value, card.id))
       : [];
 
     const parentAfterSplitPlayer = player.parentAfterSplitPlayer

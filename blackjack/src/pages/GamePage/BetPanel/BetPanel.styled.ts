@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/indent */
 import styled from 'styled-components';
-import React from 'react';
 
 import { makeColorDarker } from '../../../utils/makeColorDarker';
+import { BetPanelStyledProps, ChipStyledProps } from '../../../styled.ds';
 
 export const BetPanelStyled = styled.div.attrs(
-  (props: { size: number; }) => props
+  (props: BetPanelStyledProps) => props
 )`
   display: flex;
   justify-content: center;
@@ -14,15 +14,9 @@ export const BetPanelStyled = styled.div.attrs(
   gap: ${(props) => props.size * 0.35}px;
   width: 100%;
 `;
-type ChipStyledProps = {
-  color: string;
-  bet: number;
-  size: number;
-} & React.HTMLProps<HTMLButtonElement>;
+
 export const ChipStyled = styled.button.attrs(
-  (
-    props: ChipStyledProps
-  ) => props
+  (props: ChipStyledProps) => props
 )`
   cursor: pointer;
   position: relative;
@@ -140,6 +134,7 @@ export const ChipStyled = styled.button.attrs(
     z-index: 2;
     position: absolute;
     content: '${(props) => props.bet}';
+    font-family: 'Prompt';
     text-align: center;
     font: bold ${(props) => props.size! * 0.35}px /
       ${(props) => props.size! * 0.75}px Arial;
@@ -170,7 +165,8 @@ export const ChipStyled = styled.button.attrs(
     color: ${(props) => makeColorDarker(props.color!, 5)};
   }
   &:hover,
-  &.active {
+  &.active,
+  &:disabled {
     &::after {
       color: #fff;
       text-shadow: none;
@@ -191,7 +187,8 @@ export const ChipStyled = styled.button.attrs(
           0px rgba(255, 255, 255, 0.3);
     }
   }
-  &:hover {
+  &:hover,
+  &:disabled {
     transform: scale(1.3);
     box-shadow: 0 0 5px ${(props) => props.color},
       0 0 25px ${(props) => props.color}, 0 0 50px ${(props) => props.color},
@@ -225,10 +222,4 @@ export const ChipStyled = styled.button.attrs(
       transform: rotate(360deg) scale(1.3);
     }
   }
-`;
-export const BetBtnStyled = styled.div`
-  width: 60px;
-  height: 60px;
-  border: 2px solid red;
-  border-radius: 50%;
 `;

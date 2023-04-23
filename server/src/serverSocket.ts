@@ -171,9 +171,6 @@ export class ServerSocket {
         table.deal();
 
         const player = table.currentPlayer;
-        if (player?.isBJ || player?.isBust || player?.isNaturalBJ) {
-          table.stand();
-        }
 
         console.info(`${SocketEmit.Dealt} ${table.id}`);
         //send
