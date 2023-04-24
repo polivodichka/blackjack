@@ -118,7 +118,8 @@ export class Table {
   @action.bound public addPlayer(player: IPlayer): Player {
     const hand = player.hand
       ? player.hand.map(
-        (card) => new Card(card.suit, card.rank, card.value, card.id)
+        (card) =>
+          new Card(card.suit, card.rank, card.value, card.id, card.isNew)
       )
       : [];
 

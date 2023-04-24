@@ -4,7 +4,7 @@ import { DeckStyled } from './Deck.styled';
 
 export const Deck: React.FC = () => {
   return (
-    <DeckStyled>
+    <DeckStyled id='deck'>
       {Array.from({ length: 60 }).map((_, index) => (
         <CardStyled
           className={`back deck Deck=${index}`}

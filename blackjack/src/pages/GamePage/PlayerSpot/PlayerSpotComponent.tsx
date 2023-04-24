@@ -36,7 +36,7 @@ export const PlayerSpotComponent: React.FC<PlayerProps> = observer(({ id }) => {
     }
 
     return className.join(' ');
-  }, [gameTable?.currentPlayer, gameTable?.dealer, gameTable?.spots, id]);
+  }, [gameTable?.currentPlayer, gameTable?.dealer, gameTable?.roundIsStarted, gameTable?.spots, id]);
 
   const playerClass = (player: Player) => {
     const className = [];

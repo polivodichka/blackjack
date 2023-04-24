@@ -361,18 +361,24 @@ describe('Table', () => {
     });
     it('should return PlayerGameState.Bust when hand total is greater than 21', () => {
       player1.hand = [
-        { suit: 'Clubs', rank: Rank.Ten, value: 10 },
-        { suit: 'Diamonds', rank: Rank.Ten, value: 10 },
-        { suit: 'Clubs', rank: Rank.Ten, value: 10 },
-        { suit: 'Hearts', rank: Rank.Ten, value: 10 },
+        { suit: 'Clubs', rank: Rank.Ten, value: 10, id: 'card', isNew: false },
+        {
+          suit: 'Diamonds',
+          rank: Rank.Ten,
+          value: 10,
+          id: 'card',
+          isNew: false,
+        },
+        { suit: 'Clubs', rank: Rank.Ten, value: 10, id: 'card', isNew: false },
+        { suit: 'Hearts', rank: Rank.Ten, value: 10, id: 'card', isNew: false },
       ];
       expect(table.getPlayerState(player1)).toBe(PlayerGameState.Bust);
     });
 
     it('should return PlayerGameState.NaturalBlackjack when hand total is 21 and round is not started and not splitted', () => {
       player1.hand = [
-        { suit: 'Clubs', rank: Rank.Ace, value: 11 },
-        { suit: 'Clubs', rank: Rank.Ten, value: 10 },
+        { suit: 'Clubs', rank: Rank.Ace, value: 11, id: 'card', isNew: false },
+        { suit: 'Clubs', rank: Rank.Ten, value: 10, id: 'card', isNew: false },
       ];
       player1.parentAfterSplitPlayer = null;
       expect(table.getPlayerState(player1)).toBe(
@@ -382,17 +388,23 @@ describe('Table', () => {
 
     it('should return PlayerGameState.Blackjack when hand total is 21 and not a natural blackjack', () => {
       player1.hand = [
-        { suit: 'Clubs', rank: Rank.Seven, value: 7 },
-        { suit: 'Clubs', rank: Rank.Ace, value: 11 },
-        { suit: 'Clubs', rank: Rank.Three, value: 3 },
+        { suit: 'Clubs', rank: Rank.Seven, value: 7, id: 'card', isNew: false },
+        { suit: 'Clubs', rank: Rank.Ace, value: 11, id: 'card', isNew: false },
+        { suit: 'Clubs', rank: Rank.Three, value: 3, id: 'card', isNew: false },
       ];
       expect(table.getPlayerState(player1)).toBe(PlayerGameState.Blackjack);
     });
 
     it('should return PlayerGameState.Active when hand total is less than 21 and greater than 0', () => {
       player1.hand = [
-        { suit: 'Clubs', rank: Rank.Ten, value: 10 },
-        { suit: 'Diamonds', rank: Rank.Seven, value: 7 },
+        { suit: 'Clubs', rank: Rank.Ten, value: 10, id: 'card', isNew: false },
+        {
+          suit: 'Diamonds',
+          rank: Rank.Seven,
+          value: 7,
+          id: 'card',
+          isNew: false,
+        },
       ];
       expect(table.getPlayerState(player1)).toBe(PlayerGameState.Active);
     });

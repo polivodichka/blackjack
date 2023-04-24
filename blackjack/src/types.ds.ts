@@ -42,6 +42,7 @@ export interface ICard {
   rank: Rank;
   suit: Suit;
   value: number;
+  isNew: boolean;
 }
 
 export interface IDealer {

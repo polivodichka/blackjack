@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 import { Color } from '../../../constants/constants';
+import { motion } from 'framer-motion';
 
-export const CardWrap = styled.div`
+export const CardWrap = styled(motion.div)`
   --width: 4vw;
   --height: 6.4vw;
   width: var(--width);
@@ -16,19 +17,27 @@ export const CardWrap = styled.div`
   user-select: none;
   &:not(:first-child) {
     position: relative;
-    margin-left: -2.9vw;
+    margin-left: -2.2vw;
     z-index: 2;
   }
-  &:hover {
-    .face {
+  @keyframes rotate360 {
+    from {
       transform: rotateY(180deg);
     }
-    .back {
+    to {
       transform: rotateY(360deg);
     }
   }
+  @keyframes rotate180 {
+    from {
+      transform: rotateY(0);
+    }
+    to {
+      transform: rotateY(180deg);
+    }
+  }
 `;
-export const CardStyled = styled.div`
+export const CardStyled = styled(motion.div)`
   position: absolute;
   width: 100%;
   height: 100%;
@@ -41,7 +50,8 @@ export const CardStyled = styled.div`
   backface-visibility: hidden;
   padding: 0.5em;
   border-radius: 0.4em;
-  transition: transform 1s ease-in-out ;
+  pointer-events: none;
+  /* transition: transform 1s ease-in-out ; */
   &.Spades,
   &.Clubs {
     color: black;
@@ -53,6 +63,7 @@ export const CardStyled = styled.div`
   }
 
   &.face {
+    /* transform: rotateY(180deg); */
     box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.5);
     background: #fff;
     & .suit {
@@ -87,7 +98,6 @@ export const CardStyled = styled.div`
   }
 
   &.back {
-    transform: rotateY(180deg);
     background: linear-gradient(-90deg, ${Color.MainDark}, ${Color.Main});
     background-position: center center;
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5);
@@ -140,8 +150,7 @@ export const CardStyled = styled.div`
       filter: drop-shadow(-3.2vw 2vw 1vw rgba(0, 0, 0, 0.514));
     }
     50% {
-      filter: drop-shadow(calc(-3.2vw + 20px) 2vw 0.2vw rgba(0, 0, 0, 0.514));
+      filter: drop-shadow(calc(-3.2vw + 20px) 1vw 0.2vw rgba(0, 0, 0, 0.514));
     }
   }
-
 `;

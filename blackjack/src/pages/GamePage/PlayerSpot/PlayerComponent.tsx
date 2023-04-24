@@ -1,4 +1,4 @@
-import React, { useCallback, MouseEvent } from 'react';
+import React, { useCallback, MouseEvent, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import {
@@ -34,6 +34,7 @@ export const PlayerComponent: React.FC<PlayerComponentProps> = observer(
       [player.id, spotId]
     );
 
+    const cardRef = useRef<HTMLDivElement>(null);
     const activeClassName =
       player.id === game.table?.currentPlayer?.id ? 'active' : '';
 
@@ -65,13 +66,15 @@ export const PlayerComponent: React.FC<PlayerComponentProps> = observer(
             ))
           }
         </ChipsWrapper>
-        <CardsWrapper>
-          {player?.hand.map((card, index) => (
+        <CardsWrapper ref={cardRef} id={`${spotId}Cardholder`}>
+          {player?.hand.map((card) => (
             <CardComponent
+              cardholderId={`${spotId}Cardholder`}
               key={`${card.id}-Card`}
               suit={card.suit}
               rank={card.rank}
               id={card.id}
+              isNew={card.isNew}
             />
           ))}
           {player.handTotal > 0 && <CardsTotal>{player.handTotal}</CardsTotal>}

@@ -305,7 +305,7 @@ export class Table {
       for (const rank of ranks) {
         for (let i = 0; i < 6; i++) {
           //6 decks
-          this.deck.push(new Card(suit, rank.rank, rank.value));
+          this.deck.push(new Card(suit, rank.rank, rank.value, true));
         }
       }
     }

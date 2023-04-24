@@ -257,7 +257,7 @@ export class Game {
 
   private updateTableInfo(table: ITable) {
     const dealerHand = table.dealer?.hand.map(
-      (card) => new Card(card.suit, card.rank, card.value, card.id)
+      (card) => new Card(card.suit, card.rank, card.value, card.id, card.isNew)
     );
 
     let dealer: Dealer | null;

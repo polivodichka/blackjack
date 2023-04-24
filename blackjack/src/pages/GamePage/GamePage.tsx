@@ -19,7 +19,7 @@ import {
 import { DealerSpotComponent } from './PlayerSpot/DealerSpotComponent';
 import { PlayerSpotComponent } from './PlayerSpot/PlayerSpotComponent';
 import { ModalTypes, SocketEmit } from '../../types.ds';
-import { SpotStyled, SpotsZone, SpotWrapper } from './PlayerSpot/Spot.styled';
+import { SpotsZone } from './PlayerSpot/Spot.styled';
 import moneyIcon from '../../assets/money.svg';
 import { BetPanel } from './BetPanel/BetPanel';
 import chatIcon from '../../assets/chat.svg';

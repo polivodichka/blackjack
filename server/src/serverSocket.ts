@@ -199,6 +199,13 @@ export class ServerSocket {
             throw new Error(BaseMessages.ProhibitedAction);
           }
 
+          table.playingPlayers.forEach((plPlayer) => {
+            const hand = plPlayer.hand;
+            hand
+              .filter((card) => card.isNew)
+              .map((newCard) => (newCard.isNew = false));
+          });
+
           switch (actionType) {
             case ActionType.Hit:
               table.hit();
@@ -393,7 +400,9 @@ export class ServerSocket {
             table = this.tables[key_id];
             if (table) {
               player = this.findPlayerById(socket.id, table);
-              if (player) {break;}
+              if (player) {
+                break;
+              }
             }
           }
         }
