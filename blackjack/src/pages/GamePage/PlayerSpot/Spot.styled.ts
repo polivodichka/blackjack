@@ -1,7 +1,7 @@
+import styled from 'styled-components';
+
 import { Color } from '../../../constants/constants';
 import { SpotStyledProps } from '../../../styled.ds';
-
-import styled from 'styled-components';
 
 export const PlayersWrapper = styled.div`
   display: flex;
@@ -16,14 +16,20 @@ export const OnePlayerWrapper = styled.div`
   align-items: center;
   justify-content: center;
   position: relative;
+  .bet {
+    z-index: 8;
+  }
   &.loose {
-    filter: drop-shadow(0px 0px 20px red);
+    transition: filter 0.3s ease-in 0.9s;
+    filter: drop-shadow(0px 0px 20px ${Color.Fail});
   }
   &.win {
-    filter: drop-shadow(0px 0px 20px green);
+    transition: filter 0.3s ease-in 0.9s;
+    filter: drop-shadow(0px 0px 20px ${Color.Success});
   }
 `;
 export const PlayerComponentWrapper = styled(OnePlayerWrapper)`
+  gap: 5px;
   &.active {
     z-index: 7;
     animation: pulse 2s ease-in-out infinite;
@@ -43,17 +49,19 @@ export const SpotStyled = styled.div.attrs((props: SpotStyledProps) => props)`
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 30vh;
-  width: 16vw;
+  height: 15vmax;
+  width: 16vmax;
   border: 3px solid white;
   border-radius: 9px;
   padding: 20px 0;
   position: relative;
   cursor: pointer;
+  transition: box-shadow 0.5s ease-in-out, border 0.5s ease-in-out;
 
   &.active {
+    transition: box-shadow 0.5s ease-in-out 0.2s, border 0.5s ease-in-out 0.2s;
     border: 2px solid ${Color.MainAccent};
-    box-shadow: 0 0 40px ${Color.MainAccent} inset;
+    box-shadow: 0 0 5vmax ${Color.MainAccent} inset;
   }
   &.empty {
     animation: pulseColor 2s ease-in-out infinite;
@@ -68,11 +76,11 @@ export const SpotStyled = styled.div.attrs((props: SpotStyledProps) => props)`
   @keyframes pulseColor {
     0%,
     100% {
-      box-shadow: 0 0 40px ${Color.MainAccent} inset;
+      box-shadow: 0 0 5vmax ${Color.MainAccent} inset;
     }
 
     50% {
-      box-shadow: 0 0 20px #fff inset;
+      box-shadow: 0 0 2vmax #fff inset;
     }
   }
 `;
@@ -118,15 +126,24 @@ export const CardsWrapper = styled.div`
 `;
 
 export const CardsTotal = styled.div`
-  height: 20px;
-  width: 20px;
+  padding-top: 100%;
+  margin-left: 30px;
+  width: 30px;
   height: min-content;
   color: white;
-  background-color: #5dadec;
+  border: 2px solid #fff;
   text-align: center;
   padding: 3px;
-  border-radius: 50%;
+  border-radius: 6px;
   z-index: 2;
+  &.bust {
+    border-color: ${Color.Fail};
+    color: ${Color.Fail};
+  }
+  &.bj {
+    border-color: ${Color.Success};
+    color: ${Color.Success};
+  }
 `;
 
 export const ChipsWrapper = styled.div`

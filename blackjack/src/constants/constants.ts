@@ -11,6 +11,9 @@ export enum Color {
   MainAccent = '#03e9f4',
   MainDark = '#141e30',
   Main = '#243b55',
+  MainSemitransparent = '#243b5588',
+  Success = '#71a869',
+  Fail = 'red',
 }
 
 type BetValueOptionType = {

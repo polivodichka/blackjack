@@ -1,6 +1,6 @@
-import { Color } from '../../constants/constants';
-
 import styled from 'styled-components';
+
+import { Color } from '../../constants/constants';
 
 export const Overflow = styled.div`
   height: 100%;
@@ -213,7 +213,4 @@ export const RangeBarInput = styled.input`
     cursor: pointer;
     }
   }
-
-  /* &:active{
-    box-shadow: 0px 0px 1px darken($darkgreen, 15%)} */
 `;

@@ -18,12 +18,18 @@ interface SocketEventsOn {
   [SocketOn.DisconnectPlayer]: (table: string) => void;
   [SocketOn.BetUpdate]: (players: string) => void;
   [SocketOn.Dealt]: (table: string) => void;
-  [SocketOn.ActionMade]: (table: string, actionType: ActionType | undefined) => void;
-  [SocketOn.DealerMadeAction]: (table: string, actionType: ActionType | undefined) => void;
+  [SocketOn.ActionMade]: (
+    table: string,
+    actionType: ActionType | undefined
+  ) => void;
+  [SocketOn.DealerMadeAction]: (
+    table: string,
+    actionType: ActionType | undefined
+  ) => void;
   [SocketOn.WinnersCounted]: (table: string) => void;
   [SocketOn.GameEnded]: (table: string) => void;
   [SocketOn.Error]: (message: string) => void;
-  [SocketOn.Message]: (message: string) => void;
+  [SocketOn.Message]: (message: string, type?: 'chat') => void;
   [SocketOn.BalanceToppedUp]: (player: string) => void;
   [SocketOn.ChatServerMessage]: (message: string) => void;
 }

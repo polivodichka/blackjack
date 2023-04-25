@@ -1,11 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-/* eslint-disable @typescript-eslint/indent */
+import styled from 'styled-components';
+
+import { makeColorDarker } from '../../../utils/makeColorDarker';
 import { BetPanelStyledProps } from '../../../styled.ds';
 import { ChipStyledProps } from '../../../styled.ds';
 
-import { makeColorDarker } from '../../../utils/makeColorDarker';
+/* eslint-disable @typescript-eslint/indent */
 
-import styled from 'styled-components';
+
 
 export const BetPanelStyled = styled.div.attrs(
   (props: BetPanelStyledProps) => props
@@ -189,12 +191,14 @@ export const ChipStyled = styled.button.attrs(
           0px rgba(255, 255, 255, 0.3);
     }
   }
-  &:hover,
-  &:disabled {
+  &:hover {
     transform: scale(1.3);
     box-shadow: 0 0 5px ${(props) => props.color},
       0 0 25px ${(props) => props.color}, 0 0 50px ${(props) => props.color},
       0 0 100px ${(props) => props.color};
+  }
+  &:disabled{
+    box-shadow: -2px 2px 5px #000;
   }
   &.active {
     -webkit-animation: 10s rotate-right linear infinite;

@@ -47,12 +47,17 @@ export const PlayerSpotComponent: React.FC<PlayerProps> = observer(({ id }) => {
     const className = [];
     if (
       (player.state === PlayerGameState.Blackjack ||
-        player.state === PlayerGameState.NaturalBlackjack) &&
+        player.state === PlayerGameState.NaturalBlackjack ||
+        player.state === PlayerGameState.Win) &&
       player.state
     ) {
       className.push('win');
     }
-    if (player.state === PlayerGameState.Bust && player.state) {
+    if (
+      (player.state === PlayerGameState.Loose ||
+        player.state === PlayerGameState.Bust) &&
+      player.state
+    ) {
       className.push('loose');
     }
     return className.join(' ');
@@ -67,21 +72,6 @@ export const PlayerSpotComponent: React.FC<PlayerProps> = observer(({ id }) => {
       game.emit[SocketEmit.SetBet](id);
     }
   };
-
-  // const ref = React.useRef<HTMLDivElement>(null);
-  // const SpotStyledWithSound: React.FC<ButtonWithSoundProps> = withSound(
-  //   ({ children, ...props }) => {
-  //     return (
-  //       <SpotStyled
-  //         ref={ref as React.LegacyRef<HTMLDivElement>}
-  //         className={spotClass}
-  //         {...props}
-  //       >
-  //         {children}
-  //       </SpotStyled>
-  //     );
-  //   }
-  // );
 
   return (
     <SpotWrapper className="spot">

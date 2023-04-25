@@ -1,13 +1,14 @@
-import styled from 'styled-components';
-import { Color } from '../../../constants/constants';
 import { motion } from 'framer-motion';
+import styled from 'styled-components';
+
+import { Color } from '../../../constants/constants';
 
 export const CardWrap = styled(motion.div)`
-  --width: 4vw;
-  --height: 6.4vw;
+  --width: 4vmax;
+  --height: 6.4vmax;
   width: var(--width);
   height: var(--height);
-  font-size: 1.6em;
+  font-size: 2.88vmin;
   font-family: 'Prompt';
   position: relative;
   margin-left: 0;
@@ -48,8 +49,8 @@ export const CardStyled = styled(motion.div)`
   justify-content: center;
   align-items: center;
   backface-visibility: hidden;
-  padding: 0.5em;
-  border-radius: 0.4em;
+  padding: 0.9vmax;
+  border-radius: 0.72vmax;
   pointer-events: none;
   /* transition: transform 1s ease-in-out ; */
   &.Spades,
@@ -67,7 +68,7 @@ export const CardStyled = styled(motion.div)`
     box-shadow: 0 0 16px 0 rgba(0, 0, 0, 0.5);
     background: #fff;
     & .suit {
-      font-size: 2.5em;
+      font-size: 4.5vmax;
       font-weight: 100;
     }
 
@@ -75,7 +76,7 @@ export const CardStyled = styled(motion.div)`
       position: absolute;
       bottom: 0;
       right: 0;
-      padding: 0.2em;
+      padding: 0.36vmax;
       display: flex;
       flex-flow: column;
       align-items: center;
@@ -91,7 +92,7 @@ export const CardStyled = styled(motion.div)`
       }
 
       &::after {
-        font-size: 0.7em;
+        font-size: 1.26vmax;
         content: attr(data-suit);
       }
     }
@@ -103,7 +104,7 @@ export const CardStyled = styled(motion.div)`
     box-shadow: 0 0 4px 0 rgba(0, 0, 0, 0.5);
 
     &::before {
-      font-size: 0.4em;
+      font-size: 0.72vmax;
       content: 'evolution';
       color: white;
       position: absolute;
@@ -111,14 +112,14 @@ export const CardStyled = styled(motion.div)`
       left: 0px;
     }
     &::after {
-      font-size: 0.4em;
+      font-size: 0.72vmax;
 
       content: 'evolution';
       color: white;
       position: absolute;
       bottom: 0px;
       right: 0px;
-      padding: 0.2em;
+      padding: 0.36vmax;
       display: flex;
       flex-flow: column;
       -webkit-box-align: center;
@@ -131,13 +132,13 @@ export const CardStyled = styled(motion.div)`
   &.deck {
     position: absolute;
 
-    --width: 4vw;
-    --height: 6.4vw;
+    --width: 4vmax;
+    --height: 6.4vmax;
     width: var(--width);
     height: var(--height);
     &::before,
     &::after {
-      font-size: 0.6em;
+      font-size: 1.08vmax;
     }
   }
   &.deck:first-child {
@@ -147,10 +148,10 @@ export const CardStyled = styled(motion.div)`
   @keyframes shadow {
     0%,
     100% {
-      filter: drop-shadow(-3.2vw 2vw 1vw rgba(0, 0, 0, 0.514));
+      filter: drop-shadow(-3.2vmax 2vmax 1vmax rgba(0, 0, 0, 0.514));
     }
     50% {
-      filter: drop-shadow(calc(-3.2vw + 20px) 1vw 0.2vw rgba(0, 0, 0, 0.514));
+      filter: drop-shadow(calc(-3.2vmax + 20px) 1vmax 0.2vw rgba(0, 0, 0, 0.514));
     }
   }
 `;

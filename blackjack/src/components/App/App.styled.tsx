@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { ToastOptions } from 'react-toastify';
 import styled from 'styled-components';
 
 import { makeColorDarker } from '../../utils/makeColorDarker';
-import { Color } from '../../constants/constants';
 import { StyledButtonProps } from '../../styled.ds';
+import { Color } from '../../constants/constants';
 
 export const StyledBtn = styled.button.attrs(
   (props: StyledButtonProps) => props
@@ -24,7 +25,6 @@ export const StyledBtn = styled.button.attrs(
   overflow: hidden;
   transition: 0.5s;
   font-family: 'Prompt';
-  /* letter-spacing: 4px; */
   &:hover {
     background: ${Color.MainAccent};
     color: #fff;
@@ -54,14 +54,15 @@ export const ButtonWithSvg = styled(StyledBtn)`
   }
 `;
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 export const toastSettings: ToastOptions<{}> = {
   position: 'top-right',
-  autoClose: 1000,
+  autoClose: 800,
   hideProgressBar: false,
   closeOnClick: true,
-  pauseOnHover: true,
+  pauseOnHover: false,
   draggable: true,
+  pauseOnFocusLoss: false,
   progress: undefined,
   theme: 'dark',
+  rtl: false,
 };

@@ -19,12 +19,19 @@ export const SoundSettingsForm = observer(() => {
   const [soundVolume, setSoundVolume] = useState(
     game.music?.sounds[SoundType.Click]?.volume ?? 0
   );
+  const [notificationVolume, setNotificationVolume] = useState(
+    game.music?.notifications[SoundType.PlayerConnected]?.volume ?? 0
+  );
   const handleMusicMute = () => {
     game.music?.toggleMuteMusic();
   };
 
   const handleSoundMute = () => {
     game.music?.toggleMuteSound();
+  };
+
+  const handleNotificationMute = () => {
+    game.music?.toggleMuteNotifications();
   };
 
   const handleMusicVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -45,6 +52,19 @@ export const SoundSettingsForm = observer(() => {
       game.music.setSoundVolume(value);
       if (game.music.soundsMuted) {
         game.music.toggleMuteSound();
+      }
+    }
+  };
+
+  const handleNotificationVolumeChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const value = +e.currentTarget.value / 100;
+    if (game.music) {
+      setNotificationVolume(value);
+      game.music.setNotificationVolume(value);
+      if (game.music.notificationsMuted) {
+        game.music.toggleMuteNotifications();
       }
     }
   };
@@ -98,6 +118,29 @@ export const SoundSettingsForm = observer(() => {
         >
           <HandySvg
             src={game.music?.soundsMuted ? muteIcon : soundIcon}
+            width="17"
+            height="17"
+          />
+        </SvgBtnWithSound>
+      </RangeBarContainer>
+
+      <CheckboxLabel>Notifications</CheckboxLabel>
+      <RangeBarContainer>
+        <RangeBarInput
+          type="range"
+          value={notificationVolume * 100}
+          onChange={handleNotificationVolumeChange}
+          step={5}
+          min={0}
+          max={100}
+        />
+        <SvgBtnWithSound
+          soundType={SoundType.Click}
+          onClick={handleNotificationMute}
+          disabled={!game.music}
+        >
+          <HandySvg
+            src={game.music?.notificationsMuted ? muteIcon : soundIcon}
             width="17"
             height="17"
           />

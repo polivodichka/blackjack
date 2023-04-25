@@ -28,6 +28,8 @@ export enum PlayerGameState {
   Blackjack = 'Blackjack',
   NaturalBlackjack = 'Natural blackjack',
   Active = 'Active',
+  Loose = 'Loose',
+  Win = 'Win',
   Error = 'Error',
 }
 
@@ -157,4 +159,16 @@ export enum SoundType {
   Flip = 'flip',
   Balance = 'balance',
   Background = 'background',
+  PlayerConnected = 'player-connsected',
+  PlayerDisconnected = 'player-disconnsected',
+  Message = 'message',
+}
+
+export enum CardholdersIds {
+  Spot0 = 'spot-0Cardholder',
+  Spot1 = 'spot-1Cardholder',
+  Spot2 = 'spot-2Cardholder',
+  Spot3 = 'spot-3Cardholder',
+  Spot4 = 'spot-4Cardholder',
+  Dealer = 'dealerCardholder',
 }

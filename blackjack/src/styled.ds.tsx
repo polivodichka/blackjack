@@ -16,4 +16,6 @@ export type SoundSettings = {
   musicMuted: boolean;
   soundsVolume: number;
   soundsMuted: boolean;
+  notificationsVolume: number;
+  notificationsMuted: boolean;
 };

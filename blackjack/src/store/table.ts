@@ -66,6 +66,9 @@ export class Table {
             (player) => player.parentPlayer?.id === parentPlayer.id
           )
       ) &&
+      this.parentPlayers.every(
+        (player) => player.balance >= 2 || player.betChipsTotalWithChildren
+      ) &&
       Object.keys(this.spots).length < 5 &&
       !this._dealer
     ) {

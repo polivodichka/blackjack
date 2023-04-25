@@ -26,7 +26,7 @@ export const Bet: React.FC<BetProps> = ({
       return (
         <ChipStyled
           ref={ref as React.LegacyRef<HTMLButtonElement>}
-          className={active ? 'active' : ''}
+          className={active ? 'active bet' : 'bet'}
           color={color}
           bet={value}
           size={size}

@@ -4,27 +4,27 @@ import React, { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { HandySvg } from 'handy-svg';
 
-import { StyledBtn, toastSettings } from '../../components/App/App.styled';
-import { GameActionsComponent } from './GameActions/GameActionsComponent';
 import {
   BalanceStyled,
-  GameWrapper,
   OptionsPanel,
+  GameWrapper,
   Wrapper,
 } from './GamePage.styled';
+import { StyledBtn, toastSettings } from '../../components/App/App.styled';
+import { GameActionsComponent } from './GameActions/GameActionsComponent';
 import { DealerSpotComponent } from './PlayerSpot/DealerSpotComponent';
 import { PlayerSpotComponent } from './PlayerSpot/PlayerSpotComponent';
 import { ModalTypes, SocketEmit, SoundType } from '../../types.ds';
+import { SvgBtnWithSound } from '../../sounds/StyledBtnWithSound';
+import soundSettingsIcon from '../../assets/settings.svg';
 import { SpotsZone } from './PlayerSpot/Spot.styled';
 import moneyIcon from '../../assets/money.svg';
 import { BetPanel } from './BetPanel/BetPanel';
+import { GameText } from './GameText/GameText';
 import chatIcon from '../../assets/chat.svg';
 import copyIcon from '../../assets/copy.svg';
-import soundSettingsIcon from '../../assets/settings.svg';
 import { game } from '../../store/game';
-import { GameText } from './GameText/GameText';
-import { Deck } from '../../components/Deck/Deck';
-import { SvgBtnWithSound } from '../../sounds/StyledBtnWithSound';
+import { Deck } from './Deck/Deck';
 
 export const GamePage: React.FC = observer(() => {
   const navigate = useNavigate();
@@ -73,7 +73,11 @@ export const GamePage: React.FC = observer(() => {
     game.table?.ableToStartGame && game.player?.betChipsTotalWithChildren ? (
       <StyledBtn onClick={handlePlayBtn}>PLAY</StyledBtn>
     ) : game.table?.ableToStartGame ? (
-      <div>No empty spots left</div>
+      game.player?.balance && game.player?.balance > 2 ? (
+        <div>No empty spots left</div>
+      ) : (
+        <div>Insufficient funds! </div>
+      )
     ) : (
       <div>{game.table?.gameStatus}</div>
     );
@@ -105,7 +109,7 @@ export const GamePage: React.FC = observer(() => {
       <HandySvg src={chatIcon} width="17" height="17" />
     </SvgBtnWithSound>
   );
-  const soundsBtn = (
+  const soundsSettingsBtn = (
     <SvgBtnWithSound
       soundType={SoundType.Click}
       onClick={handleModalOpen(ModalTypes.Sounds)}
@@ -117,7 +121,7 @@ export const GamePage: React.FC = observer(() => {
   return (
     <Wrapper>
       <OptionsPanel>
-        {copyTableIdBtn} {chatBtn} {soundsBtn}
+        {copyTableIdBtn} {chatBtn} {soundsSettingsBtn}
       </OptionsPanel>
       <BalanceStyled>
         <div>{game.player?.balance}</div>

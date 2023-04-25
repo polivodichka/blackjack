@@ -78,6 +78,8 @@ export const EnterForm: React.FC = () => {
         const { musicVolume, soundsVolume } = soundSettings;
         game.music?.setMusicVolume(musicVolume);
         game.music?.setSoundVolume(soundsVolume);
+      } else {
+        game.music?.setMusicVolume(0.1);
       }
 
       game.music?.bg?.play();

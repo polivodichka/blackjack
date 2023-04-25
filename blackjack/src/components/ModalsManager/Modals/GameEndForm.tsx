@@ -1,9 +1,9 @@
 import React from 'react';
 
-import { ButtonsWrapper, Form } from '../ModalsManager.styled';
 import { EndGameActions, SocketEmit, SoundType } from '../../../types.ds';
-import { game } from '../../../store/game';
 import { StyledBtnWithSound } from '../../../sounds/StyledBtnWithSound';
+import { ButtonsWrapper, Form } from '../ModalsManager.styled';
+import { game } from '../../../store/game';
 
 export const GameEndForm: React.FC = () => {
   const handleEndGame =

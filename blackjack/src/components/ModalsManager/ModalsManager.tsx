@@ -6,7 +6,7 @@ import { BalanceForm } from './Modals/BalanceForm';
 import { GameEndForm } from './Modals/GameEndForm';
 import { Overflow } from './ModalsManager.styled';
 import { EnterForm } from './Modals/EnterForm';
-import { ModalTypes } from '../../types.ds';
+import { ModalTypes, SoundType } from '../../types.ds';
 import { game } from '../../store/game';
 import { Chat } from './Chat/Chat';
 
@@ -26,6 +26,13 @@ export const ModalsManager: React.FC = observer(() => {
       ModalComponent === MODAL_COMPONENTS.Chat ||
       ModalComponent === MODAL_COMPONENTS.Sounds
     ) {
+      const audio = game.music?.sounds[SoundType.Click];
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        audio.play();
+      }
       game.modalUpdate(true);
     }
   };

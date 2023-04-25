@@ -2,10 +2,10 @@ import React, { useCallback, MouseEvent, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import {
+  PlayerComponentWrapper,
   CardsWrapper,
   ChipsWrapper,
   CardsTotal,
-  PlayerComponentWrapper,
 } from './Spot.styled';
 import { getBetColor } from '../../../utils/getBetColor';
 import { CardComponent } from '../Card/CardComponent';
@@ -77,7 +77,19 @@ export const PlayerComponent: React.FC<PlayerComponentProps> = observer(
               isNew={card.isNew}
             />
           ))}
-          {player.handTotal > 0 && <CardsTotal>{player.handTotal}</CardsTotal>}
+          {player.handTotal > 0 && (
+            <CardsTotal
+              className={
+                player.isBust
+                  ? 'bust'
+                  : player.isBJ || player.isNaturalBJ
+                    ? 'bj'
+                    : ''
+              }
+            >
+              {player.handTotal}
+            </CardsTotal>
+          )}
         </CardsWrapper>
       </PlayerComponentWrapper>
     );

@@ -3,9 +3,10 @@ import { observer } from 'mobx-react-lite';
 
 import { Blob, ChatWrapper, MessageForm, MessagesWrapper } from './Chat.styled';
 import { IMessage, SocketEmit, SocketOn, SoundType } from '../../../types.ds';
+import { Color } from '../../../constants/constants';
+import { StyledBtn } from '../../App/App.styled';
 import { socket } from '../../../server/socket';
 import { game } from '../../../store/game';
-import { StyledBtnWithSound } from '../../../sounds/StyledBtnWithSound';
 
 export const Chat: React.FC = observer(() => {
   const messages = game.chat?.messages ?? [];
@@ -25,6 +26,13 @@ export const Chat: React.FC = observer(() => {
       };
 
       game.emit[SocketEmit.ChatSendMessage](JSON.stringify(newMessage));
+      const audio = game.music?.sounds[SoundType.Click];
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        audio.play();
+      }
       setInputValue('');
     }
   };
@@ -34,17 +42,9 @@ export const Chat: React.FC = observer(() => {
   }, [messages.length]);
 
   useEffect(() => {
-    const handleChatMessage = (messageStr: string) => {
-      const message = JSON.parse(messageStr) as IMessage;
+    socket.on(SocketOn.ChatServerMessage, () => {
       setInputValue('');
-      game.chat?.addMessage(message);
-    };
-
-    socket.on(SocketOn.ChatServerMessage, handleChatMessage);
-
-    return () => {
-      socket.off(SocketOn.ChatServerMessage, handleChatMessage);
-    };
+    });
   }, [messages.length]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -96,13 +96,13 @@ export const Chat: React.FC = observer(() => {
           onKeyDown={handleKeyPressed}
           placeholder="Shift+Enter for new line&#10;Enter for send"
         />
-        <StyledBtnWithSound
-          soundType={SoundType.Click}
+        <StyledBtn
           type="submit"
           disabled={!inputValue.length}
+          style={{ background: Color.MainSemitransparent }}
         >
           Send
-        </StyledBtnWithSound>
+        </StyledBtn>
       </MessageForm>
     </ChatWrapper>
   );

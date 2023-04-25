@@ -1,4 +1,4 @@
-import { ActionType, Rank } from './types.ds';
+import { ActionType } from './types.ds';
 import { BaseMessages } from './types.ds';
 import { Chat } from './models/chat';
 import { EndGameActions } from './types.ds';
@@ -6,6 +6,7 @@ import { IMessage } from './types.ds';
 import { MyServer } from './serverSocket.ds';
 import { MySocket } from './serverSocket.ds';
 import { Player } from './models/player';
+import { Rank } from './types.ds';
 import { Server } from 'socket.io';
 import { Server as HttpServer } from 'http';
 import { SocketEmit } from './types.ds';
@@ -247,13 +248,6 @@ export class ServerSocket {
               break;
           }
 
-          if (
-            (player.isBJ || player.isBust || player.isNaturalBJ) &&
-            actionType !== ActionType.Stand
-          ) {
-            table.stand();
-          }
-
           console.info(`${SocketEmit.ActionMade} ${player.parentPlayer?.id}`);
           //send
           this.io
@@ -264,7 +258,6 @@ export class ServerSocket {
             table.dealer &&
             table.currentPlayerIndex === table.playingPlayers.length
           ) {
-            
             /*Dealers round*/
             while (table.dealer.canHit) {
               table.dealer.hand.push(table.draw());
@@ -273,7 +266,11 @@ export class ServerSocket {
               //send
               this.io
                 .to(table.id)
-                .emit(SocketEmit.DealerMadeAction, JSON.stringify(table), ActionType.Hit);
+                .emit(
+                  SocketEmit.DealerMadeAction,
+                  JSON.stringify(table),
+                  ActionType.Hit
+                );
             }
 
             table.countWinnings();
@@ -344,9 +341,13 @@ export class ServerSocket {
 
         console.info(`Message ${table.id}`);
         //send
-        this.io
+        socket.broadcast
+          .to(tableId)
+          .emit(SocketEmit.Message, newMessage.text.join('\n'), 'chat');
+        socket.broadcast
           .to(table.id)
           .emit(SocketEmit.ChatServerMessage, JSON.stringify(newMessage));
+        socket.emit(SocketEmit.ChatServerMessage, JSON.stringify(newMessage));
       } catch (error) {
         this.handleError(error, socket);
       }

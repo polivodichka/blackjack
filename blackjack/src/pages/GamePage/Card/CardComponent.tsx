@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 
-import { Rank, Suit, SuitCard } from '../../../types.ds';
+import { CardholdersIds, Rank, Suit, SuitCard } from '../../../types.ds';
 import { CardStyled, CardWrap } from './Card.styled';
 
 type CardProps = {
@@ -36,18 +36,37 @@ export const CardComponent: React.FC<CardProps> = ({
       rotate: 0,
     };
     switch (cardholderId) {
-      case 'spot-0Cardholder':
+      case CardholdersIds.Spot0:
         angle = ((90 - 45 * 1.5) * Math.PI) / 180;
         result.y -= result.x * 2 * Math.sqrt(1 - Math.cos(angle));
         result.rotate = 100;
         break;
-      case 'spot-1Cardholder':
+      case CardholdersIds.Spot1:
         angle = ((90 - 45 * 1.7) * Math.PI) / 180;
         result.y -= result.x * 2 * Math.sqrt(1 - Math.cos(angle));
         result.rotate = 113;
         break;
+      case CardholdersIds.Spot2:
+        angle = ((90 - 45 * 1.9) * Math.PI) / 180;
+        result.y -= result.x * 2 * Math.sqrt(1 - Math.cos(angle));
+        result.rotate = 126;
+        break;
+      case CardholdersIds.Spot3:
+        angle = ((90 - 45 * 2.1) * Math.PI) / 180;
+        result.y -= result.x * 2 * Math.sqrt(1 - Math.cos(angle));
+        result.rotate = 139;
+        break;
+
+      case CardholdersIds.Spot4:
+        angle = ((90 - 45 * 1) * Math.PI) / 180;
+        result.y += result.x * 2 * Math.sqrt(1 - Math.cos(angle));
+        result.rotate = 152;
+        break;
 
       default:
+        angle = ((90 - 45 * 1.8) * Math.PI) / 180;
+        result.y -= result.x * 2 * Math.sqrt(1 - Math.cos(angle));
+        result.rotate = 115;
         break;
     }
     return result;
