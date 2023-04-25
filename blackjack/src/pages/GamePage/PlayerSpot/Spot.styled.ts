@@ -1,6 +1,7 @@
-import styled from 'styled-components';
 import { Color } from '../../../constants/constants';
 import { SpotStyledProps } from '../../../styled.ds';
+
+import styled from 'styled-components';
 
 export const PlayersWrapper = styled.div`
   display: flex;
@@ -24,6 +25,7 @@ export const OnePlayerWrapper = styled.div`
 `;
 export const PlayerComponentWrapper = styled(OnePlayerWrapper)`
   &.active {
+    z-index: 7;
     animation: pulse 2s ease-in-out infinite;
   }
 `;

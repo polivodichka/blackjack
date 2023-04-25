@@ -131,6 +131,7 @@ export enum ModalTypes {
   Balance = 'Balance',
   GameEnd = 'GameEnd',
   Chat = 'Chat',
+  Sounds = 'Sounds',
 }
 
 export interface IModal {
@@ -153,4 +154,7 @@ export interface IChat {
 export enum SoundType {
   Click = 'click',
   Chip = 'chip',
+  Flip = 'flip',
+  Balance = 'balance',
+  Background = 'background',
 }

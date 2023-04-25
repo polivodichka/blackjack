@@ -4,11 +4,7 @@ import React, { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { HandySvg } from 'handy-svg';
 
-import {
-  ButtonWithSvg,
-  toastSettings,
-  StyledBtn,
-} from '../../components/App/App.styled';
+import { StyledBtn, toastSettings } from '../../components/App/App.styled';
 import { GameActionsComponent } from './GameActions/GameActionsComponent';
 import {
   BalanceStyled,
@@ -18,18 +14,21 @@ import {
 } from './GamePage.styled';
 import { DealerSpotComponent } from './PlayerSpot/DealerSpotComponent';
 import { PlayerSpotComponent } from './PlayerSpot/PlayerSpotComponent';
-import { ModalTypes, SocketEmit } from '../../types.ds';
+import { ModalTypes, SocketEmit, SoundType } from '../../types.ds';
 import { SpotsZone } from './PlayerSpot/Spot.styled';
 import moneyIcon from '../../assets/money.svg';
 import { BetPanel } from './BetPanel/BetPanel';
 import chatIcon from '../../assets/chat.svg';
 import copyIcon from '../../assets/copy.svg';
+import soundSettingsIcon from '../../assets/settings.svg';
 import { game } from '../../store/game';
 import { GameText } from './GameText/GameText';
 import { Deck } from '../../components/Deck/Deck';
+import { SvgBtnWithSound } from '../../sounds/StyledBtnWithSound';
 
 export const GamePage: React.FC = observer(() => {
   const navigate = useNavigate();
+
   useEffect(() => {
     if (!(game.table && game.player)) {
       navigate('/');
@@ -84,29 +83,41 @@ export const GamePage: React.FC = observer(() => {
   );
 
   const copyTableIdBtn = (
-    <ButtonWithSvg onClick={handleCopyClick}>
+    <SvgBtnWithSound soundType={SoundType.Click} onClick={handleCopyClick}>
       <HandySvg src={copyIcon} width="17" height="17" />
-    </ButtonWithSvg>
+    </SvgBtnWithSound>
   );
 
   const topUpBalanceBtn = (
-    <ButtonWithSvg
+    <SvgBtnWithSound
+      soundType={SoundType.Click}
       onClick={handleModalOpen(ModalTypes.Balance)}
       disabled={game.table?.roundIsStarted}
     >
       <HandySvg src={moneyIcon} width="17" height="17" />
-    </ButtonWithSvg>
+    </SvgBtnWithSound>
   );
   const chatBtn = (
-    <ButtonWithSvg onClick={handleModalOpen(ModalTypes.Chat)}>
+    <SvgBtnWithSound
+      soundType={SoundType.Click}
+      onClick={handleModalOpen(ModalTypes.Chat)}
+    >
       <HandySvg src={chatIcon} width="17" height="17" />
-    </ButtonWithSvg>
+    </SvgBtnWithSound>
+  );
+  const soundsBtn = (
+    <SvgBtnWithSound
+      soundType={SoundType.Click}
+      onClick={handleModalOpen(ModalTypes.Sounds)}
+    >
+      <HandySvg src={soundSettingsIcon} width="17" height="17" />
+    </SvgBtnWithSound>
   );
 
   return (
     <Wrapper>
       <OptionsPanel>
-        {copyTableIdBtn} {chatBtn}
+        {copyTableIdBtn} {chatBtn} {soundsBtn}
       </OptionsPanel>
       <BalanceStyled>
         <div>{game.player?.balance}</div>

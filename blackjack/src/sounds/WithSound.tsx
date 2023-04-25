@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-floating-promises */
 import React from 'react';
+import { game } from '../store/game';
 import { SoundType } from '../types.ds';
-import { CLICK_SOUND_ID, CHIP_SOUND_ID } from './SoundsContainer';
 
 export type WithSoundProps = {
   soundType: SoundType;
@@ -18,7 +18,7 @@ export function withSound<P extends WithSoundProps>(
   Component: React.FC<P>
 ): React.FC<P> {
   const ButtonWithSound: React.FC<P> = ({ soundType, onClick, ...props }) => {
-    const audio = getElement(soundType);
+    const audio = game.music?.sounds[soundType];
 
     const handleClick = React.useCallback(
       (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -26,13 +26,13 @@ export function withSound<P extends WithSoundProps>(
           audio.pause();
           audio.currentTime = 0;
         }
+        audio?.play();
 
         if (onClick) {
           onClick(event);
         }
-        audio?.play();
       },
-      [onClick, soundType]
+      [audio, onClick]
     );
 
     return <Component {...(props as P)} onClick={handleClick} />;
@@ -40,14 +40,3 @@ export function withSound<P extends WithSoundProps>(
 
   return ButtonWithSound;
 }
-
-const getElement = (soundType: SoundType): HTMLAudioElement | null => {
-  switch (soundType) {
-    case SoundType.Click:
-      return document.getElementById(CLICK_SOUND_ID) as HTMLAudioElement;
-    case SoundType.Chip:
-      return document.getElementById(CHIP_SOUND_ID) as HTMLAudioElement;
-    default:
-      return null;
-  }
-};

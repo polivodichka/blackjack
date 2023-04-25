@@ -6,13 +6,12 @@ import {
   SpotStyled,
   OnePlayerWrapper,
   SpotWrapper,
-  Name
+  Name,
 } from './Spot.styled';
 import { PlayerGameState, SocketEmit, SoundType } from '../../../types.ds';
 import { PlayerComponent } from './PlayerComponent';
 import { game } from '../../../store/game';
 import { Player } from '../../../store/player';
-import { ButtonWithSoundProps, withSound } from '../../../sounds/WithSound';
 
 type PlayerProps = {
   id: string;
@@ -30,13 +29,19 @@ export const PlayerSpotComponent: React.FC<PlayerProps> = observer(({ id }) => {
     if (!gameTable?.spots[id] && !gameTable?.dealer) {
       className.push('empty');
     }
-    
+
     if (gameTable?.roundIsStarted) {
       className.push('disabled');
     }
 
     return className.join(' ');
-  }, [gameTable?.currentPlayer, gameTable?.dealer, gameTable?.roundIsStarted, gameTable?.spots, id]);
+  }, [
+    gameTable?.currentPlayer,
+    gameTable?.dealer,
+    gameTable?.roundIsStarted,
+    gameTable?.spots,
+    id,
+  ]);
 
   const playerClass = (player: Player) => {
     const className = [];
@@ -63,25 +68,29 @@ export const PlayerSpotComponent: React.FC<PlayerProps> = observer(({ id }) => {
     }
   };
 
-  const ref = React.useRef<HTMLDivElement>(null);
-  const SpotStyledWithSound: React.FC<ButtonWithSoundProps> = withSound(
-    ({ children, ...props }) => {
-      return (
-        <SpotStyled
-          ref={ref as React.LegacyRef<HTMLDivElement>}
-          className={spotClass}
-          {...props}
-        >
-          {children}
-        </SpotStyled>
-      );
-    }
-  );
+  // const ref = React.useRef<HTMLDivElement>(null);
+  // const SpotStyledWithSound: React.FC<ButtonWithSoundProps> = withSound(
+  //   ({ children, ...props }) => {
+  //     return (
+  //       <SpotStyled
+  //         ref={ref as React.LegacyRef<HTMLDivElement>}
+  //         className={spotClass}
+  //         {...props}
+  //       >
+  //         {children}
+  //       </SpotStyled>
+  //     );
+  //   }
+  // );
 
   return (
     <SpotWrapper className="spot">
       <Name>{game.getNameBySpotId(id)}</Name>
-      <SpotStyledWithSound onClick={handleSetNewBet} soundType={SoundType.Chip}>
+      <SpotStyled
+        onClick={handleSetNewBet}
+        className={spotClass}
+        soundType={SoundType.Chip}
+      >
         <PlayersWrapper>
           {gameTable?.spots[id] &&
             gameTable.spots[id].map((player) => (
@@ -93,7 +102,7 @@ export const PlayerSpotComponent: React.FC<PlayerProps> = observer(({ id }) => {
               </OnePlayerWrapper>
             ))}
         </PlayersWrapper>
-      </SpotStyledWithSound>
+      </SpotStyled>
     </SpotWrapper>
   );
 });

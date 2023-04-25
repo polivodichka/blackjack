@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { ActionType } from '../types.ds';
 import { Card } from './card';
 import { Chat } from './chat';
@@ -22,11 +23,18 @@ import { toast } from 'react-toastify';
 import { toastSettings } from '../components/App/App.styled';
 
 import equal from 'fast-deep-equal';
+import {
+  BALANCE_SOUND_ID,
+  CHIP_SOUND_ID,
+  FLIP_SOUND_ID,
+} from '../sounds/SoundsContainer';
+import { Music } from './music';
 
 export class Game {
   @observable public player: Player | null = null;
   @observable public table: Table | null = null;
   @observable public chat: Chat | null = null;
+  @observable public music: Music | null = null;
   @observable public modal: IModal = {
     type: ModalTypes.CreateOrJoin,
     hide: false,
@@ -91,6 +99,11 @@ export class Game {
     },
   };
 
+  private dealerActionsHip: {
+    table: string;
+    action: ActionType | undefined;
+  }[] = [];
+
   public constructor() {
     makeObservable(this);
 
@@ -107,46 +120,132 @@ export class Game {
       this.handleTableUpdate(tableStr)
     );
 
-    socket.on(SocketOn.BetUpdate, (playersStr) =>
-      this.updateAllPlayersArray(JSON.parse(playersStr))
-    );
+    socket.on(SocketOn.BetUpdate, (playersStr) => {
+      this.updateAllPlayersArray(JSON.parse(playersStr));
+      const audio = document.getElementById(CHIP_SOUND_ID) as HTMLAudioElement;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.play();
+      }
+    });
     socket.on(SocketOn.BalanceToppedUp, (playerStr) => {
       const playerObj = JSON.parse(playerStr) as IPlayer;
       const player = this.findPlayerById(playerObj.id);
       if (player) {
         player.update(playerObj);
+        const audio = document.getElementById(
+          BALANCE_SOUND_ID
+        ) as HTMLAudioElement;
+        if (audio) {
+          audio.pause();
+          audio.currentTime = 0;
+          audio.play();
+        }
       }
     });
 
     socket.on(SocketOn.Dealt, (tableStr) => {
       this.handleTableUpdate(tableStr);
+      const audio = document.getElementById(FLIP_SOUND_ID) as HTMLAudioElement;
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+        audio.play();
+      }
       if (
         this.table?.currentPlayer?.isBJ ||
         this.table?.currentPlayer?.isBust ||
         this.table?.currentPlayer?.isNaturalBJ
       ) {
-        this.emit[SocketEmit.Action](ActionType.Stand);
+        setTimeout(() => {
+          this.emit[SocketEmit.Action](ActionType.Stand);
+        }, 600);
       }
     });
 
-    socket.on(SocketOn.ActionMade, (tableStr) => {
+    socket.on(SocketOn.ActionMade, (tableStr, actionType) => {
       this.handleTableUpdate(tableStr);
+      //music
+      let audio;
+      switch (actionType) {
+        case ActionType.Hit:
+        case ActionType.Split:
+          audio = document.getElementById(FLIP_SOUND_ID) as HTMLAudioElement;
+          if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.play();
+          }
+          break;
+        case ActionType.Insurance:
+          audio = document.getElementById(CHIP_SOUND_ID) as HTMLAudioElement;
+          if (audio) {
+            audio.pause();
+            audio.currentTime = 0;
+            audio.play();
+          }
+          break;
+        case ActionType.Double:
+          audio = document.getElementById(CHIP_SOUND_ID) as HTMLAudioElement;
+          const audio2 = document.getElementById(
+            FLIP_SOUND_ID
+          ) as HTMLAudioElement;
+
+          audio.pause();
+          audio2.pause();
+          audio.currentTime = 0;
+          audio2.currentTime = 0;
+          audio.play();
+          audio2.play();
+          break;
+      }
       if (
         this.table?.currentPlayer?.isBJ ||
         this.table?.currentPlayer?.isBust ||
         this.table?.currentPlayer?.isNaturalBJ
       ) {
-        this.emit[SocketEmit.Action](ActionType.Stand);
+        setTimeout(() => {
+          this.emit[SocketEmit.Action](ActionType.Stand);
+        }, 600);
       }
     });
 
-    socket.on(SocketOn.DealerMadeAction, (tableStr) =>
-      this.handleTableUpdate(tableStr)
-    );
+    socket.on(SocketOn.DealerMadeAction, (tableStr, actionType) => {
+      this.dealerActionsHip.push({ table: tableStr, action: actionType });
+    });
 
-    socket.on(SocketOn.WinnersCounted, (tableStr) =>
-      this.handleTableUpdate(tableStr)
-    );
+    socket.on(SocketOn.WinnersCounted, (tableStr) => {
+      this.dealerActionsHip.push({ table: tableStr, action: undefined });
+
+      const handleActions = async () => {
+        while (this.dealerActionsHip.length) {
+          const data = this.dealerActionsHip.shift();
+          const table = data?.table;
+          const actionType = data?.action;
+          if (table) {
+            await new Promise((resolve) => setTimeout(resolve, 1000));
+            this.handleTableUpdate(table);
+            //music
+            let audio;
+            switch (actionType) {
+              case ActionType.Hit:
+                audio = document.getElementById(
+                  FLIP_SOUND_ID
+                ) as HTMLAudioElement;
+                if (audio) {
+                  audio.pause();
+                  audio.currentTime = 0;
+                  audio.play();
+                }
+                break;
+            }
+          }
+        }
+      };
+
+      handleActions();
+    });
 
     socket.on(SocketOn.GameEnded, (tableStr) => {
       this.handleTableUpdate(tableStr);
@@ -174,6 +273,7 @@ export class Game {
   ): void {
     this.table = new Table(table.id);
     this.chat = new Chat();
+    this.music = new Music();
     this.updateTableInfo(table);
     this.player = this.findPlayerById(player.id) ?? null;
 

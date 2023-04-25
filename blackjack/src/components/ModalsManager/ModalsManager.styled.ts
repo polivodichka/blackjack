@@ -1,6 +1,6 @@
-import styled from 'styled-components';
-
 import { Color } from '../../constants/constants';
+
+import styled from 'styled-components';
 
 export const Overflow = styled.div`
   height: 100%;
@@ -17,7 +17,7 @@ export const Overflow = styled.div`
   background-color: rgba(0, 0, 0, 0.4);
   transform: translateY(-100%);
   opacity: 0;
-  z-index: 3;
+  z-index: 10;
   &.active {
     transform: translateY(0);
     opacity: 1;
@@ -176,4 +176,44 @@ export const ButtonsWrapper = styled.div`
   display: flex;
   align-self: center;
   gap: 5px;
+`;
+export const RangeBarContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: nowrap;
+  gap: 5px;
+`;
+export const RangeBarInput = styled.input`
+  -webkit-appearance: none !important; 
+  width: 100%;
+  height: 15px;
+  background-color: ${Color.MainDark};
+  border: 1px solid ${Color.MainAccent};
+  border-radius: 10px;
+  margin: auto;
+  transition: all 0.3s ease;
+  cursor: pointer;
+
+  &:hover {
+    background-color: ${Color.Main};
+  }
+
+  &::-webkit-slider-thumb {
+    -webkit-appearance: none !important ;
+    width: 20px;
+    height: 20px;
+    background-color: ${Color.Main};
+    border-radius: 30px;
+    box-shadow: 0px 0px 3px ${Color.MainAccent};
+    transition: all 0.5s ease;
+
+    &:hover {
+      background-color: ${Color.MainAccent};
+    cursor: pointer;
+    }
+  }
+
+  /* &:active{
+    box-shadow: 0px 0px 1px darken($darkgreen, 15%)} */
 `;

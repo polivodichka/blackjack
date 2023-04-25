@@ -1,9 +1,9 @@
 import React from 'react';
 
 import { ButtonsWrapper, Form } from '../ModalsManager.styled';
-import { EndGameActions, SocketEmit } from '../../../types.ds';
-import { StyledBtn } from '../../App/App.styled';
+import { EndGameActions, SocketEmit, SoundType } from '../../../types.ds';
 import { game } from '../../../store/game';
+import { StyledBtnWithSound } from '../../../sounds/StyledBtnWithSound';
 
 export const GameEndForm: React.FC = () => {
   const handleEndGame =
@@ -20,12 +20,18 @@ export const GameEndForm: React.FC = () => {
   return (
     <Form onSubmit={handleFormSubmit}>
       <ButtonsWrapper>
-        <StyledBtn onClick={handleEndGame(EndGameActions.Rebet)}>
+        <StyledBtnWithSound
+          soundType={SoundType.Chip}
+          onClick={handleEndGame(EndGameActions.Rebet)}
+        >
           rebet
-        </StyledBtn>
-        <StyledBtn onClick={handleEndGame(EndGameActions.NewBet)}>
+        </StyledBtnWithSound>
+        <StyledBtnWithSound
+          soundType={SoundType.Click}
+          onClick={handleEndGame(EndGameActions.NewBet)}
+        >
           new bet
-        </StyledBtn>
+        </StyledBtnWithSound>
       </ButtonsWrapper>
     </Form>
   );

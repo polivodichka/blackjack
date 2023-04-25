@@ -3,10 +3,11 @@ import { observer } from 'mobx-react-lite';
 import React from 'react';
 
 import { ButtonsWrapper } from '../../../components/ModalsManager/ModalsManager.styled';
-import { ActionType, SocketEmit, SocketOn } from '../../../types.ds';
+import { ActionType, SocketEmit, SocketOn, SoundType } from '../../../types.ds';
 import { StyledBtn } from '../../../components/App/App.styled';
 import { socket } from '../../../server/socket';
 import { game } from '../../../store/game';
+import { StyledBtnWithSound } from '../../../sounds/StyledBtnWithSound';
 
 export const GameActionsComponent: React.FC = observer(() => {
   const { table, player } = game;
@@ -32,37 +33,42 @@ export const GameActionsComponent: React.FC = observer(() => {
   const insuranceButtons = currentPlayer?.canInsurance && (
     <ButtonsWrapper>
       <StyledBtn
+        soundType={SoundType.Click}
         disabled={buttonsDisabled}
         onClick={handleAction(ActionType.Insurance)}
       >
         Insurance
       </StyledBtn>
-      <StyledBtn
+      <StyledBtnWithSound
+        soundType={SoundType.Click}
         disabled={buttonsDisabled}
         onClick={handleAction(ActionType.SkipInsurance)}
       >
         Skip insurance
-      </StyledBtn>
+      </StyledBtnWithSound>
     </ButtonsWrapper>
   );
   const actionsButtons = !insuranceButtons && (
     <ButtonsWrapper>
       {currentPlayer?.canHit && (
         <StyledBtn
+          soundType={SoundType.Click}
           disabled={buttonsDisabled}
           onClick={handleAction(ActionType.Hit)}
         >
           Hit
         </StyledBtn>
       )}
-      <StyledBtn
+      <StyledBtnWithSound
+        soundType={SoundType.Click}
         disabled={buttonsDisabled}
         onClick={handleAction(ActionType.Stand)}
       >
         Stand
-      </StyledBtn>
+      </StyledBtnWithSound>
       {currentPlayer?.canSplit && (
         <StyledBtn
+          soundType={SoundType.Click}
           disabled={buttonsDisabled}
           onClick={handleAction(ActionType.Split)}
         >
@@ -71,6 +77,7 @@ export const GameActionsComponent: React.FC = observer(() => {
       )}
       {currentPlayer?.canDouble && (
         <StyledBtn
+          soundType={SoundType.Click}
           disabled={buttonsDisabled}
           onClick={handleAction(ActionType.Double)}
         >

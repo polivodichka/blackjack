@@ -16,8 +16,8 @@ export interface SocketEventsEmit {
   [SocketEmit.DisconnectPlayer]: (table: string) => void;
   [SocketEmit.BetUpdate]: (players: string) => void;
   [SocketEmit.Dealt]: (table: string) => void;
-  [SocketEmit.ActionMade]: (table: string) => void;
-  [SocketEmit.DealerMadeAction]: (table: string) => void;
+  [SocketEmit.ActionMade]: (table: string, actionType?: ActionType) => void;
+  [SocketEmit.DealerMadeAction]: (table: string, actionType?: ActionType) => void;
   [SocketEmit.WinnersCounted]: (table: string) => void;
   [SocketEmit.GameEnded]: (table: string) => void;
   [SocketEmit.Error]: (message: string) => void;

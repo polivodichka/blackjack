@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -71,6 +72,15 @@ export const EnterForm: React.FC = () => {
         navigate(`/table?id=${game.table.id}`);
       }
       game.modalUpdate(true);
+
+      const soundSettings = game.music?.getLoacaleSettings();
+      if (soundSettings) {
+        const { musicVolume, soundsVolume } = soundSettings;
+        game.music?.setMusicVolume(musicVolume);
+        game.music?.setSoundVolume(soundsVolume);
+      }
+
+      game.music?.bg?.play();
     };
 
     const handleError = () => {

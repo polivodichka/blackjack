@@ -258,12 +258,13 @@ export class ServerSocket {
           //send
           this.io
             .to(table.id)
-            .emit(SocketEmit.ActionMade, JSON.stringify(table));
+            .emit(SocketEmit.ActionMade, JSON.stringify(table), actionType);
 
           if (
             table.dealer &&
             table.currentPlayerIndex === table.playingPlayers.length
           ) {
+            
             /*Dealers round*/
             while (table.dealer.canHit) {
               table.dealer.hand.push(table.draw());
@@ -272,7 +273,7 @@ export class ServerSocket {
               //send
               this.io
                 .to(table.id)
-                .emit(SocketEmit.DealerMadeAction, JSON.stringify(table));
+                .emit(SocketEmit.DealerMadeAction, JSON.stringify(table), ActionType.Hit);
             }
 
             table.countWinnings();

@@ -2,10 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import { Blob, ChatWrapper, MessageForm, MessagesWrapper } from './Chat.styled';
-import { IMessage, SocketEmit, SocketOn } from '../../../types.ds';
-import { StyledBtn } from '../../App/App.styled';
+import { IMessage, SocketEmit, SocketOn, SoundType } from '../../../types.ds';
 import { socket } from '../../../server/socket';
 import { game } from '../../../store/game';
+import { StyledBtnWithSound } from '../../../sounds/StyledBtnWithSound';
 
 export const Chat: React.FC = observer(() => {
   const messages = game.chat?.messages ?? [];
@@ -96,9 +96,13 @@ export const Chat: React.FC = observer(() => {
           onKeyDown={handleKeyPressed}
           placeholder="Shift+Enter for new line&#10;Enter for send"
         />
-        <StyledBtn type="submit" disabled={!inputValue.length}>
+        <StyledBtnWithSound
+          soundType={SoundType.Click}
+          type="submit"
+          disabled={!inputValue.length}
+        >
           Send
-        </StyledBtn>
+        </StyledBtnWithSound>
       </MessageForm>
     </ChatWrapper>
   );

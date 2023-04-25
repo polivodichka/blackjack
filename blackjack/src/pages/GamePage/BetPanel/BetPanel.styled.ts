@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/indent */
-import styled from 'styled-components';
+import { BetPanelStyledProps } from '../../../styled.ds';
+import { ChipStyledProps } from '../../../styled.ds';
 
 import { makeColorDarker } from '../../../utils/makeColorDarker';
-import { BetPanelStyledProps, ChipStyledProps } from '../../../styled.ds';
+
+import styled from 'styled-components';
 
 export const BetPanelStyled = styled.div.attrs(
   (props: BetPanelStyledProps) => props
@@ -25,7 +27,7 @@ export const ChipStyled = styled.button.attrs(
   max-width: ${(props) => props.size}px;
   height: ${(props) => props.size}px;
   max-height: ${(props) => props.size}px;
-  //box-shadow: 0 0 5px 1px rgba(0, 0, 0, 0.5), 0 0 3px 0 rgba(0, 0, 0, 0.4) inset;
+  z-index: 4;
   border: none;
   border-radius: 50%;
   background-position: center center;

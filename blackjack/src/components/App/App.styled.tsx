@@ -3,8 +3,11 @@ import styled from 'styled-components';
 
 import { makeColorDarker } from '../../utils/makeColorDarker';
 import { Color } from '../../constants/constants';
+import { StyledButtonProps } from '../../styled.ds';
 
-export const StyledBtn = styled.button`
+export const StyledBtn = styled.button.attrs(
+  (props: StyledButtonProps) => props
+)`
   align-self: center;
   display: flex;
   align-items: center;
