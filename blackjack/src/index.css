@@ -14,6 +14,7 @@ body,
   --toastify-icon-color-error: var(--toastify-color-progress-error);
 
   font-weight: 700;
+  font-size: 1.9vmin;
   font-family: "Prompt";
   overflow: hidden;
 
@@ -43,4 +44,8 @@ svg:not(:root) {
 .Toastify__toast-body {
   font-family: 'Prompt';
   font-weight: 100;
+}
+
+svg{
+  stroke-width: 0.2vmin;
 }

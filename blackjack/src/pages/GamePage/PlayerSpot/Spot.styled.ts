@@ -86,6 +86,7 @@ export const SpotStyled = styled.div.attrs((props: SpotStyledProps) => props)`
 `;
 export const Name = styled.div`
   position: absolute;
+  font-size: 1.9vmin;
   top: 0;
 `;
 
@@ -97,21 +98,21 @@ export const SpotsZone = styled.div`
     transform: rotate(calc(90deg - 45deg * var(--i)));
     &:nth-child(1) {
       --i: 1.5;
-      top: -75px;
+      top: -10.75vmin;
     }
     &:nth-child(2) {
       --i: 1.75;
     }
     &:nth-child(3) {
       --i: 2;
-      top: 25px;
+      top: 3.3vmin;
     }
     &:nth-child(4) {
       --i: 2.25;
     }
     &:nth-child(5) {
       --i: 2.5;
-      top: -75px;
+      top: -10.75vmin;
     }
   }
 `;
@@ -120,21 +121,22 @@ export const CardsWrapper = styled.div`
   display: flex;
   flex-wrap: nowrap;
   justify-content: center;
-  gap: -20px;
+  gap: -2.3vmin;
   box-sizing: border-box;
-  min-height: 6.4vw;
+  min-height: 6.4vmin;
 `;
 
 export const CardsTotal = styled.div`
   padding-top: 100%;
-  margin-left: 30px;
-  width: 30px;
+  font-size: 1.9vmin;
+  margin-left: 4vmin;
+  width: 3.5vmin;
   height: min-content;
   color: white;
-  border: 2px solid #fff;
+  border: 0.23vmin solid #fff;
   text-align: center;
-  padding: 3px;
-  border-radius: 6px;
+  padding: 0.35vmin;
+  border-radius: 0.7vmin;
   z-index: 2;
   &.bust {
     border-color: ${Color.Fail};

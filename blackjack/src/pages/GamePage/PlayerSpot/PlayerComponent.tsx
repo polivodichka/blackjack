@@ -47,7 +47,7 @@ export const PlayerComponent: React.FC<PlayerComponentProps> = observer(
               <Bet
                 value={player.insuranceBet}
                 color={Color.MainAccent}
-                size={40}
+                size={7}
                 active={false}
               />
             )
@@ -60,7 +60,7 @@ export const PlayerComponent: React.FC<PlayerComponentProps> = observer(
                 value={bet}
                 onBetSet={handleRemoveBet(index)}
                 color={getBetColor(bet)}
-                size={40}
+                size={7}
                 active={false}
               />
             ))

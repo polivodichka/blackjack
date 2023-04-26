@@ -59,13 +59,16 @@ export const GameActionsComponent: React.FC = observer(() => {
           Hit
         </StyledBtn>
       )}
-      <StyledBtnWithSound
-        soundType={SoundType.Click}
-        disabled={buttonsDisabled}
-        onClick={handleAction(ActionType.Stand)}
-      >
-        Stand
-      </StyledBtnWithSound>
+      {currentPlayer?.canHit && (
+        <StyledBtnWithSound
+          soundType={SoundType.Click}
+          disabled={buttonsDisabled}
+          onClick={handleAction(ActionType.Stand)}
+        >
+          Stand
+        </StyledBtnWithSound>
+      )}
+
       {currentPlayer?.canSplit && (
         <StyledBtn
           soundType={SoundType.Click}

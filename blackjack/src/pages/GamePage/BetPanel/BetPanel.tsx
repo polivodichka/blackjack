@@ -8,7 +8,7 @@ import { TBet } from '../../../types.ds';
 import { Bet } from './Bet';
 
 export const BetPanel: React.FC = observer(() => {
-  const betSize = 70;
+  const betSize = 10;
   const { table } = game;
 
   const handleBet = useCallback(

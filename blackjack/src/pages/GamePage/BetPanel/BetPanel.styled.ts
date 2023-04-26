@@ -15,7 +15,7 @@ export const BetPanelStyled = styled.div.attrs(
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: ${(props) => props.size * 0.35}px;
+  gap: ${(props) => props.size * 0.35}vmin;
   width: 100%;
 `;
 
@@ -25,10 +25,10 @@ export const ChipStyled = styled.button.attrs(
   cursor: pointer;
   position: relative;
   display: inline-block;
-  width: ${(props) => props.size}px;
-  max-width: ${(props) => props.size}px;
-  height: ${(props) => props.size}px;
-  max-height: ${(props) => props.size}px;
+  width: ${(props) => props.size}vmin;
+  max-width: ${(props) => props.size}vmin;
+  height: ${(props) => props.size}vmin;
+  max-height: ${(props) => props.size}vmin;
   z-index: 4;
   border: none;
   border-radius: 50%;
@@ -76,7 +76,7 @@ export const ChipStyled = styled.button.attrs(
     transform: translate(-50%, -50%);
     background-position: center center;
 
-    border: ${(props) => props.size! * 0.05}px solid ${(props) => props.color};
+    border: ${(props) => props.size! * 0.05}vmin solid ${(props) => props.color};
     background-image: linear-gradient(
         0deg,
         transparent 0,
@@ -140,8 +140,8 @@ export const ChipStyled = styled.button.attrs(
     content: '${(props) => props.bet}';
     font-family: 'Prompt';
     text-align: center;
-    font: bold ${(props) => props.size! * 0.35}px /
-      ${(props) => props.size! * 0.75}px Arial;
+    font: bold ${(props) => props.size! * 0.35}vmin /
+      ${(props) => props.size! * 0.75}vmin Arial;
     white-space: pre;
     width: 75%;
     height: 75%;
@@ -151,19 +151,19 @@ export const ChipStyled = styled.button.attrs(
     transform: translate(-50%, -50%);
     text-shadow: ${(props) => {
           const size = props.size! * 0.015;
-          return `${-size}px ${-size}px`;
+          return `${-size}vmin ${-size}vmin`;
         }}
-        0px rgba(0, 0, 0, 0.3),
+        0vmin rgba(0, 0, 0, 0.3),
       ${(props) => {
           const size = props.size! * 0.015;
-          return `${size}px ${size}px`;
+          return `${size}vmin ${size}vmin`;
         }}
-        0px rgba(255, 255, 255, 0.2),
+        0vmin rgba(255, 255, 255, 0.2),
       ${(props) => {
           const size = props.size! * 0.007;
-          return `${size}px ${size}px`;
+          return `${size}vmin ${size}vmin`;
         }}
-        0px rgba(0, 0, 0, 0.3);
+        0vmin rgba(0, 0, 0, 0.3);
 
     background: ${(props) => props.color};
     color: ${(props) => makeColorDarker(props.color!, 5)};
@@ -176,36 +176,36 @@ export const ChipStyled = styled.button.attrs(
       text-shadow: none;
       text-shadow: ${(props) => {
             const size = props.size! * 0.015;
-            return `${-size}px ${-size}px`;
+            return `${-size}vmin ${-size}vmin`;
           }}
-          0px rgba(255, 255, 255, 0.3),
+          0vmin rgba(255, 255, 255, 0.3),
         ${(props) => {
             const size = props.size! * 0.015;
-            return `${size}px ${size}px`;
+            return `${size}vmin ${size}vmin`;
           }}
-          0px rgba(0, 0, 0, 0.2),
+          0vmin rgba(0, 0, 0, 0.2),
         ${(props) => {
             const size = props.size! * 0.007;
-            return `${size}px ${size}px`;
+            return `${size}vmin ${size}vmin`;
           }}
-          0px rgba(255, 255, 255, 0.3);
+          0vmin rgba(255, 255, 255, 0.3);
     }
   }
   &:hover {
     transform: scale(1.3);
-    box-shadow: 0 0 5px ${(props) => props.color},
-      0 0 25px ${(props) => props.color}, 0 0 50px ${(props) => props.color},
-      0 0 100px ${(props) => props.color};
+    box-shadow: 0 0 5vmin ${(props) => props.color},
+      0 0 25vmin ${(props) => props.color}, 0 0 50vmin ${(props) => props.color},
+      0 0 100vmin ${(props) => props.color};
   }
   &:disabled{
-    box-shadow: -2px 2px 5px #000;
+    box-shadow: -2vmin 2vmin 5vmin #000;
   }
   &.active {
     -webkit-animation: 10s rotate-right linear infinite;
     animation: 10s rotate-right linear infinite;
-    box-shadow: 0 0 5px ${(props) => props.color},
-      0 0 25px ${(props) => props.color}, 0 0 50px ${(props) => props.color},
-      0 0 100px ${(props) => props.color};
+    box-shadow: 0 0 5vmin ${(props) => props.color},
+      0 0 25vmin ${(props) => props.color}, 0 0 50vmin ${(props) => props.color},
+      0 0 100vmin ${(props) => props.color};
   }
   @-webkit-keyframes rotate-right {
     0% {

@@ -88,7 +88,8 @@ export const GamePage: React.FC = observer(() => {
 
   const copyTableIdBtn = (
     <SvgBtnWithSound soundType={SoundType.Click} onClick={handleCopyClick}>
-      <HandySvg src={copyIcon} width="17" height="17" />
+      <HandySvg src={copyIcon} width={0.017 * Math.min(window.innerWidth, window.innerHeight)}
+        height={0.017 * Math.min(window.innerWidth, window.innerHeight)} />
     </SvgBtnWithSound>
   );
 
@@ -98,7 +99,8 @@ export const GamePage: React.FC = observer(() => {
       onClick={handleModalOpen(ModalTypes.Balance)}
       disabled={game.table?.roundIsStarted}
     >
-      <HandySvg src={moneyIcon} width="17" height="17" />
+      <HandySvg src={moneyIcon} width={0.017 * Math.min(window.innerWidth, window.innerHeight)}
+        height={0.017 * Math.min(window.innerWidth, window.innerHeight)} />
     </SvgBtnWithSound>
   );
   const chatBtn = (
@@ -106,7 +108,8 @@ export const GamePage: React.FC = observer(() => {
       soundType={SoundType.Click}
       onClick={handleModalOpen(ModalTypes.Chat)}
     >
-      <HandySvg src={chatIcon} width="17" height="17" />
+      <HandySvg src={chatIcon} width={0.017 * Math.min(window.innerWidth, window.innerHeight)}
+        height={0.017 * Math.min(window.innerWidth, window.innerHeight)} />
     </SvgBtnWithSound>
   );
   const soundsSettingsBtn = (
@@ -114,7 +117,8 @@ export const GamePage: React.FC = observer(() => {
       soundType={SoundType.Click}
       onClick={handleModalOpen(ModalTypes.Sounds)}
     >
-      <HandySvg src={soundSettingsIcon} width="17" height="17" />
+      <HandySvg src={soundSettingsIcon} width={0.017 * Math.min(window.innerWidth, window.innerHeight)}
+        height={0.017 * Math.min(window.innerWidth, window.innerHeight)} />
     </SvgBtnWithSound>
   );
 

@@ -50,7 +50,6 @@ export const Blob = styled.div`
   margin-bottom: 10px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
   font-size: 18px;
-  /* letter-spacing: 2px; */
   font-weight: 700;
   font-family: 'Prompt';
 
@@ -97,7 +96,6 @@ export const MessageForm = styled.form`
     flex-grow: 1;
     resize: none;
     font-size: 18px;
-    /* letter-spacing: 2px; */
     font-weight: 100;
     font-family: 'Prompt';
     height: 70px;

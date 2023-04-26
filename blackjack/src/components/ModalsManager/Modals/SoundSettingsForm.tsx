@@ -95,8 +95,8 @@ export const SoundSettingsForm = observer(() => {
         >
           <HandySvg
             src={game.music?.musicMuted ? muteIcon : soundIcon}
-            width="17"
-            height="17"
+            width={0.017 * Math.min(window.innerWidth, window.innerHeight)}
+            height={0.017 *Math.min(window.innerWidth, window.innerHeight)}
           />
         </SvgBtnWithSound>
       </RangeBarContainer>
@@ -118,8 +118,8 @@ export const SoundSettingsForm = observer(() => {
         >
           <HandySvg
             src={game.music?.soundsMuted ? muteIcon : soundIcon}
-            width="17"
-            height="17"
+            width={0.017 * Math.min(window.innerWidth, window.innerHeight)}
+            height={0.017 *Math.min(window.innerWidth, window.innerHeight)}
           />
         </SvgBtnWithSound>
       </RangeBarContainer>
@@ -141,8 +141,8 @@ export const SoundSettingsForm = observer(() => {
         >
           <HandySvg
             src={game.music?.notificationsMuted ? muteIcon : soundIcon}
-            width="17"
-            height="17"
+            width={0.017 * Math.min(window.innerWidth, window.innerHeight)}
+            height={0.017 *Math.min(window.innerWidth, window.innerHeight)}
           />
         </SvgBtnWithSound>
       </RangeBarContainer>

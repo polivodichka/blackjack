@@ -15,11 +15,11 @@ export const StyledBtn = styled.button.attrs(
   justify-content: center;
   background: none;
   cursor: pointer;
-  border: 2px solid ${Color.MainAccent};
-  border-radius: 5px;
+  border: 0.23vmin solid ${Color.MainAccent};
+  border-radius: 0.58vmin;
   color: ${Color.MainAccent};
   padding: 10px 20px;
-  font-size: 16px;
+  font-size: 1.9vmin;
   text-decoration: none;
   text-transform: uppercase;
   overflow: hidden;
@@ -33,14 +33,14 @@ export const StyledBtn = styled.button.attrs(
   }
   &:disabled {
     pointer-events: none;
-    border: 2px solid ${makeColorDarker(Color.MainAccent, 50)};
+    border: 0.23vmin solid ${makeColorDarker(Color.MainAccent, 50)};
     color: ${makeColorDarker(Color.MainAccent, 50)};
     border-radius: 5px;
   }
 `;
 
 export const ButtonWithSvg = styled(StyledBtn)`
-  padding: 5px 10px;
+  padding: 0.58vmin 1.2vmin;
   svg {
     fill: transparent;
     stroke: ${Color.MainAccent};

@@ -9,8 +9,9 @@ export const GameTextStyled = styled.div`
   top: 0;
   opacity: 0.6;
   user-select: none;
+  font-size: 2vmin;
   h2 {
-    font-size: 9em;
+    font-size: 16vmin;
     margin: 0;
     padding: 0;
     font-weight: 700;

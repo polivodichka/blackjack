@@ -38,7 +38,7 @@ export const Form = styled.form`
   border-radius: 10px;
 `;
 export const Input = styled.input`
-  font-size: 18px;
+  font-size: 1.9vmin;
   padding: 5px;
   -webkit-appearance: none;
   display: block;
@@ -49,15 +49,13 @@ export const Input = styled.input`
   border-radius: 0;
   border-bottom: 1px solid #fff;
   font-family: 'Prompt';
-  &:focus ~ .highlight {
-    animation: inputHighlighter 0.3s ease;
-  }
+
   &:focus {
     outline: none;
   }
   &:focus ~ label,
   &.filled ~ label {
-    top: -20px;
+    top: -2.3vmin;
     transform: scale(0.75);
     left: -2px;
     color: ${Color.MainAccent};
@@ -69,11 +67,11 @@ export const Input = styled.input`
 `;
 export const InputWrapper = styled.div`
   position: relative;
-  margin-bottom: 35px;
+  margin-bottom: 4vmin;
 `;
 export const Label = styled.label`
   color: #fff;
-  font-size: 18px;
+  font-size: 1.9vmin;
   font-weight: normal;
   position: absolute;
   pointer-events: none;
@@ -94,34 +92,8 @@ export const CheckboxInputWrapper = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-  height: 28px;
-  margin-bottom: 30px;
-
-  /* .fake-check {
-    background-color: #fff;
-    border: 1px solid #ccc;
-    border-radius: 50%;
-    cursor: pointer;
-    height: 28px;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 28px;
-  }
-
-  .fake-check:after {
-    border: 2px solid #fff;
-    border-top: none;
-    border-right: none;
-    content: '';
-    height: 6px;
-    left: 7px;
-    opacity: 0;
-    position: absolute;
-    top: 8px;
-    transform: rotate(-45deg);
-    width: 12px;
-  } */
+  height: 3.4vmin;
+  margin-bottom: 3.5vmin;
 `;
 
 export const ChecboxInput = styled.input`
@@ -167,7 +139,7 @@ export const ChecboxInput = styled.input`
 export const CheckboxLabel = styled.label`
   color: #fff;
   padding-left: 28px;
-  font-size: 18px;
+  font-size: 1.9vmin;
   font-weight: normal;
   pointer-events: none;
   width: max-content;
@@ -187,7 +159,7 @@ export const RangeBarContainer = styled.div`
 export const RangeBarInput = styled.input`
   -webkit-appearance: none !important; 
   width: 100%;
-  height: 15px;
+  height: 1.9vmin;
   background-color: ${Color.MainDark};
   border: 1px solid ${Color.MainAccent};
   border-radius: 10px;

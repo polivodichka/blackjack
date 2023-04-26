@@ -11,7 +11,7 @@ export const Deck: React.FC = () => {
           className={`back deck Deck=${index}`}
           style={{
             zIndex: index + 1,
-            transform: `translateX(${(index + 1) * .1}px) translateY(${
+            transform: `translateX(${(index + 1) * .25}px) translateY(${
               (index + 1) * -1
             }px) rotateX(-40deg) rotateY(0deg) rotateZ(-60deg) scale(${
               1.3 + index * 0.0009
