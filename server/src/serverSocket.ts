@@ -197,7 +197,7 @@ export class ServerSocket {
           }
 
           if (table.currentPlayer && player.id !== table.currentPlayer.id) {
-            throw new Error(BaseMessages.ProhibitedAction);
+            throw new Error(BaseMessages.ProhibitedAction + ' 2');
           }
 
           table.playingPlayers.forEach((plPlayer) => {
@@ -248,7 +248,7 @@ export class ServerSocket {
               break;
           }
 
-          console.info(`${SocketEmit.ActionMade} ${player.parentPlayer?.id}`);
+          console.info(`${SocketEmit.ActionMade} ${player.parentPlayer?.id}  ${actionType}`);
           //send
           this.io
             .to(table.id)

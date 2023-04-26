@@ -16,7 +16,7 @@ export class Table {
   public deck: Card[] = [];
   public roundIsStarted = false;
 
-  public constructor() {}
+  public constructor() { }
 
   public get players(): Player[] {
     return this.allPlayers.filter(
@@ -91,7 +91,16 @@ export class Table {
           player.parentAfterSplitPlayer?.id === parent.id
       )
       .map((player) => {
+        while (this.currentPlayer?.id === player.id) {
+          if (this.currentPlayerIndex !== null) {
+            this.currentPlayerIndex++;
+          }
+        }
+        const savedCurrentPlayer = this.currentPlayer;
         this.playerRemove(player);
+        if (this.currentPlayerIndex !== null && savedCurrentPlayer) {
+          this.currentPlayerIndex = this.players.indexOf(savedCurrentPlayer) ?? null
+        }
       });
     parent.roundIsEnded = false;
   }

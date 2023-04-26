@@ -180,16 +180,23 @@ export class Game {
         audio.play();
       }
 
-      const stand = async () => {
-        await new Promise((resolve) => setTimeout(resolve, 600));
-        this.emit[SocketEmit.Action](ActionType.Stand);
-      };
-      if (
-        this.table?.currentPlayer?.isBJ ||
-        this.table?.currentPlayer?.isBust ||
-        this.table?.currentPlayer?.isNaturalBJ
-      ) {
-        stand();
+      if (this.player?.id === this.table?.currentPlayer?.id
+        || this.player?.id === this.table?.currentPlayer?.parentPlayer?.id
+        || this.player?.id === this.table?.currentPlayer?.parentAfterSplitPlayer?.id) {
+        if (
+          this.table?.currentPlayer?.isBJ ||
+          this.table?.currentPlayer?.isBust ||
+          this.table?.currentPlayer?.isNaturalBJ
+        ) {
+          (async () => {
+            try {
+              await new Promise((resolve) => setTimeout(resolve, 600));
+              this.emit[SocketEmit.Action](ActionType.Stand);
+            } catch (error) {
+              console.error(error);
+            }
+          })();
+        }
       }
     });
 
@@ -228,16 +235,24 @@ export class Game {
           }
           break;
       }
-      const stand = async () => {
-        await new Promise((resolve) => setTimeout(resolve, 600));
-        this.emit[SocketEmit.Action](ActionType.Stand);
-      };
-      if (
-        this.table?.currentPlayer?.isBJ ||
-        this.table?.currentPlayer?.isBust ||
-        this.table?.currentPlayer?.isNaturalBJ
-      ) {
-        stand();
+
+      if (this.player?.id === this.table?.currentPlayer?.id
+        || this.player?.id === this.table?.currentPlayer?.parentPlayer?.id
+        || this.player?.id === this.table?.currentPlayer?.parentAfterSplitPlayer?.id) {
+        if (
+          this.table?.currentPlayer?.isBJ ||
+          this.table?.currentPlayer?.isBust ||
+          this.table?.currentPlayer?.isNaturalBJ
+        ) {
+          (async () => {
+            try {
+              await new Promise((resolve) => setTimeout(resolve, 600));
+              this.emit[SocketEmit.Action](ActionType.Stand);
+            } catch (error) {
+              console.error(error);
+            }
+          })();
+        }
       }
     });
 
