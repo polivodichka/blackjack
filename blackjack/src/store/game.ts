@@ -179,14 +179,17 @@ export class Game {
         audio.currentTime = 0;
         audio.play();
       }
+
+      const stand = async () => {
+        await new Promise((resolve) => setTimeout(resolve, 600));
+        this.emit[SocketEmit.Action](ActionType.Stand);
+      };
       if (
         this.table?.currentPlayer?.isBJ ||
         this.table?.currentPlayer?.isBust ||
         this.table?.currentPlayer?.isNaturalBJ
       ) {
-        setTimeout(() => {
-          this.emit[SocketEmit.Action](ActionType.Stand);
-        }, 600);
+        stand();
       }
     });
 
@@ -225,14 +228,16 @@ export class Game {
           }
           break;
       }
+      const stand = async () => {
+        await new Promise((resolve) => setTimeout(resolve, 600));
+        this.emit[SocketEmit.Action](ActionType.Stand);
+      };
       if (
         this.table?.currentPlayer?.isBJ ||
         this.table?.currentPlayer?.isBust ||
         this.table?.currentPlayer?.isNaturalBJ
       ) {
-        setTimeout(() => {
-          this.emit[SocketEmit.Action](ActionType.Stand);
-        }, 600);
+        stand();
       }
     });
 

@@ -8,7 +8,7 @@ export const GameTextStyled = styled.div`
   justify-content: center;
   top: 0;
   opacity: 0.6;
-
+  user-select: none;
   h2 {
     font-size: 9em;
     margin: 0;
