@@ -61,7 +61,7 @@ export const ChipStyled = styled.button.attrs(
     );
 
   transition: color 0.3s ease-in-out, box-shadow 0.3s ease-in-out,
-    transform 0.7s ease-in-out;
+    transform 0.3s ease-in-out;
   &:before {
     position: absolute;
     content: '';
