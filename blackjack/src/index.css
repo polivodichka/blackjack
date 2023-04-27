@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Prompt:wght@400;500;600;700;800&display=swap');
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+
+  --toastify-color-dark: #0d131ea6;
+  --toastify-color-progress-dark: #03e9f4;
+  --toastify-color-error: var(--toastify-color-dark);
+  --toastify-color-progress-error: #c45e51;
+  --toastify-icon-color-error: var(--toastify-color-progress-error);
+
+  font-weight: 700;
+  font-size: 1.9vmin;
+  font-family: "Prompt";
+  overflow: hidden;
+
+}
+
+input {
+  font-family: "Prompt";
+}
+
+:root svg {
+  display: block !important;
+}
+
+
+svg:not(:root) {
+  display: none;
+}
+
+@keyframes pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+.Toastify__toast-body {
+  font-family: 'Prompt';
+  font-weight: 100;
+}
+
+svg {
+  stroke-width: 0.2vmin;
+}
