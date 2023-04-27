@@ -314,7 +314,7 @@ export class ServerSocket {
           player.balance = +balance + +player.balance;
 
           console.info(
-            `${SocketEmit.BalanceToppedUp} to ${player.balance} for ${player.parentPlayer?.id}`
+            `${SocketEmit.BalanceToppedUp} to ${player.balance} for ${player.id}`
           );
           //send
           socket.emit(SocketEmit.BalanceToppedUp, JSON.stringify(player));

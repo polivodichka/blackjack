@@ -28,7 +28,6 @@ import { Chat } from './chat';
 
 /* eslint-disable @typescript-eslint/no-floating-promises */
 
-
 export class Game {
   @observable public player: Player | null = null;
   @observable public table: Table | null = null;
@@ -143,6 +142,7 @@ export class Game {
       const playerObj = JSON.parse(playerStr) as IPlayer;
       const player = this.findPlayerById(playerObj.id);
       if (player) {
+        player.update(playerObj);
         this.playSound(SoundType.Balance);
       }
     });
