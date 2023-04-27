@@ -5,24 +5,30 @@ import { toast } from 'react-toastify';
 import { HandySvg } from 'handy-svg';
 
 import {
-  ButtonWithSvg,
-  toastSettings,
-  StyledBtn,
-} from '../../components/App/App.styled';
+  BalanceStyled,
+  OptionsPanel,
+  GameWrapper,
+  Wrapper,
+} from './GamePage.styled';
+import { StyledBtn, toastSettings } from '../../components/App/App.styled';
 import { GameActionsComponent } from './GameActions/GameActionsComponent';
-import { BalanceStyled, OptionsPanel, Wrapper } from './GamePage.styled';
 import { DealerSpotComponent } from './PlayerSpot/DealerSpotComponent';
 import { PlayerSpotComponent } from './PlayerSpot/PlayerSpotComponent';
-import { ModalTypes, SocketEmit } from '../../types.ds';
+import { ModalTypes, SocketEmit, SoundType } from '../../types.ds';
+import { SvgBtnWithSound } from '../../sounds/StyledBtnWithSound';
+import soundSettingsIcon from '../../assets/settings.svg';
 import { SpotsZone } from './PlayerSpot/Spot.styled';
 import moneyIcon from '../../assets/money.svg';
 import { BetPanel } from './BetPanel/BetPanel';
+import { GameText } from './GameText/GameText';
 import chatIcon from '../../assets/chat.svg';
 import copyIcon from '../../assets/copy.svg';
 import { game } from '../../store/game';
+import { Deck } from './Deck/Deck';
 
 export const GamePage: React.FC = observer(() => {
   const navigate = useNavigate();
+
   useEffect(() => {
     if (!(game.table && game.player)) {
       navigate('/');
@@ -67,7 +73,11 @@ export const GamePage: React.FC = observer(() => {
     game.table?.ableToStartGame && game.player?.betChipsTotalWithChildren ? (
       <StyledBtn onClick={handlePlayBtn}>PLAY</StyledBtn>
     ) : game.table?.ableToStartGame ? (
-      <div>No empty spots left :(</div>
+      game.player?.balance && game.player?.balance > 2 ? (
+        <div>No empty spots left</div>
+      ) : (
+        <div>Insufficient funds! </div>
+      )
     ) : (
       <div>{game.table?.gameStatus}</div>
     );
@@ -77,44 +87,81 @@ export const GamePage: React.FC = observer(() => {
   );
 
   const copyTableIdBtn = (
-    <ButtonWithSvg onClick={handleCopyClick}>
-      <HandySvg src={copyIcon} width="17" height="17" />
-    </ButtonWithSvg>
+    <SvgBtnWithSound soundType={SoundType.Click} onClick={handleCopyClick}>
+      <HandySvg
+        src={copyIcon}
+        width={0.017 * Math.min(window.innerWidth, window.innerHeight)}
+        height={0.017 * Math.min(window.innerWidth, window.innerHeight)}
+      />
+    </SvgBtnWithSound>
   );
 
   const topUpBalanceBtn = (
-    <ButtonWithSvg
+    <SvgBtnWithSound
+      soundType={SoundType.Click}
       onClick={handleModalOpen(ModalTypes.Balance)}
-      disabled={game.table?.roundIsStarted}
+      disabled={
+        game.table?.roundIsStarted &&
+        !!game.table.playingPlayers.find(
+          (player) => game.player?.id === player.parentPlayer?.id)
+      }
     >
-      <HandySvg src={moneyIcon} width="17" height="17" />
-    </ButtonWithSvg>
+      <HandySvg
+        src={moneyIcon}
+        width={0.017 * Math.min(window.innerWidth, window.innerHeight)}
+        height={0.017 * Math.min(window.innerWidth, window.innerHeight)}
+      />
+    </SvgBtnWithSound>
   );
   const chatBtn = (
-    <ButtonWithSvg onClick={handleModalOpen(ModalTypes.Chat)}>
-      <HandySvg src={chatIcon} width="17" height="17" />
-    </ButtonWithSvg>
+    <SvgBtnWithSound
+      soundType={SoundType.Click}
+      onClick={handleModalOpen(ModalTypes.Chat)}
+    >
+      <HandySvg
+        src={chatIcon}
+        width={0.017 * Math.min(window.innerWidth, window.innerHeight)}
+        height={0.017 * Math.min(window.innerWidth, window.innerHeight)}
+      />
+    </SvgBtnWithSound>
+  );
+  const soundsSettingsBtn = (
+    <SvgBtnWithSound
+      soundType={SoundType.Click}
+      onClick={handleModalOpen(ModalTypes.Sounds)}
+    >
+      <HandySvg
+        src={soundSettingsIcon}
+        width={0.017 * Math.min(window.innerWidth, window.innerHeight)}
+        height={0.017 * Math.min(window.innerWidth, window.innerHeight)}
+      />
+    </SvgBtnWithSound>
   );
 
   return (
     <Wrapper>
       <OptionsPanel>
-        {copyTableIdBtn} {chatBtn}
+        {copyTableIdBtn} {chatBtn} {soundsSettingsBtn}
       </OptionsPanel>
       <BalanceStyled>
         <div>{game.player?.balance}</div>
         {topUpBalanceBtn}
       </BalanceStyled>
 
-      <DealerSpotComponent />
+      <GameWrapper>
+        <DealerSpotComponent />
+        <GameText />
 
-      {spotsZone}
+        {spotsZone}
+        <Deck />
+      </GameWrapper>
 
-      <BetPanel />
+      <div className="buttons">
+        <BetPanel />
 
-      {playButtonOrGameStatus}
-
-      {gameActionsComponent}
+        {playButtonOrGameStatus}
+        {gameActionsComponent}
+      </div>
     </Wrapper>
   );
 });

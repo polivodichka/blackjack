@@ -1,13 +1,16 @@
-import { SuitCard } from '../types.ds';
+import { v4 } from 'uuid';
+
+import { Rank, SuitCard } from '../types.ds';
 
 export class Card {
-  public suit: keyof typeof SuitCard;
-  public rank: string;
-  public value: number;
+  private id: string;
 
-  public constructor(suit: keyof typeof SuitCard, rank: string, value: number) {
-    this.suit = suit;
-    this.rank = rank;
-    this.value = value;
+  public constructor(
+    public suit: keyof typeof SuitCard,
+    public rank: Rank,
+    public value: number,
+    public isNew: boolean = true
+  ) {
+    this.id = v4();
   }
 }

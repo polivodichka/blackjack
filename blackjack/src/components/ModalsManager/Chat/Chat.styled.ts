@@ -50,9 +50,7 @@ export const Blob = styled.div`
   margin-bottom: 10px;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
   font-size: 18px;
-  letter-spacing: 2px;
   font-weight: 700;
-  font-family: 'Yanone Kaffeesatz';
 
   &.myMessage {
     background: rgba(20, 30, 48, 0.9);
@@ -66,6 +64,7 @@ export const Blob = styled.div`
   }
 
   .text {
+    font-weight: 100;
     font-size: 14px;
     margin-bottom: 5px;
     p {
@@ -91,19 +90,17 @@ export const MessageForm = styled.form`
     padding: 10px;
     border-radius: 5px;
     border: none;
+    outline: none;
     margin-right: 10px;
     flex-grow: 1;
     resize: none;
     font-size: 18px;
-    letter-spacing: 2px;
-    font-weight: 700;
-    font-family: 'Yanone Kaffeesatz';
-    height: 50px;
+    font-weight: 100;
+    height: 70px;
     transition: height 0.3s ease-in-out;
 
     &:focus {
-      outline: none;
-      height: 200px;
+      height: 100px;
     }
   }
 `;

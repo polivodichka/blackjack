@@ -28,6 +28,8 @@ export enum PlayerGameState {
   Blackjack = 'Blackjack',
   NaturalBlackjack = 'Natural blackjack',
   Active = 'Active',
+  Loose = 'Loose',
+  Win = 'Win',
   Error = 'Error',
 }
 
@@ -38,10 +40,11 @@ export enum PlayerType {
 }
 
 export interface ICard {
-  id: number;
+  id: string;
   rank: Rank;
   suit: Suit;
   value: number;
+  isNew: boolean;
 }
 
 export interface IDealer {
@@ -130,6 +133,7 @@ export enum ModalTypes {
   Balance = 'Balance',
   GameEnd = 'GameEnd',
   Chat = 'Chat',
+  Sounds = 'Sounds',
 }
 
 export interface IModal {
@@ -147,4 +151,24 @@ export interface IMessage {
 
 export interface IChat {
   messages: IMessage[];
+}
+
+export enum SoundType {
+  Click = 'click',
+  Chip = 'chip',
+  Flip = 'flip',
+  Balance = 'balance',
+  Background = 'background',
+  PlayerConnected = 'player-connsected',
+  PlayerDisconnected = 'player-disconnsected',
+  Message = 'message',
+}
+
+export enum CardholdersIds {
+  Spot0 = 'spot-0Cardholder',
+  Spot1 = 'spot-1Cardholder',
+  Spot2 = 'spot-2Cardholder',
+  Spot3 = 'spot-3Cardholder',
+  Spot4 = 'spot-4Cardholder',
+  Dealer = 'dealerCardholder',
 }

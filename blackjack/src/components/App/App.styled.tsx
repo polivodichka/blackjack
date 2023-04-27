@@ -1,26 +1,29 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { ToastOptions } from 'react-toastify';
 import styled from 'styled-components';
 
 import { makeColorDarker } from '../../utils/makeColorDarker';
+import { StyledButtonProps } from '../../styled.ds';
 import { Color } from '../../constants/constants';
 
-export const StyledBtn = styled.button`
+export const StyledBtn = styled.button.attrs(
+  (props: StyledButtonProps) => props
+)`
   align-self: center;
   display: flex;
   align-items: center;
   justify-content: center;
   background: none;
   cursor: pointer;
-  border: 2px solid ${Color.MainAccent};
-  border-radius: 5px;
+  border: 0.23vmin solid ${Color.MainAccent};
+  border-radius: 0.58vmin;
   color: ${Color.MainAccent};
   padding: 10px 20px;
-  font-size: 16px;
+  font-size: 1.9vmin;
   text-decoration: none;
   text-transform: uppercase;
   overflow: hidden;
   transition: 0.5s;
-  letter-spacing: 4px;
   &:hover {
     background: ${Color.MainAccent};
     color: #fff;
@@ -29,14 +32,14 @@ export const StyledBtn = styled.button`
   }
   &:disabled {
     pointer-events: none;
-    border: 2px solid ${makeColorDarker(Color.MainAccent, 50)};
+    border: 0.23vmin solid ${makeColorDarker(Color.MainAccent, 50)};
     color: ${makeColorDarker(Color.MainAccent, 50)};
     border-radius: 5px;
   }
 `;
 
 export const ButtonWithSvg = styled(StyledBtn)`
-  padding: 5px 10px;
+  padding: 0.58vmin 1.2vmin;
   svg {
     fill: transparent;
     stroke: ${Color.MainAccent};
@@ -50,14 +53,15 @@ export const ButtonWithSvg = styled(StyledBtn)`
   }
 `;
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 export const toastSettings: ToastOptions<{}> = {
   position: 'top-right',
-  autoClose: 1000,
+  autoClose: 800,
   hideProgressBar: false,
   closeOnClick: true,
-  pauseOnHover: true,
+  pauseOnHover: false,
   draggable: true,
+  pauseOnFocusLoss: false,
   progress: undefined,
   theme: 'dark',
+  rtl: false,
 };

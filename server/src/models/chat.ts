@@ -1,6 +1,6 @@
-import { IMessage } from '../types.ds';
-
 import { v4 } from 'uuid';
+
+import { IMessage } from '../types.ds';
 
 export class Chat {
   public messages: IMessage[] = [];

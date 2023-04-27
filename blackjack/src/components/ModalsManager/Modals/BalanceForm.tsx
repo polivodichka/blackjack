@@ -9,8 +9,8 @@ import {
   Label,
   Form,
 } from '../ModalsManager.styled';
-import { SocketEmit, SocketOn } from '../../../types.ds';
-import { StyledBtn } from '../../App/App.styled';
+import { StyledBtnWithSound } from '../../../sounds/StyledBtnWithSound';
+import { SocketEmit, SocketOn, SoundType } from '../../../types.ds';
 import { socket } from '../../../server/socket';
 import { game } from '../../../store/game';
 
@@ -87,20 +87,22 @@ export const BalanceForm: React.FC = () => {
         <Label>Top-up amount:</Label>
       </InputWrapper>
       <ButtonsWrapper>
-        <StyledBtn
+        <StyledBtnWithSound
+          soundType={SoundType.Click}
           type="submit"
           className="button buttonBlue"
           disabled={disabled}
         >
           Top up
-        </StyledBtn>
-        <StyledBtn
+        </StyledBtnWithSound>
+        <StyledBtnWithSound
+          soundType={SoundType.Click}
           type="button"
           className="button buttonRed"
           onClick={onCancel}
         >
           Cancel
-        </StyledBtn>
+        </StyledBtnWithSound>
       </ButtonsWrapper>
     </Form>
   );

@@ -1,16 +1,18 @@
-import { ActionType, Rank } from './types.ds';
-import { BaseMessages } from './types.ds';
-import { Chat } from './models/chat';
-import { EndGameActions } from './types.ds';
-import { IMessage } from './types.ds';
+import { Server as HttpServer } from 'http';
+import { Server } from 'socket.io';
+
 import { MyServer } from './serverSocket.ds';
 import { MySocket } from './serverSocket.ds';
+import { EndGameActions } from './types.ds';
+import { BaseMessages } from './types.ds';
 import { Player } from './models/player';
-import { Server } from 'socket.io';
-import { Server as HttpServer } from 'http';
+import { ActionType } from './types.ds';
 import { SocketEmit } from './types.ds';
-import { SocketOn } from './types.ds';
 import { Table } from './models/table';
+import { IMessage } from './types.ds';
+import { SocketOn } from './types.ds';
+import { Chat } from './models/chat';
+import { Rank } from './types.ds';
 
 export class ServerSocket {
   public static instance: ServerSocket;
@@ -32,13 +34,11 @@ export class ServerSocket {
         origin: '*',
       },
     });
-    this.findPlayerById = this.findPlayerById.bind(this);
-    this.handleError = this.handleError.bind(this);
 
-    this.io.on(SocketOn.Connect, this.StartListeners);
+    this.io.on(SocketOn.Connect, this.startListeners);
   }
 
-  public StartListeners = (socket: MySocket): void => {
+  private startListeners = (socket: MySocket): void => {
     console.info(`Message received from ${socket.id}`);
 
     socket.on(SocketOn.CreateTable, async (name, balance) => {
@@ -171,9 +171,6 @@ export class ServerSocket {
         table.deal();
 
         const player = table.currentPlayer;
-        if (player?.isBJ || player?.isBust || player?.isNaturalBJ) {
-          table.stand();
-        }
 
         console.info(`${SocketEmit.Dealt} ${table.id}`);
         //send
@@ -201,6 +198,14 @@ export class ServerSocket {
           if (table.currentPlayer && player.id !== table.currentPlayer.id) {
             throw new Error(BaseMessages.ProhibitedAction);
           }
+
+          table.playingPlayers.forEach((plPlayer) => {
+            const hand = plPlayer.hand;
+            const filtredHand = hand.filter((card) => card.isNew);
+            for(const newCard of filtredHand){
+              newCard.isNew = false
+            }
+          });
 
           switch (actionType) {
             case ActionType.Hit:
@@ -243,18 +248,13 @@ export class ServerSocket {
               break;
           }
 
-          if (
-            (player.isBJ || player.isBust || player.isNaturalBJ) &&
-            actionType !== ActionType.Stand
-          ) {
-            table.stand();
-          }
-
-          console.info(`${SocketEmit.ActionMade} ${player.parentPlayer?.id}`);
+          console.info(
+            `${SocketEmit.ActionMade} ${player.parentPlayer?.id}  ${actionType}`
+          );
           //send
           this.io
             .to(table.id)
-            .emit(SocketEmit.ActionMade, JSON.stringify(table));
+            .emit(SocketEmit.ActionMade, JSON.stringify(table), actionType);
 
           if (
             table.dealer &&
@@ -268,7 +268,11 @@ export class ServerSocket {
               //send
               this.io
                 .to(table.id)
-                .emit(SocketEmit.DealerMadeAction, JSON.stringify(table));
+                .emit(
+                  SocketEmit.DealerMadeAction,
+                  JSON.stringify(table),
+                  ActionType.Hit
+                );
             }
 
             table.countWinnings();
@@ -308,10 +312,10 @@ export class ServerSocket {
             throw new Error(BaseMessages.PlayerLost);
           }
 
-          player.balance = +balance + +player.balance;
+          player.increaseBalance(+balance);
 
           console.info(
-            `${SocketEmit.BalanceToppedUp} to ${player.balance} for ${player.parentPlayer?.id}`
+            `${SocketEmit.BalanceToppedUp} to ${player.balance} for ${player.id}`
           );
           //send
           socket.emit(SocketEmit.BalanceToppedUp, JSON.stringify(player));
@@ -339,9 +343,13 @@ export class ServerSocket {
 
         console.info(`Message ${table.id}`);
         //send
-        this.io
+        socket.broadcast
+          .to(tableId)
+          .emit(SocketEmit.Message, newMessage.text.join('\n'), 'chat');
+        socket.broadcast
           .to(table.id)
           .emit(SocketEmit.ChatServerMessage, JSON.stringify(newMessage));
+        socket.emit(SocketEmit.ChatServerMessage, JSON.stringify(newMessage));
       } catch (error) {
         this.handleError(error, socket);
       }
@@ -396,7 +404,9 @@ export class ServerSocket {
             table = this.tables[key_id];
             if (table) {
               player = this.findPlayerById(socket.id, table);
-              if (player) {break;}
+              if (player) {
+                break;
+              }
             }
           }
         }
@@ -431,7 +441,7 @@ export class ServerSocket {
     });
   };
 
-  public handleError(error: unknown, socket: MySocket): void {
+  private handleError = (error: unknown, socket: MySocket): void => {
     if (error instanceof Error) {
       console.info(error);
       socket.emit(SocketEmit.Error, error.message);
@@ -439,9 +449,12 @@ export class ServerSocket {
       console.info('An unknown error occurred');
       socket.emit(SocketEmit.Error, BaseMessages.SmthWentWrong);
     }
-  }
+  };
 
-  public findPlayerById(playerId: string, table: Table): Player | undefined {
+  private findPlayerById = (
+    playerId: string,
+    table: Table
+  ): Player | undefined => {
     return table.allPlayers.find((player) => player.id === playerId);
-  }
+  };
 }

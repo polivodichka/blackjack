@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
-import { Card } from './card';
-import { Dealer } from './dealer';
-import { GameStatus } from '../types.ds';
-import { IPlayer } from '../types.ds';
-import { Player } from './player';
-import { PlayerType } from '../types.ds';
-import { Rank } from '../types.ds';
-import { TBet } from '../types.ds';
-
-import { action } from 'mobx';
-import { computed } from 'mobx';
-import { game } from './game';
 import { makeObservable } from 'mobx';
 import { observable } from 'mobx';
+import { computed } from 'mobx';
+import { action } from 'mobx';
+
+import { GameStatus } from '../types.ds';
+import { PlayerType } from '../types.ds';
+import { IPlayer } from '../types.ds';
+import { Rank } from '../types.ds';
+import { TBet } from '../types.ds';
+import { Dealer } from './dealer';
+import { Player } from './player';
+import { Card } from './card';
+import { game } from './game';
 
 export class Table {
   @observable public allPlayers: Player[] = [];
@@ -66,6 +66,9 @@ export class Table {
             (player) => player.parentPlayer?.id === parentPlayer.id
           )
       ) &&
+      this.parentPlayers.every(
+        (player) => player.balance >= 2 || player.betChipsTotalWithChildren
+      ) &&
       Object.keys(this.spots).length < 5 &&
       !this._dealer
     ) {
@@ -117,7 +120,10 @@ export class Table {
 
   @action.bound public addPlayer(player: IPlayer): Player {
     const hand = player.hand
-      ? player.hand.map((card) => new Card(card.suit, card.rank, card.value))
+      ? player.hand.map(
+        (card) =>
+          new Card(card.suit, card.rank, card.value, card.id, card.isNew)
+      )
       : [];
 
     const parentAfterSplitPlayer = player.parentAfterSplitPlayer

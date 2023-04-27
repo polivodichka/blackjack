@@ -4,17 +4,21 @@ import React from 'react';
 import { CardsTotal, CardsWrapper, SpotStyled } from './Spot.styled';
 import { CardComponent } from '../Card/CardComponent';
 import { game } from '../../../store/game';
+import { CardholdersIds } from '../../../types.ds';
 
 export const DealerSpotComponent: React.FC = observer(() => {
   const dealer = game.table?.dealer;
   return (
-    <SpotStyled>
-      <CardsWrapper>
-        {dealer?.hand.map((card, i) => (
+    <SpotStyled className="dealer">
+      <CardsWrapper id={CardholdersIds.Dealer}>
+        {dealer?.hand.map((card) => (
           <CardComponent
-            key={`dealerCard${card.suit}${card.rank}${i}`}
+            cardholderId={CardholdersIds.Dealer}
+            key={`dealerCard-${card.id}`}
             suit={card.suit}
             rank={card.rank}
+            id={card.id}
+            isNew={card.isNew}
           />
         ))}
         {dealer && dealer.handTotal > 0 && (

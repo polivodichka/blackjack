@@ -6,10 +6,26 @@ export const Wrapper = styled.div`
   color: white;
   height: 100%;
   width: 100%;
+  display: grid;
+  grid-template-rows: 4fr 1fr;
+  
+  .buttons {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    align-items: center;
+  }
+`;
+
+export const GameWrapper = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   align-items: center;
+  gap: 50px 0;
+  width: 100%;
+  transform: perspective(1000px) translateZ(-300px) rotateX(30deg);
 `;
 
 export const BalanceStyled = styled.div`

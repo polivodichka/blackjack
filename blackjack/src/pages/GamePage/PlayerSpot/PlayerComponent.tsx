@@ -1,8 +1,8 @@
-import React, { useCallback, MouseEvent } from 'react';
+import React, { useCallback, MouseEvent, useRef } from 'react';
 import { observer } from 'mobx-react-lite';
 
 import {
-  OnePlayerWrapper,
+  PlayerComponentWrapper,
   CardsWrapper,
   ChipsWrapper,
   CardsTotal,
@@ -34,44 +34,64 @@ export const PlayerComponent: React.FC<PlayerComponentProps> = observer(
       [player.id, spotId]
     );
 
+    const cardRef = useRef<HTMLDivElement>(null);
     const activeClassName =
       player.id === game.table?.currentPlayer?.id ? 'active' : '';
 
     return (
-      <OnePlayerWrapper className={activeClassName}>
+      <PlayerComponentWrapper className={activeClassName}>
         <ChipsWrapper>
-          {!!player.insuranceBet && (
-            <Bet
-              value={player.insuranceBet}
-              color={Color.MainAccent}
-              size={40}
-              active={false}
-            />
-          )}
+          {
+            /**InsuranceBet */
+            !!player.insuranceBet && (
+              <Bet
+                value={player.insuranceBet}
+                color={Color.MainAccent}
+                size={5.5}
+                active={false}
+              />
+            )
+          }
+          {
+            /**Bet */
+            player.betChips.map((bet, index) => (
+              <Bet
+                key={`${player}-bet${index}-${bet}`}
+                value={bet}
+                onBetSet={handleRemoveBet(index)}
+                color={getBetColor(bet)}
+                size={5.5}
+                active={false}
+              />
+            ))
+          }
         </ChipsWrapper>
-        <ChipsWrapper>
-          {player.betChips.map((bet, index) => (
-            <Bet
-              key={`${player}-bet${index}-${bet}`}
-              value={bet}
-              onBetSet={handleRemoveBet(index)}
-              color={getBetColor(bet)}
-              size={40}
-              active={false}
-            />
-          ))}
-        </ChipsWrapper>
-        <CardsWrapper>
-          {player?.hand.map((card, index) => (
+        <CardsWrapper ref={cardRef} id={`${spotId}Cardholder`}>
+          {player?.hand.map((card) => (
             <CardComponent
-              key={`${index + card.suit}Card`}
+              cardholderId={`${spotId}Cardholder`}
+              key={`${card.id}-Card`}
               suit={card.suit}
               rank={card.rank}
+              id={card.id}
+              isNew={card.isNew}
             />
           ))}
-          {player.handTotal > 0 && <CardsTotal>{player.handTotal}</CardsTotal>}
+          {player.handTotal > 0 && (
+            <CardsTotal
+              className={
+                player.isBust
+                  ? 'bust'
+                  : player.isBJ || player.isNaturalBJ
+                    ? 'bj'
+                    : ''
+              }
+            >
+              {player.handTotal}
+            </CardsTotal>
+          )}
         </CardsWrapper>
-      </OnePlayerWrapper>
+      </PlayerComponentWrapper>
     );
   }
 );

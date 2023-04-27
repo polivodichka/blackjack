@@ -1,4 +1,21 @@
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import http from 'http';
+
+import { ServerSocket } from '../serverSocket';
+import { EndGameActions } from '../types.ds';
+import { BaseMessages } from '../types.ds';
+import { Dealer } from '../models/dealer';
+import { Player } from '../models/player';
+import { mockedDeck } from './mockedDeck';
+import { ActionType } from '../types.ds';
+import { SocketEmit } from '../types.ds';
+import { Table } from '../models/table';
+import { IMessage } from '../types.ds';
+import { Chat } from '../models/chat';
+
 /* eslint-disable @typescript-eslint/dot-notation */
+
+
 /* eslint-disable @typescript-eslint/no-unsafe-return */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 /* eslint-disable @typescript-eslint/unbound-method */
@@ -6,20 +23,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-expressions */
-import http from 'http';
-import { Table } from '../models/table';
-import { Chat } from '../models/chat';
-import { Player } from '../models/player';
-import { ServerSocket } from '../serverSocket';
-import {
-  ActionType,
-  BaseMessages,
-  SocketEmit,
-  IMessage,
-  EndGameActions
-} from '../types.ds';
-import { Dealer } from '../models/dealer';
-import { mockedDeck } from './mockedDeck';
 
 describe('ServerSocket', () => {
   let serverSocket: ServerSocket;
@@ -78,7 +81,8 @@ describe('ServerSocket', () => {
 
   describe('StartListeners', () => {
     it('should set up event listeners on the socket', () => {
-      serverSocket.StartListeners(mockSocket1);
+      //@ts-ignore
+      serverSocket.startListeners(mockSocket1);
       expect(mockSocket1.on).toHaveBeenCalledTimes(10);
     });
   });
@@ -91,7 +95,8 @@ describe('ServerSocket', () => {
     let chat: Chat;
 
     beforeAll(async () => {
-      serverSocket.StartListeners(mockSocket1);
+      //@ts-ignore
+      serverSocket.startListeners(mockSocket1);
       await mockSocket1.on.mock.calls[0][1](name, balance);
       table = Object.values(serverSocket.tables)[0];
       player = table.allPlayers[0];
@@ -140,7 +145,8 @@ describe('ServerSocket', () => {
     it('should add a player to the specified table', async () => {
       const name = 'testPlayer2';
       const balance = 100;
-      serverSocket.StartListeners(mockSocket2);
+      //@ts-ignore
+      serverSocket.startListeners(mockSocket2);
 
       table = Object.values(serverSocket.tables)[0];
       const initialPlayerCount: number = table.allPlayers.length;
@@ -177,8 +183,10 @@ describe('ServerSocket', () => {
     it('should throw an error if table is not found', async () => {
       const name = 'testPlayer3';
       const balance = 200;
-      serverSocket.StartListeners(mockSocket3);
+      //@ts-ignore
+      serverSocket.startListeners(mockSocket3);
 
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
 
       await mockSocket3.on.mock.calls[1][1]('fakeId', name, balance);
@@ -195,6 +203,7 @@ describe('ServerSocket', () => {
       const initialPlayerCount: number = table.allPlayers.length;
 
       expect(table.allPlayers).toHaveLength(initialPlayerCount);
+      //@ts-ignore
       expect(serverSocket.findPlayerById(mockSocket3.id, table)).not
         .toBeDefined;
     });
@@ -207,7 +216,9 @@ describe('ServerSocket', () => {
 
     beforeAll(() => {
       table = Object.values(serverSocket.tables)[0];
+      //@ts-ignore
       player1 = serverSocket.findPlayerById(mockSocket1.id, table)!;
+      //@ts-ignore
       player2 = serverSocket.findPlayerById(mockSocket2.id, table)!;
     });
 
@@ -277,6 +288,7 @@ describe('ServerSocket', () => {
     it('should throw an error if table is not found', async () => {
       const amount = 100;
       const spotId = 'spot-1';
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
       const initialPlayerCount = table.allPlayers.length;
       const initialPlayerBalance = player1.balance;
@@ -301,6 +313,7 @@ describe('ServerSocket', () => {
     it('should throw an error if player is not found', async () => {
       const amount = 100;
       const spotId = 'spot-1';
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
       const initialPlayerCount = table.allPlayers.length;
       const initialPlayerBalance = player1.balance;
@@ -325,6 +338,7 @@ describe('ServerSocket', () => {
     it('should throw an error if bet amount is bigger than balance', async () => {
       const amount = player1.balance + 100;
       const spotId = 'spot-1';
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
       const initialPlayerCount = table.allPlayers.length;
       const initialPlayerBalance = player1.balance;
@@ -399,6 +413,7 @@ describe('ServerSocket', () => {
     });
 
     it('should throw an error if table is not found', async () => {
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
       const initialPlayerCount = table.allPlayers.length;
       const initialPlayerBalance = fakePlayer1.parentPlayer!.balance;
@@ -416,6 +431,7 @@ describe('ServerSocket', () => {
     });
 
     it('should throw an error if player is not found', async () => {
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
       const initialPlayerCount = table.allPlayers.length;
       const initialPlayerBalance = fakePlayer1.parentPlayer!.balance;
@@ -444,7 +460,9 @@ describe('ServerSocket', () => {
     beforeAll(() => {
       table = Object.values(serverSocket.tables)[0];
 
+      //@ts-ignore
       player1 = serverSocket.findPlayerById(mockSocket1.id, table)!;
+      //@ts-ignore
       player2 = serverSocket.findPlayerById(mockSocket2.id, table)!;
 
       fakePlayer1 = table.allPlayers.find(
@@ -457,6 +475,7 @@ describe('ServerSocket', () => {
     });
 
     it('should throw an error if there are no bets at all', async () => {
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
       jest.spyOn(table, 'spots', 'get').mockReturnValueOnce({});
 
@@ -479,6 +498,7 @@ describe('ServerSocket', () => {
     });
 
     it('should throw an error if table is not found', async () => {
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
 
       await mockSocket2.on.mock.calls[4][1]('fakeTableId');
@@ -524,8 +544,12 @@ describe('ServerSocket', () => {
     beforeAll(() => {
       table = Object.values(serverSocket.tables)[0];
     });
+    beforeEach(() => {
+      (serverSocket.io.to(table.id).emit as jest.Mock).mockReset();
+    });
 
     it("should throw an error if player doesn't exist", async () => {
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
 
       await mockSocket1.on.mock.calls[5][1](
@@ -543,6 +567,7 @@ describe('ServerSocket', () => {
     });
 
     it("should throw an error if table doesn't exist", async () => {
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
 
       await mockSocket1.on.mock.calls[5][1](
@@ -560,6 +585,7 @@ describe('ServerSocket', () => {
     });
 
     it("should throw an error if user can't make an action", async () => {
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
       const player = table.playingPlayers[1];
       const initialBalance = player.parentPlayer!.balance;
@@ -595,7 +621,8 @@ describe('ServerSocket', () => {
       expect(table.currentPlayer?.id).toBe(player.id);
       expect(serverSocket.io.to(table.id).emit).toHaveBeenCalledWith(
         SocketEmit.ActionMade,
-        JSON.stringify(table)
+        JSON.stringify(table),
+        ActionType.Insurance
       );
     });
 
@@ -623,7 +650,8 @@ describe('ServerSocket', () => {
       child && expect(table.currentPlayer?.id).toBe(child.id);
       expect(serverSocket.io.to(table.id).emit).toHaveBeenCalledWith(
         SocketEmit.ActionMade,
-        JSON.stringify(table)
+        JSON.stringify(table),
+        ActionType.Split
       );
     });
 
@@ -645,15 +673,17 @@ describe('ServerSocket', () => {
       );
       expect(serverSocket.io.to(table.id).emit).toHaveBeenCalledWith(
         SocketEmit.ActionMade,
-        JSON.stringify(table)
+        JSON.stringify(table),
+        ActionType.Hit
       );
 
       spyHit.mockRestore();
     });
 
-    it('should stand if bust', async () => {
-      const player = table.playingPlayers[table.currentPlayerIndex!];
-      const spyStand = jest.spyOn(table, 'stand');
+    it('should double and stand after double', async () => {
+      //prep
+      let player = table.playingPlayers[table.currentPlayerIndex!];
+      let spyStand = jest.spyOn(table, 'stand');
       const spyHit = jest.spyOn(table, 'hit');
 
       await mockSocket2.on.mock.calls[5][1](
@@ -666,28 +696,17 @@ describe('ServerSocket', () => {
         table.id,
         player.id
       );
-
-      expect(player.isBust).toBeTruthy();
-      expect(spyStand).toHaveBeenCalledTimes(1);
-      expect(spyHit).toHaveBeenCalledTimes(2);
-      expect(player.hand).toHaveLength(5);
-      expect(player.handTotal).toBe(22);
-      expect(player.hand.map((card) => card.value)).toEqual(
-        expect.arrayContaining([2, 3, 3, 10, 4])
-      );
-      expect(table.currentPlayer?.id).not.toBe(player.id);
-      expect(serverSocket.io.to(table.id).emit).toHaveBeenCalledWith(
-        SocketEmit.ActionMade,
-        JSON.stringify(table)
+      await mockSocket2.on.mock.calls[5][1](
+        ActionType.Stand,
+        table.id,
+        player.id
       );
 
-      spyHit.mockRestore();
       spyStand.mockRestore();
-    });
 
-    it('should double and stand after double', async () => {
-      const player = table.playingPlayers[table.currentPlayerIndex!];
-      const spyStand = jest.spyOn(table, 'stand');
+      //test
+      player = table.playingPlayers[table.currentPlayerIndex!];
+      spyStand = jest.spyOn(table, 'stand');
       const spyDouble = jest.spyOn(table, 'double');
       const initialPlayerBet = player.betChipsTotal;
       const initialPlayerBalance = player.parentPlayer!.balance;
@@ -712,7 +731,8 @@ describe('ServerSocket', () => {
       expect(table.currentPlayer?.id).not.toBe(player.id);
       expect(serverSocket.io.to(table.id).emit).toHaveBeenCalledWith(
         SocketEmit.ActionMade,
-        JSON.stringify(table)
+        JSON.stringify(table),
+        ActionType.Double
       );
     });
 
@@ -732,13 +752,15 @@ describe('ServerSocket', () => {
       expect(table.currentPlayer?.id).toBe(player.id);
       expect(serverSocket.io.to(table.id).emit).toHaveBeenCalledWith(
         SocketEmit.ActionMade,
-        JSON.stringify(table)
+        JSON.stringify(table),
+        ActionType.SkipInsurance
       );
 
       spyInsurance.mockRestore();
     });
 
     it('should throw an error if user have not enaugh money for action', async () => {
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
       const player = table.playingPlayers[table.currentPlayerIndex!];
       const initialBalance = player.parentPlayer!.balance;
@@ -780,13 +802,19 @@ describe('ServerSocket', () => {
       const spyCountWinnings = jest.spyOn(table, 'countWinnings');
       const spySend = jest.spyOn(serverSocket.io.to(table.id), 'emit');
       const callStack: string[][] = [];
-      spySend.mockImplementation((eventName: SocketEmit, ...args: string[]) => {
-        callStack.push(args);
-        return jest
-          .requireActual('socket.io')(serverSocket.io)
-          .to(table.id)
-          .emit(eventName, ...args);
-      });
+      spySend.mockImplementation(
+        (
+          eventName: SocketEmit,
+          ...args: (string | ActionType | undefined)[]
+        ) => {
+          const cleanedArgs = args.map((arg) => (arg === undefined ? '' : arg));
+          callStack.push(cleanedArgs);
+          return jest
+            .requireActual('socket.io')(serverSocket.io)
+            .to(table.id)
+            .emit(eventName, ...cleanedArgs);
+        }
+      );
 
       const player = table.playingPlayers[table.currentPlayerIndex!];
       const initialBalance = player.parentPlayer!.balance;
@@ -842,6 +870,7 @@ describe('ServerSocket', () => {
     });
 
     it('should throw an error if table is not found', async () => {
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
 
       await mockSocket1.on.mock.calls[6][1](0, 'fakeTableId', player.id);
@@ -854,6 +883,7 @@ describe('ServerSocket', () => {
     });
 
     it('should throw an error if player is not found', async () => {
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
 
       await mockSocket1.on.mock.calls[6][1](0, table.id, 'fakePlayerId');
@@ -866,6 +896,7 @@ describe('ServerSocket', () => {
     });
 
     it('should top up balance', async () => {
+      //@ts-ignore
       const spySenf = jest.spyOn(serverSocket, 'handleError');
       const initialBalance = player.balance;
       const amount = 100;
@@ -902,6 +933,7 @@ describe('ServerSocket', () => {
     });
 
     it('should throw an error if table is not found', async () => {
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
       await mockSocket1.on.mock.calls[7][1](
         'fakeTableId',
@@ -916,6 +948,7 @@ describe('ServerSocket', () => {
     });
 
     it('should throw an error if chat is not found', async () => {
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
       const newTable = new Table();
       serverSocket.tables[newTable.id] = newTable;
@@ -946,7 +979,12 @@ describe('ServerSocket', () => {
     });
 
     it('should send message to the client', () => {
-      expect(serverSocket.io.to(table.id).emit).toHaveBeenCalledWith(
+      expect(mockSocket1.broadcast.to(table.id).emit).toBeCalledWith(
+        SocketEmit.Message,
+        spyChat.mock.results[0].value.text.join('\n'),
+        'chat'
+      );
+      expect(mockSocket1.broadcast.to(table.id).emit).toBeCalledWith(
         SocketEmit.ChatServerMessage,
         JSON.stringify(spyChat.mock.results[0].value)
       );
@@ -960,11 +998,14 @@ describe('ServerSocket', () => {
 
     beforeAll(() => {
       table = Object.values(serverSocket.tables)[0];
+      //@ts-ignore
       player1 = serverSocket.findPlayerById(mockSocket1.id, table)!;
+      //@ts-ignore
       player2 = serverSocket.findPlayerById(mockSocket2.id, table)!;
     });
 
     it('should throw an error if table is not found', async () => {
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
       await mockSocket1.on.mock.calls[8][1](
         'fakeTableId',
@@ -981,6 +1022,7 @@ describe('ServerSocket', () => {
     });
 
     it('should throw an error if player is not found', async () => {
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
       await mockSocket1.on.mock.calls[8][1](
         table.id,
@@ -1045,7 +1087,9 @@ describe('ServerSocket', () => {
     });
 
     it('should correctly rebet', async () => {
+      //@ts-ignore
       player2.balance = 100;
+      //@ts-ignore
       player1.balance = 100;
 
       await mockSocket1.on.mock.calls[2][1](table.id, 'spot-1', player1.id, 2);
@@ -1090,7 +1134,9 @@ describe('ServerSocket', () => {
 
     beforeAll(() => {
       table = Object.values(serverSocket.tables)[0];
+      //@ts-ignore
       player1 = serverSocket.findPlayerById(mockSocket1.id, table)!;
+      //@ts-ignore
       player2 = serverSocket.findPlayerById(mockSocket2.id, table)!;
     });
 
@@ -1114,6 +1160,7 @@ describe('ServerSocket', () => {
     });
 
     it('should throw an error if table or player is not found', async () => {
+      //@ts-ignore
       const spyHandleError = jest.spyOn(serverSocket, 'handleError');
       await mockSocket1.on.mock.calls[9][1]();
       await mockSocket1.on.mock.calls[9][1]();

@@ -1,12 +1,14 @@
-/* eslint-disable @typescript-eslint/dot-notation */
-import { Card } from '../models/card';
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+import { PlayerGameState, PlayerType } from '../types.ds';
 import { Dealer } from '../models/dealer';
 import { Player } from '../models/player';
+import { mockedDeck } from './mockedDeck';
 import { Table } from '../models/table';
-import { PlayerGameState, PlayerType } from '../types.ds';
+import { Card } from '../models/card';
 import { Rank } from '../types.ds';
 import { Suit } from '../types.ds';
-import { mockedDeck } from './mockedDeck';
+
+/* eslint-disable @typescript-eslint/dot-notation */
 
 describe('Table', () => {
   let table: Table;
@@ -235,6 +237,7 @@ describe('Table', () => {
 
   describe('countWinnings', () => {
     it('should correctly calculate winnings for a dealler natural blackjack', () => {
+      //@ts-ignore
       player2.balance = 70; // including deductions
       player1.hand = [card2, card2];
       player1.parentPlayer = player2;
@@ -253,6 +256,7 @@ describe('Table', () => {
     });
 
     it('should correctly calculate winnings for a player natural blackjack', () => {
+      //@ts-ignore
       player2.balance = 80; // including deductions
       player1.hand = [card1, card2];
       player1.parentPlayer = player2;
@@ -269,6 +273,7 @@ describe('Table', () => {
       expect(player2.balance).toBe(130);
     });
     it('should correctly calculate winnings if player and dealer have natural blackjack', () => {
+      //@ts-ignore
       player2.balance = 80; // including deductions
       player1.hand = [card1, card2];
       player1.parentPlayer = player2;
@@ -285,6 +290,7 @@ describe('Table', () => {
       expect(player2.balance).toBe(100);
     });
     it('should correctly calculate winnings for a player blackjack', () => {
+      //@ts-ignore
       player2.balance = 80; // including deductions
       player1.hand = [
         card1,
@@ -302,9 +308,11 @@ describe('Table', () => {
 
       table.countWinnings();
 
+      //@ts-ignore
       expect(player2.balance).toBe(120);
     });
     it('should correctly calculate winnings for a player bust', () => {
+      //@ts-ignore
       player2.balance = 80; // including deductions
       player1.hand = [card2, card2, card2];
       player1.parentPlayer = player2;
@@ -321,6 +329,7 @@ describe('Table', () => {
       expect(player2.balance).toBe(80);
     });
     it('should correctly calculate winnings for a dealer bust', () => {
+      //@ts-ignore
       player2.balance = 80; // including deductions
       player1.hand = [card2, card2];
       player1.parentPlayer = player2;
@@ -338,6 +347,7 @@ describe('Table', () => {
     });
 
     it('should correctly calculate winnings if dealer and player hands are equal', () => {
+      //@ts-ignore
       player2.balance = 80; // including deductions
       player1.hand = [card2, card2];
       player1.parentPlayer = player2;
@@ -361,45 +371,66 @@ describe('Table', () => {
     });
     it('should return PlayerGameState.Bust when hand total is greater than 21', () => {
       player1.hand = [
-        { suit: 'Clubs', rank: Rank.Ten, value: 10 },
-        { suit: 'Diamonds', rank: Rank.Ten, value: 10 },
-        { suit: 'Clubs', rank: Rank.Ten, value: 10 },
-        { suit: 'Hearts', rank: Rank.Ten, value: 10 },
+        //@ts-ignore
+        { suit: 'Clubs', rank: Rank.Ten, value: 10, id: 'card', isNew: false },
+        //@ts-ignore
+        {
+          suit: 'Diamonds',
+          rank: Rank.Ten,
+          value: 10,
+          id: 'card',
+          isNew: false,
+        },
+        //@ts-ignore
+        { suit: 'Clubs', rank: Rank.Ten, value: 10, id: 'card', isNew: false },
+        //@ts-ignore
+        { suit: 'Hearts', rank: Rank.Ten, value: 10, id: 'card', isNew: false },
       ];
-      expect(table.getPlayerState(player1)).toBe(PlayerGameState.Bust);
+      expect(player1.isBust).toBeTruthy();
     });
 
     it('should return PlayerGameState.NaturalBlackjack when hand total is 21 and round is not started and not splitted', () => {
       player1.hand = [
-        { suit: 'Clubs', rank: Rank.Ace, value: 11 },
-        { suit: 'Clubs', rank: Rank.Ten, value: 10 },
+        //@ts-ignore
+        { suit: 'Clubs', rank: Rank.Ace, value: 11, id: 'card', isNew: false },
+        //@ts-ignore
+        { suit: 'Clubs', rank: Rank.Ten, value: 10, id: 'card', isNew: false },
       ];
       player1.parentAfterSplitPlayer = null;
-      expect(table.getPlayerState(player1)).toBe(
-        PlayerGameState.NaturalBlackjack
-      );
+      expect(player1.isNaturalBJ).toBeTruthy();
     });
 
     it('should return PlayerGameState.Blackjack when hand total is 21 and not a natural blackjack', () => {
       player1.hand = [
-        { suit: 'Clubs', rank: Rank.Seven, value: 7 },
-        { suit: 'Clubs', rank: Rank.Ace, value: 11 },
-        { suit: 'Clubs', rank: Rank.Three, value: 3 },
+        //@ts-ignore
+        { suit: 'Clubs', rank: Rank.Seven, value: 7, id: 'card', isNew: false },
+        //@ts-ignore
+        { suit: 'Clubs', rank: Rank.Ace, value: 11, id: 'card', isNew: false },
+        //@ts-ignore
+        { suit: 'Clubs', rank: Rank.Three, value: 3, id: 'card', isNew: false },
       ];
-      expect(table.getPlayerState(player1)).toBe(PlayerGameState.Blackjack);
+      expect(player1.isBJ).toBeTruthy();
     });
 
     it('should return PlayerGameState.Active when hand total is less than 21 and greater than 0', () => {
       player1.hand = [
-        { suit: 'Clubs', rank: Rank.Ten, value: 10 },
-        { suit: 'Diamonds', rank: Rank.Seven, value: 7 },
+        //@ts-ignore
+        { suit: 'Clubs', rank: Rank.Ten, value: 10, id: 'card', isNew: false },
+        //@ts-ignore
+        {
+          suit: 'Diamonds',
+          rank: Rank.Seven,
+          value: 7,
+          id: 'card',
+          isNew: false,
+        },
       ];
-      expect(table.getPlayerState(player1)).toBe(PlayerGameState.Active);
+      expect(player1.isActive).toBeTruthy();
     });
 
     it('should return PlayerGameState.Error when hand total is less than or equal to 0', () => {
       player1.hand = [];
-      expect(table.getPlayerState(player1)).toBe(PlayerGameState.Error);
+      expect(player1.isError).toBeTruthy();
     });
   });
 });

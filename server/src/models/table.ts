@@ -1,12 +1,12 @@
-import { Card } from './card';
-import { Dealer } from './dealer';
-import { Player } from './player';
+import { v4 } from 'uuid';
+
 import { PlayerGameState } from '../types.ds';
 import { PlayerType } from '../types.ds';
 import { Rank } from '../types.ds';
 import { Suit } from '../types.ds';
-
-import { v4 } from 'uuid';
+import { Dealer } from './dealer';
+import { Player } from './player';
+import { Card } from './card';
 
 export class Table {
   public readonly id: string = v4();
@@ -84,36 +84,50 @@ export class Table {
   }
 
   public removeFakePlayers(parent: Player): void {
-    this.players
-      .filter(
-        (player) =>
-          player.parentPlayer?.id === parent.id ||
-          player.parentAfterSplitPlayer?.id === parent.id
-      )
-      .map((player) => {
-        this.playerRemove(player);
-      });
+    const filteredPlayers = this.players.filter(
+      (player) =>
+        player.parentPlayer?.id === parent.id ||
+        player.parentAfterSplitPlayer?.id === parent.id
+    );
+
+    for (const player of filteredPlayers) {
+      while (this.currentPlayer?.id === player.id) {
+        if (this.currentPlayerIndex !== null) {
+          this.currentPlayerIndex++;
+        }
+      }
+      const savedCurrentPlayer = this.currentPlayer;
+      this.playerRemove(player);
+      if (this.currentPlayerIndex !== null && savedCurrentPlayer) {
+        this.currentPlayerIndex =
+          this.players.indexOf(savedCurrentPlayer) ?? null;
+      }
+    }
+
     parent.roundIsEnded = false;
   }
 
   public rebet(parent: Player): void {
-    this.players
-      .filter(
-        (player) =>
-          player.parentPlayer?.id === parent.id && player.parentAfterSplitPlayer
-      )
-      .map((player) => {
-        this.playerRemove(player);
-      });
+    const filteredPlayers = this.players.filter(
+      (player) =>
+        player.parentPlayer?.id === parent.id && player.parentAfterSplitPlayer
+    );
+    for (const player of filteredPlayers) {
+      this.playerRemove(player);
+    }
     const playersWithBet = this.players.filter(
       (player) =>
         player.parentPlayer?.id === parent.id && !player.parentAfterSplitPlayer
     );
-    playersWithBet.map((player) => {
+    playersWithBet.forEach((player) => {
       player.hand = [];
       player.insuranceBet = null;
+      if (player.doubled) {
+        player.betChips.splice(player.betChips.length / 2);
+        player.doubled = false;
+      }
     });
-    parent.balance -= this.getPlayerBetChipsTotalWithChildren(parent);
+    parent.decreaseBalance(this.getPlayerBetChipsTotalWithChildren(parent));
     parent.roundIsEnded = false;
     if (this.handsEmpty) {
       this.dealer = null;
@@ -176,6 +190,7 @@ export class Table {
       player.betChips = player.betChips.concat(player.betChips);
       this.hit();
       this.stand();
+      player.doubled = true;
     }
   }
 
@@ -251,34 +266,6 @@ export class Table {
     }
   }
 
-  public getPlayerState(player: Player): PlayerGameState {
-    if (player.handTotal > 21) {
-      return PlayerGameState.Bust;
-    }
-    if (
-      player.handTotal === 21 &&
-      !player.roundIsStarted &&
-      !this.getPlayrIsSplitted(player)
-    ) {
-      return PlayerGameState.NaturalBlackjack;
-    }
-    if (player.handTotal === 21) {
-      return PlayerGameState.Blackjack;
-    }
-    if (player.handTotal < 21 && player.handTotal > 0) {
-      return PlayerGameState.Active;
-    }
-    return PlayerGameState.Error;
-  }
-
-  private getPlayerSpot(player: Player): Player[] | null {
-    return player.spotId ? this.spots[player.spotId] : null;
-  }
-
-  private getPlayrIsSplitted(player: Player): boolean {
-    return player.isSubplayer || (this.getPlayerSpot(player)?.length ?? 1) > 1;
-  }
-
   private createDeck(): void {
     const suits: Suit[] = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
     const ranks = [
@@ -301,7 +288,7 @@ export class Table {
       for (const rank of ranks) {
         for (let i = 0; i < 6; i++) {
           //6 decks
-          this.deck.push(new Card(suit, rank.rank, rank.value));
+          this.deck.push(new Card(suit, rank.rank, rank.value, true));
         }
       }
     }
