@@ -35,7 +35,7 @@ export const SoundSettingsForm = observer(() => {
   };
 
   const handleMusicVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = +e.currentTarget.value / 100;
+    const value = e.currentTarget.valueAsNumber / 100;
     if (game.music) {
       setMusicVolume(value);
       game.music.setMusicVolume(value);
@@ -46,7 +46,7 @@ export const SoundSettingsForm = observer(() => {
   };
 
   const handleSoundVolumeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = +e.currentTarget.value / 100;
+    const value = e.currentTarget.valueAsNumber / 100;
     if (game.music) {
       setSoundVolume(value);
       game.music.setSoundVolume(value);

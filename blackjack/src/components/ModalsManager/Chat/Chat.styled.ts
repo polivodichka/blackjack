@@ -51,7 +51,6 @@ export const Blob = styled.div`
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
   font-size: 18px;
   font-weight: 700;
-  font-family: 'Prompt';
 
   &.myMessage {
     background: rgba(20, 30, 48, 0.9);
@@ -97,7 +96,6 @@ export const MessageForm = styled.form`
     resize: none;
     font-size: 18px;
     font-weight: 100;
-    font-family: 'Prompt';
     height: 70px;
     transition: height 0.3s ease-in-out;
 

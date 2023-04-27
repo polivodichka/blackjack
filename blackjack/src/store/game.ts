@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
+/* eslint-disable no-console */
 import { toast } from 'react-toastify';
 import { makeObservable } from 'mobx';
 import equal from 'fast-deep-equal';
@@ -25,6 +25,9 @@ import { Music } from './music';
 import { Table } from './table';
 import { Card } from './card';
 import { Chat } from './chat';
+
+/* eslint-disable @typescript-eslint/no-floating-promises */
+
 
 export class Game {
   @observable public player: Player | null = null;
@@ -111,12 +114,7 @@ export class Game {
         if (!(this.modal.type === ModalTypes.Chat && !this.modal.hide)) {
           toast(message, toastSettings);
         }
-        const audio = this.music?.notifications[SoundType.Message];
-        if (audio) {
-          audio.pause();
-          audio.currentTime = 0;
-          audio.play();
-        }
+        this.playSound(SoundType.Message);
       } else if (!type) {
         toast(message, toastSettings);
       }
@@ -129,131 +127,52 @@ export class Game {
     socket.on(SocketOn.TableJoined, (table) => {
       this.onTableJoined(JSON.parse(table));
       this.modalUpdate(true);
-      const audio = this.music?.notifications[SoundType.PlayerConnected];
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-        audio.play();
-      }
+      this.playSound(SoundType.PlayerConnected);
     });
 
     socket.on(SocketOn.DisconnectPlayer, (tableStr) => {
       this.handleTableUpdate(tableStr);
-      const audio = this.music?.notifications[SoundType.PlayerDisconnected];
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-        audio.play();
-      }
+      this.playSound(SoundType.PlayerDisconnected);
     });
 
     socket.on(SocketOn.BetUpdate, (playersStr) => {
       this.updateAllPlayersArray(JSON.parse(playersStr));
-      const audio = this.music?.sounds[SoundType.Chip];
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-        audio.play();
-      }
+      this.playSound(SoundType.Chip);
     });
     socket.on(SocketOn.BalanceToppedUp, (playerStr) => {
       const playerObj = JSON.parse(playerStr) as IPlayer;
       const player = this.findPlayerById(playerObj.id);
       if (player) {
-        player.update(playerObj);
-        const audio = this.music?.notifications[SoundType.Balance];
-        if (audio) {
-          audio.pause();
-          audio.currentTime = 0;
-          audio.play();
-        }
+        this.playSound(SoundType.Balance);
       }
     });
 
     socket.on(SocketOn.Dealt, (tableStr) => {
       this.allActionsMade = false;
       this.handleTableUpdate(tableStr);
-      const audio = this.music?.sounds[SoundType.Flip];
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-        audio.play();
-      }
+      this.playSound(SoundType.Flip);
 
-      if (this.player?.id === this.table?.currentPlayer?.id
-        || this.player?.id === this.table?.currentPlayer?.parentPlayer?.id
-        || this.player?.id === this.table?.currentPlayer?.parentAfterSplitPlayer?.id) {
-        if (
-          this.table?.currentPlayer?.isBJ ||
-          this.table?.currentPlayer?.isBust ||
-          this.table?.currentPlayer?.isNaturalBJ
-        ) {
-          (async () => {
-            try {
-              await new Promise((resolve) => setTimeout(resolve, 600));
-              this.emit[SocketEmit.Action](ActionType.Stand);
-            } catch (error) {
-              console.error(error);
-            }
-          })();
-        }
-      }
+      this.handleAdditionalStand();
     });
 
     socket.on(SocketOn.ActionMade, (tableStr, actionType) => {
       this.handleTableUpdate(tableStr);
       //music
-      let audio;
       switch (actionType) {
         case ActionType.Hit:
         case ActionType.Split:
-          audio = this.music?.sounds[SoundType.Flip];
-          if (audio) {
-            audio.pause();
-            audio.currentTime = 0;
-            audio.play();
-          }
+          this.playSound(SoundType.Flip);
           break;
         case ActionType.Insurance:
-          audio = this.music?.sounds[SoundType.Chip];
-          if (audio) {
-            audio.pause();
-            audio.currentTime = 0;
-            audio.play();
-          }
+          this.playSound(SoundType.Chip);
           break;
         case ActionType.Double:
-          audio = this.music?.sounds[SoundType.Chip];
-          const audio2 = this.music?.sounds[SoundType.Flip];
-          if (audio && audio2) {
-            audio.pause();
-            audio2.pause();
-            audio.currentTime = 0;
-            audio2.currentTime = 0;
-            audio.play();
-            audio2.play();
-          }
+          this.playSound(SoundType.Chip);
+          this.playSound(SoundType.Flip);
           break;
       }
 
-      if (this.player?.id === this.table?.currentPlayer?.id
-        || this.player?.id === this.table?.currentPlayer?.parentPlayer?.id
-        || this.player?.id === this.table?.currentPlayer?.parentAfterSplitPlayer?.id) {
-        if (
-          this.table?.currentPlayer?.isBJ ||
-          this.table?.currentPlayer?.isBust ||
-          this.table?.currentPlayer?.isNaturalBJ
-        ) {
-          (async () => {
-            try {
-              await new Promise((resolve) => setTimeout(resolve, 600));
-              this.emit[SocketEmit.Action](ActionType.Stand);
-            } catch (error) {
-              console.error(error);
-            }
-          })();
-        }
-      }
+      this.handleAdditionalStand();
     });
 
     socket.on(SocketOn.DealerMadeAction, (tableStr, actionType) => {
@@ -263,33 +182,7 @@ export class Game {
     socket.on(SocketOn.WinnersCounted, (tableStr) => {
       this.dealerActionsHip.push({ table: tableStr, action: undefined });
 
-      const handleActions = async () => {
-        while (this.dealerActionsHip.length) {
-          const data = this.dealerActionsHip.shift();
-          const table = data?.table;
-          const actionType = data?.action;
-          if (table) {
-            await new Promise((resolve) =>
-              setTimeout(resolve, this.dealerActionsHip.length ? 1000 : 1500)
-            );
-            this.handleTableUpdate(table);
-            if (this.dealerActionsHip.length === 1) {
-              this.allActionsMade = true;
-            }
-            //music
-            if (actionType === ActionType.Hit) {
-              const audio = this.music?.sounds[SoundType.Flip];
-              if (audio) {
-                audio.pause();
-                audio.currentTime = 0;
-                audio.play();
-              }
-            }
-          }
-        }
-      };
-
-      handleActions();
+      this.handleDeallerActionsAndWinnerCounting();
     });
 
     socket.on(SocketOn.GameEnded, (tableStr) => {
@@ -346,6 +239,16 @@ export class Game {
       : undefined;
   }
 
+  public playSound(soundType: SoundType): void {
+    const audio = this.music?.sounds[soundType];
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
+      audio.play();
+    }
+  }
+
   public getNameBySpotId(id: string): string {
     const spot = this.table?.spots[id];
     if (spot) {
@@ -356,6 +259,50 @@ export class Game {
       return '';
     }
   }
+
+  private handleAdditionalStand() {
+    if (
+      this.player?.id === this.table?.currentPlayer?.id ||
+      this.player?.id === this.table?.currentPlayer?.parentPlayer?.id ||
+      this.player?.id === this.table?.currentPlayer?.parentAfterSplitPlayer?.id
+    ) {
+      if (
+        this.table?.currentPlayer?.isBJ ||
+        this.table?.currentPlayer?.isBust ||
+        this.table?.currentPlayer?.isNaturalBJ
+      ) {
+        (async () => {
+          try {
+            await new Promise((resolve) => setTimeout(resolve, 600));
+            this.emit[SocketEmit.Action](ActionType.Stand);
+          } catch (error) {
+            console.error(error);
+          }
+        })();
+      }
+    }
+  }
+
+  private handleDeallerActionsAndWinnerCounting = async () => {
+    while (this.dealerActionsHip.length) {
+      const data = this.dealerActionsHip.shift();
+      const table = data?.table;
+      const actionType = data?.action;
+      if (table) {
+        await new Promise((resolve) =>
+          setTimeout(resolve, this.dealerActionsHip.length ? 1000 : 1500)
+        );
+        this.handleTableUpdate(table);
+        if (this.dealerActionsHip.length === 1) {
+          this.allActionsMade = true;
+        }
+        //music
+        if (actionType === ActionType.Hit) {
+          this.playSound(SoundType.Flip);
+        }
+      }
+    }
+  };
 
   private handleTableUpdate(tableStr: string) {
     const table = JSON.parse(tableStr) as ITable;

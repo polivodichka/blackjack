@@ -13,7 +13,6 @@ export const Overflow = styled.div`
   align-items: center;
   margin: 0;
   padding: 0;
-  font-family: 'Prompt';
   background-color: rgba(0, 0, 0, 0.4);
   transform: translateY(-100%);
   opacity: 0;
@@ -48,7 +47,6 @@ export const Input = styled.input`
   border: none;
   border-radius: 0;
   border-bottom: 1px solid #fff;
-  font-family: 'Prompt';
 
   &:focus {
     outline: none;

@@ -26,13 +26,7 @@ export const Chat: React.FC = observer(() => {
       };
 
       game.emit[SocketEmit.ChatSendMessage](JSON.stringify(newMessage));
-      const audio = game.music?.sounds[SoundType.Click];
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-        // eslint-disable-next-line @typescript-eslint/no-floating-promises
-        audio.play();
-      }
+      game.playSound(SoundType.Click);
       setInputValue('');
     }
   };

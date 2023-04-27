@@ -37,7 +37,7 @@ export const CardComponent: React.FC<CardProps> = ({
     };
     switch (cardholderId) {
       case CardholdersIds.Spot0:
-        angle = ((90 - 45 * 1.5) * Math.PI) / 180;
+        angle = ((90 - 45 * 1.55) * Math.PI) / 180;
         result.y -= result.x * 2 * Math.sqrt(1 - Math.cos(angle));
         result.rotate = 100;
         break;
@@ -47,18 +47,18 @@ export const CardComponent: React.FC<CardProps> = ({
         result.rotate = 113;
         break;
       case CardholdersIds.Spot2:
-        angle = ((90 - 45 * 1.9) * Math.PI) / 180;
+        angle = ((90 - 45 * 1.8) * Math.PI) / 180;
         result.y -= result.x * 2 * Math.sqrt(1 - Math.cos(angle));
         result.rotate = 126;
         break;
       case CardholdersIds.Spot3:
-        angle = ((90 - 45 * 2.1) * Math.PI) / 180;
+        angle = ((90 - 45 * 1.9) * Math.PI) / 180;
         result.y -= result.x * 2 * Math.sqrt(1 - Math.cos(angle));
         result.rotate = 139;
         break;
 
       case CardholdersIds.Spot4:
-        angle = ((90 - 45 * 1) * Math.PI) / 180;
+        angle = ((90 - 45 * 1.55) * Math.PI) / 180;
         result.y += result.x * 2 * Math.sqrt(1 - Math.cos(angle));
         result.rotate = 152;
         break;

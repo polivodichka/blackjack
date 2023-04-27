@@ -24,7 +24,6 @@ export const StyledBtn = styled.button.attrs(
   text-transform: uppercase;
   overflow: hidden;
   transition: 0.5s;
-  font-family: 'Prompt';
   &:hover {
     background: ${Color.MainAccent};
     color: #fff;

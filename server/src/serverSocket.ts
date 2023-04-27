@@ -1,17 +1,18 @@
-import { ActionType } from './types.ds';
-import { BaseMessages } from './types.ds';
-import { Chat } from './models/chat';
-import { EndGameActions } from './types.ds';
-import { IMessage } from './types.ds';
+import { Server as HttpServer } from 'http';
+import { Server } from 'socket.io';
+
 import { MyServer } from './serverSocket.ds';
 import { MySocket } from './serverSocket.ds';
+import { EndGameActions } from './types.ds';
+import { BaseMessages } from './types.ds';
 import { Player } from './models/player';
-import { Rank } from './types.ds';
-import { Server } from 'socket.io';
-import { Server as HttpServer } from 'http';
+import { ActionType } from './types.ds';
 import { SocketEmit } from './types.ds';
-import { SocketOn } from './types.ds';
 import { Table } from './models/table';
+import { IMessage } from './types.ds';
+import { SocketOn } from './types.ds';
+import { Chat } from './models/chat';
+import { Rank } from './types.ds';
 
 export class ServerSocket {
   public static instance: ServerSocket;
@@ -197,7 +198,7 @@ export class ServerSocket {
           }
 
           if (table.currentPlayer && player.id !== table.currentPlayer.id) {
-            throw new Error(BaseMessages.ProhibitedAction + ' 2');
+            throw new Error(BaseMessages.ProhibitedAction);
           }
 
           table.playingPlayers.forEach((plPlayer) => {

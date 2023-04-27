@@ -138,7 +138,6 @@ export const ChipStyled = styled.button.attrs(
     z-index: 2;
     position: absolute;
     content: '${(props) => props.bet}';
-    font-family: 'Prompt';
     text-align: center;
     font: bold ${(props) => props.size! * 0.35}vmin /
       ${(props) => props.size! * 0.75}vmin Arial;

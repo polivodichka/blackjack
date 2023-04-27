@@ -98,21 +98,21 @@ export const SpotsZone = styled.div`
     transform: rotate(calc(90deg - 45deg * var(--i)));
     &:nth-child(1) {
       --i: 1.5;
-      top: -10.75vmin;
+      top: -5.75vw;
     }
     &:nth-child(2) {
       --i: 1.75;
     }
     &:nth-child(3) {
       --i: 2;
-      top: 3.3vmin;
+      top: 2vw;
     }
     &:nth-child(4) {
       --i: 2.25;
     }
     &:nth-child(5) {
       --i: 2.5;
-      top: -10.75vmin;
+      top: -5.75vw;
     }
   }
 `;

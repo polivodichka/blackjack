@@ -20,6 +20,10 @@ body,
 
 }
 
+input {
+  font-family: "Prompt";
+}
+
 :root svg {
   display: block !important;
 }
@@ -46,6 +50,6 @@ svg:not(:root) {
   font-weight: 100;
 }
 
-svg{
+svg {
   stroke-width: 0.2vmin;
 }

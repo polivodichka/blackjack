@@ -9,7 +9,6 @@ export const CardWrap = styled(motion.div)`
   width: var(--width);
   height: var(--height);
   font-size: 2.88vmin;
-  font-family: 'Prompt';
   position: relative;
   margin-left: 0;
   z-index: 1;
