@@ -100,7 +100,11 @@ export const GamePage: React.FC = observer(() => {
     <SvgBtnWithSound
       soundType={SoundType.Click}
       onClick={handleModalOpen(ModalTypes.Balance)}
-      disabled={game.table?.roundIsStarted}
+      disabled={
+        game.table?.roundIsStarted &&
+        !!game.table.playingPlayers.find(
+          (player) => game.player?.id === player.parentPlayer?.id)
+      }
     >
       <HandySvg
         src={moneyIcon}
@@ -152,7 +156,7 @@ export const GamePage: React.FC = observer(() => {
         <Deck />
       </GameWrapper>
 
-      <div className='buttons'>
+      <div className="buttons">
         <BetPanel />
 
         {playButtonOrGameStatus}
