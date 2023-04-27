@@ -1,35 +1,25 @@
-### Project Goal:
-Develop a blackjack game with the ability to choose a room where users can play against each other. The game will be played in real-time, facilitating message exchange between the client and server using WebSocket.
+# BlackJack Project Repository
 
-### Main Functional Requirements:
-- [ ] Ability to choose a room for the game.
-- [ ] Ability to deal cards to players and the dealer.
-- [ ] Ability to place a bet and start the game.
-- [ ] Handling player actions, such as hit, stand, etc.
-- [ ] Determining the winner and issuing the payout.
-- [ ] Checking for bust (if the total score is greater than 21).
-- [ ] Message exchange between the client and server using WebSocket.
+This repository contains the code for a BlackJack game developed as part of the TypeScript bootcamp at Evolution Gaming. 
+The following technologies were used in the project:
+- [x] MobX for state management
+- [x] React for the user interface
+- [x] Node.js for server-side development
+- [x] Socket.io for real-time communication
+- [x] Framer Motion for animations
+- [x] React-Toastify for notifications
+- [x] TypeScript for type checking and better code organization
+- [x] Jest for tests
 
-### Main Technical Requirements:
-- [ ] Use MobX to manage the game state.
-- [ ] Use NodeJS to create the server.
-- [ ] Use React to create the user interface (?)
-- [ ] Use Babylon.js or Canvas to display the game field (???)
-- [ ] Use WebSocket to exchange messages between the client and server.
-- [ ] Use TypeScript to improve code readability and facilitate debugging.
+## Main functionality
+- [x] Creating a new game table or joining an existing one by ID.
+- [x] Entering the game with a specified name and balance.
+- [x] A form for topping up the balance (available only before the start of a round).
+- [x] Sound settings: volume, mute (notifications, background music, click sounds).
+- [x] Game interface with five slots for placing bets.
+- [x] The ability to add and remove chips.
+- [x] The start game button is unavailable until all players make bets or all slots are filled.
+- [x] Displaying the current game status (game process, waiting for bets, waiting for the end of the round and setting bets).
+- [x] Players chat with notifications
+- [x] Animations (keyframes and framer motion)
 
-### Testing Requirements(??):
-- [ ] Test game functions.
-- [ ] Test message exchange between the client and server.
-- [ ] Test the user interface.
-- [ ] Test on different browsers and devices.
-
-### Planned Development Stages:
-* Define functional and technical requirements.
-* Develop the user interface design.
-* Develop the game logic.
-* Create the server in NodeJS and configure WebSocket.
-* Create the user interface using React, Babylon.js or Canvas(???)
-* Write code for message exchange between the client and server.
-* Optimize and debug the code.
-* Test the game and debug errors.
