@@ -34,13 +34,11 @@ export class ServerSocket {
         origin: '*',
       },
     });
-    this.findPlayerById = this.findPlayerById.bind(this);
-    this.handleError = this.handleError.bind(this);
 
-    this.io.on(SocketOn.Connect, this.StartListeners);
+    this.io.on(SocketOn.Connect, this.startListeners);
   }
 
-  public StartListeners = (socket: MySocket): void => {
+  private startListeners = (socket: MySocket): void => {
     console.info(`Message received from ${socket.id}`);
 
     socket.on(SocketOn.CreateTable, async (name, balance) => {
@@ -203,9 +201,10 @@ export class ServerSocket {
 
           table.playingPlayers.forEach((plPlayer) => {
             const hand = plPlayer.hand;
-            hand
-              .filter((card) => card.isNew)
-              .map((newCard) => (newCard.isNew = false));
+            const filtredHand = hand.filter((card) => card.isNew);
+            for(const newCard of filtredHand){
+              newCard.isNew = false
+            }
           });
 
           switch (actionType) {
@@ -249,7 +248,9 @@ export class ServerSocket {
               break;
           }
 
-          console.info(`${SocketEmit.ActionMade} ${player.parentPlayer?.id}  ${actionType}`);
+          console.info(
+            `${SocketEmit.ActionMade} ${player.parentPlayer?.id}  ${actionType}`
+          );
           //send
           this.io
             .to(table.id)
@@ -311,7 +312,7 @@ export class ServerSocket {
             throw new Error(BaseMessages.PlayerLost);
           }
 
-          player.balance = +balance + +player.balance;
+          player.increaseBalance(+balance);
 
           console.info(
             `${SocketEmit.BalanceToppedUp} to ${player.balance} for ${player.id}`
@@ -440,7 +441,7 @@ export class ServerSocket {
     });
   };
 
-  public handleError(error: unknown, socket: MySocket): void {
+  private handleError = (error: unknown, socket: MySocket): void => {
     if (error instanceof Error) {
       console.info(error);
       socket.emit(SocketEmit.Error, error.message);
@@ -448,9 +449,12 @@ export class ServerSocket {
       console.info('An unknown error occurred');
       socket.emit(SocketEmit.Error, BaseMessages.SmthWentWrong);
     }
-  }
+  };
 
-  public findPlayerById(playerId: string, table: Table): Player | undefined {
+  private findPlayerById = (
+    playerId: string,
+    table: Table
+  ): Player | undefined => {
     return table.allPlayers.find((player) => player.id === playerId);
-  }
+  };
 }

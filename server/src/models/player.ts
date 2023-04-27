@@ -1,10 +1,10 @@
-import { Dealer } from './dealer';
-import { PlayerType } from '../types.ds';
-import { TBet } from '../types.ds';
-
 import { v4 } from 'uuid';
 
-export class Player extends Dealer {
+import { PlayerType } from '../types.ds';
+import { User } from './abstractUser';
+import { TBet } from '../types.ds';
+
+export class Player extends User {
   public betChips: TBet[] = [];
   public insuranceBet: number | null = null;
   public parentAfterSplitPlayer: Player | null = null;
@@ -54,7 +54,7 @@ export class Player extends Dealer {
     }
   }
 
-  public set balance(amount: number) {
+  private set balance(amount: number) {
     this._balance = amount;
   }
 
@@ -64,7 +64,7 @@ export class Player extends Dealer {
     );
   }
 
-  public set name(value: string) {
+  private set name(value: string) {
     this._name = value;
   }
 

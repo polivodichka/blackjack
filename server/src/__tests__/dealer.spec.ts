@@ -1,6 +1,7 @@
-import { Card } from '../models/card';
-import { Dealer } from '../models/dealer';
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { PlayerGameState, Rank, SuitCard } from '../types.ds';
+import { Dealer } from '../models/dealer';
+import { Card } from '../models/card';
 
 jest.mock('uuid', () => ({ v4: () => '123456789' }));
 
@@ -117,7 +118,9 @@ describe('Dealer', () => {
   describe('state', () => {
     it('should return PlayerGameState.Bust when hand total is greater than 21', () => {
       dealer.hand = [
+        //@ts-ignore
         { suit: 'Clubs', rank: Rank.Ten, value: 10, id: 'card', isNew: false },
+        //@ts-ignore
         {
           suit: 'Diamonds',
           rank: Rank.Ten,
@@ -125,12 +128,14 @@ describe('Dealer', () => {
           id: 'card',
           isNew: false,
         },
+        //@ts-ignore
         { suit: 'Clubs', rank: Rank.Ten, value: 10, id: 'card', isNew: false },
       ];
       expect(dealer.state).toBe(PlayerGameState.Bust);
     });
     it('should return PlayerGameState.Blackjack when hand total is 21 and round is started', () => {
       dealer.hand = [
+        //@ts-ignore
         {
           suit: 'Diamonds',
           rank: Rank.Ten,
@@ -138,7 +143,9 @@ describe('Dealer', () => {
           id: 'card',
           isNew: false,
         },
+        //@ts-ignore
         { suit: 'Hearts', rank: Rank.Ten, value: 5, id: 'card', isNew: false },
+        //@ts-ignore
         { suit: 'Clubs', rank: Rank.Ace, value: 11, id: 'card', isNew: false },
       ];
       expect(dealer.state).toBe(PlayerGameState.Blackjack);
@@ -146,7 +153,9 @@ describe('Dealer', () => {
 
     it('should return PlayerGameState.NaturalBlackjack when hand total is 21 and round is not started', () => {
       dealer.hand = [
+        //@ts-ignore
         { suit: 'Clubs', rank: Rank.Ace, value: 11, id: 'card', isNew: false },
+        //@ts-ignore
         { suit: 'Clubs', rank: Rank.Ten, value: 10, id: 'card', isNew: false },
       ];
       expect(dealer.state).toBe(PlayerGameState.NaturalBlackjack);
@@ -154,7 +163,9 @@ describe('Dealer', () => {
 
     it('should return PlayerGameState.Active when hand total is less than 21 and greater than 0', () => {
       dealer.hand = [
+        //@ts-ignore
         { suit: 'Hearts', rank: Rank.Ten, value: 10, id: 'card', isNew: false },
+        //@ts-ignore
         { suit: 'Clubs', rank: Rank.Nine, value: 9, id: 'card', isNew: false },
       ];
       expect(dealer.state).toBe(PlayerGameState.Active);

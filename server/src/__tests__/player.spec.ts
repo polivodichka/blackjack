@@ -1,5 +1,6 @@
-import { Player } from '../models/player';
+/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { PlayerGameState, PlayerType, TBet } from '../types.ds';
+import { Player } from '../models/player';
 
 describe('Player', () => {
   let player: Player;
@@ -73,12 +74,14 @@ describe('Player', () => {
     });
 
     it('should set balance', () => {
+      //@ts-ignore
       player.balance = 50;
       expect(player.balance).toBe(50);
     });
 
     it('should get balance for subplayer', () => {
       const parentPlayer = new Player('parent player', tableId);
+      //@ts-ignore
       parentPlayer.balance = 100;
       player.parentAfterSplitPlayer = parentPlayer;
 
@@ -90,13 +93,16 @@ describe('Player', () => {
   describe('name', () => {
     it('should capitalize the first letter of the name', () => {
       expect(player.name).toBe('Jack');
+      //@ts-ignore
       player.name = 'bob';
       expect(player.name).toBe('Bob');
     });
 
     it('should lowercase the rest of the name', () => {
+      //@ts-ignore
       player.name = 'JACK';
       expect(player.name).toBe('Jack');
+      //@ts-ignore
       player.name = 'bOB';
       expect(player.name).toBe('Bob');
     });
@@ -157,6 +163,7 @@ describe('Player', () => {
   });
   describe('Player insurance', () => {
     it('should not allow insurance greater than available balance', () => {
+      //@ts-ignore
       player.balance = 12;
       player.bet(10);
       player.insurance();
@@ -165,6 +172,7 @@ describe('Player', () => {
     });
 
     it('should allow insurance equal to available balance', () => {
+      //@ts-ignore
       player.balance = 15;
       player.bet(10);
       player.insurance();
@@ -173,6 +181,7 @@ describe('Player', () => {
     });
 
     it('should allow insurance less than available balance', () => {
+      //@ts-ignore
       player.balance = 10;
       player.bet(5);
       player.insurance();

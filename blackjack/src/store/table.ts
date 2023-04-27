@@ -1,18 +1,18 @@
 /* eslint-disable @typescript-eslint/lines-between-class-members */
-import { Card } from './card';
-import { Dealer } from './dealer';
-import { GameStatus } from '../types.ds';
-import { IPlayer } from '../types.ds';
-import { Player } from './player';
-import { PlayerType } from '../types.ds';
-import { Rank } from '../types.ds';
-import { TBet } from '../types.ds';
-
-import { action } from 'mobx';
-import { computed } from 'mobx';
-import { game } from './game';
 import { makeObservable } from 'mobx';
 import { observable } from 'mobx';
+import { computed } from 'mobx';
+import { action } from 'mobx';
+
+import { GameStatus } from '../types.ds';
+import { PlayerType } from '../types.ds';
+import { IPlayer } from '../types.ds';
+import { Rank } from '../types.ds';
+import { TBet } from '../types.ds';
+import { Dealer } from './dealer';
+import { Player } from './player';
+import { Card } from './card';
+import { game } from './game';
 
 export class Table {
   @observable public allPlayers: Player[] = [];

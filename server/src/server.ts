@@ -1,7 +1,7 @@
-import { ServerSocket } from './serverSocket';
-
 import express from 'express';
 import http from 'http';
+
+import { ServerSocket } from './serverSocket';
 
 export const app = express();
 //Server handling

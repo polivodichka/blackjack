@@ -240,7 +240,8 @@ export class Game {
   }
 
   public playSound(soundType: SoundType): void {
-    const audio = this.music?.sounds[soundType];
+    const audio =
+      this.music?.sounds[soundType] ?? this.music?.notifications[soundType];
     if (audio) {
       audio.pause();
       audio.currentTime = 0;
@@ -337,7 +338,7 @@ export class Game {
                 (findedPlayer) => findedPlayer.id === targetPlayer.id
               )
           )
-          .map((targetPlayer) => {
+          .forEach((targetPlayer) => {
             const realPlayer = this.findPlayerById(targetPlayer.id);
             if (realPlayer) {
               this.table?.playerRemove(realPlayer);

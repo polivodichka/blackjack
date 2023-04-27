@@ -1,7 +1,8 @@
-import { ActionType } from './types.ds';
-import { EndGameActions } from './types.ds';
 import { Server } from 'socket.io';
 import { Socket } from 'socket.io';
+
+import { EndGameActions } from './types.ds';
+import { ActionType } from './types.ds';
 import { SocketEmit } from './types.ds';
 import { SocketOn } from './types.ds';
 import { TBet } from './types.ds';
