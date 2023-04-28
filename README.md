@@ -1,7 +1,7 @@
 # BlackJack Project Repository
 
 This repository contains the code for a BlackJack game developed as part of the TypeScript bootcamp at Evolution Gaming. 
-### [Video demonstration](https://www.youtube.com/watch?v=_TXxz-WoBcA)
+### [Video demonstration](https://www.youtube.com/watch?v=vbYx2ggWno0)
 
 ### Build with
 - [MobX](https://mobx.js.org/README.html) for state management
