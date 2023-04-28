@@ -1,15 +1,18 @@
 # BlackJack Project Repository
 
 This repository contains the code for a BlackJack game developed as part of the TypeScript bootcamp at Evolution Gaming. 
-The following technologies were used in the project:
-- [x] MobX for state management
-- [x] React for the user interface
-- [x] Node.js for server-side development
-- [x] Socket.io for real-time communication
-- [x] Framer Motion for animations
-- [x] React-Toastify for notifications
-- [x] TypeScript for type checking and better code organization
-- [x] Jest for tests
+### [Video demonstration](https://www.youtube.com/watch?v=_TXxz-WoBcA)
+
+### Build with
+- [MobX](https://mobx.js.org/README.html) for state management
+- [React](https://reactjs.org/) for the user interface
+- [Node.js](https://nodejs.org/en/docs) for server-side development
+- [Socket.io](https://socket.io/) for real-time communication
+- [Framer Motion](https://www.framer.com/motion/) for animations
+- [React-Toastify](https://fkhadra.github.io/react-toastify/introduction/) for notifications
+- [TypeScript](https://typescriptlang.org/) for type checking and better code organization
+- [Jest](https://jestjs.io/ru/) for tests
+- [Styled-components](https://www.styled-components.com/) for styles
 
 ## Main functionality
 - [x] Creating a new game table or joining an existing one by ID.
