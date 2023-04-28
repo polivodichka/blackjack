@@ -26,3 +26,13 @@ This repository contains the code for a BlackJack game developed as part of the 
 - [x] Players chat with notifications
 - [x] Animations (keyframes and framer motion)
 
+___
+To run the project you need to install all dependencies in server and blackjack folders via 
+ ```sh
+   npm install
+   ```
+Then you need to start server with
+ ```sh
+  npm start
+   ``` 
+script in server folder. And start client part with the same script in blackjack folder
