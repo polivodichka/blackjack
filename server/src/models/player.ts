@@ -70,17 +70,17 @@ export class Player extends User {
 
   public increaseBalance(amount: number): void {
     if (this.playerType !== PlayerType.Parent && this.parentPlayer) {
-      this.parentPlayer._balance += amount;
+      this.parentPlayer._balance = +this.parentPlayer._balance + amount;
     } else {
-      this._balance += amount;
+      this._balance = +this._balance + amount;
     }
   }
 
   public decreaseBalance(amount: number): void {
     if (this.playerType !== PlayerType.Parent && this.parentPlayer) {
-      this.parentPlayer._balance -= amount;
+      this.parentPlayer._balance = +this.parentPlayer._balance - amount;
     } else {
-      this._balance -= amount;
+      this._balance = +this._balance - amount;
     }
   }
 
