@@ -38,6 +38,6 @@ Then you need to start server with
 script in server folder. And start client part with the same script in blackjack folder
 
 ## Plans
-- [x] Add responsive design (to play on mobiles)
-- [x] Add database.
-- [x] Add timer to make a decision (bet/action).
+- [ ] Add responsive design (to play on mobiles)
+- [ ] Add database.
+- [ ] Add timer to make a decision (bet/action).
