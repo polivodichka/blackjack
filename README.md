@@ -36,3 +36,8 @@ Then you need to start server with
   npm start
    ``` 
 script in server folder. And start client part with the same script in blackjack folder
+
+## Plans
+- [x] Add responsive design (to play on mobiles)
+- [x] Add database.
+- [x] Add timer to make a decision (bet/action).
